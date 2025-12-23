@@ -379,10 +379,15 @@
 
         <!-- Charts Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
-            <h3 class="font-bold text-sm mb-4 text-secondary flex items-center gap-2">
-                <span class="text-lg">📊</span> 
-                <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
-            </h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                    <span class="text-lg">📊</span> 
+                    <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
+                </h3>
+                <button onclick="app.generateComparisonImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
+                    <span>📸</span> 画像生成
+                </button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <p class="text-xs font-bold text-gray-500 mb-2 text-center uppercase tracking-wide">スタッツ比較</p>
@@ -770,6 +775,62 @@
                     
                     <!-- Copy to Clipboard (Desktop) -->
                     <button id="copy-btn" onclick="app.copyImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                        </svg>
+                        クリップボードにコピー
+                    </button>
+                </div>
+                
+                <p class="text-xs text-gray-400 text-center mt-3">
+                    💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparison Image Export Modal -->
+    <div id="comparison-image-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>📸</span> Team Comparison 画像
+                </h3>
+                <button onclick="app.closeComparisonImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="comparison-image-loading" class="flex flex-col items-center justify-center py-8">
+                <div class="spinner mb-4"></div>
+                <p class="text-gray-500 text-sm">画像を生成中...</p>
+            </div>
+            
+            <!-- Image Preview -->
+            <div id="comparison-image-preview-wrapper" class="hidden">
+                <div class="image-preview-container mb-4 border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                    <img id="comparison-generated-image" class="w-full" alt="Team Comparison">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-2">
+                    <!-- Share Button (for mobile) -->
+                    <button onclick="app.shareComparisonImage()" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                        </svg>
+                        SNSでシェア
+                    </button>
+                    
+                    <!-- Download Button -->
+                    <button onclick="app.downloadComparisonImage()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        画像をダウンロード
+                    </button>
+                    
+                    <!-- Copy to Clipboard (Desktop) -->
+                    <button id="comparison-copy-btn" onclick="app.copyComparisonImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
                         </svg>
@@ -1230,6 +1291,317 @@
 
             closeImageModal() {
                 document.getElementById('image-modal').classList.remove('active');
+            }
+
+            // =============================
+            // 📸 TEAM COMPARISON 画像生成・シェア機能
+            // =============================
+            async generateComparisonImage() {
+                const modal = document.getElementById('comparison-image-modal');
+                const loading = document.getElementById('comparison-image-loading');
+                const previewWrapper = document.getElementById('comparison-image-preview-wrapper');
+                
+                // Show modal with loading
+                modal.classList.add('active');
+                loading.classList.remove('hidden');
+                previewWrapper.classList.add('hidden');
+                
+                try {
+                    // Create a styled clone for image generation
+                    const comparisonEl = this.createComparisonImageElement();
+                    document.body.appendChild(comparisonEl);
+                    
+                    // Generate image using html2canvas
+                    const canvas = await html2canvas(comparisonEl, {
+                        backgroundColor: '#ffffff',
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        width: comparisonEl.offsetWidth,
+                        height: comparisonEl.offsetHeight
+                    });
+                    
+                    // Remove temporary element
+                    document.body.removeChild(comparisonEl);
+                    
+                    // Convert to data URL and blob
+                    this.comparisonImageDataUrl = canvas.toDataURL('image/png');
+                    this.comparisonImageBlob = await new Promise(resolve => {
+                        canvas.toBlob(resolve, 'image/png');
+                    });
+                    
+                    // Show preview
+                    document.getElementById('comparison-generated-image').src = this.comparisonImageDataUrl;
+                    loading.classList.add('hidden');
+                    previewWrapper.classList.remove('hidden');
+                    
+                } catch (error) {
+                    console.error('Comparison image generation failed:', error);
+                    alert('画像の生成に失敗しました。もう一度お試しください。');
+                    modal.classList.remove('active');
+                }
+            }
+
+            createComparisonImageElement() {
+                const container = document.createElement('div');
+                container.style.cssText = `
+                    position: absolute;
+                    left: -9999px;
+                    top: 0;
+                    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+                    padding: 20px;
+                    font-family: 'Noto Sans JP', sans-serif;
+                    width: 600px;
+                `;
+                
+                // Get game info
+                const gameEvent = document.getElementById('game-event').value;
+                const gameDate = document.getElementById('game-date').value;
+                const gameTime = document.getElementById('game-time').value;
+                
+                // Format date and time
+                let dateTimeStr = '';
+                if (gameDate) {
+                    const date = new Date(gameDate);
+                    dateTimeStr = date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+                    if (gameTime) {
+                        dateTimeStr += ' ' + gameTime;
+                    }
+                }
+                
+                // Header with scores
+                const scoreA = this.calculateTeamScore('A');
+                const scoreB = this.calculateTeamScore('B');
+                const tA = this.calculateTeamStats('A');
+                const tB = this.calculateTeamStats('B');
+                
+                const header = document.createElement('div');
+                header.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                        <span style="font-size: 24px; margin-right: 8px;">🏀</span>
+                        <span style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 2px;">StatsToo</span>
+                    </div>
+                    ${gameEvent || dateTimeStr ? `
+                    <div style="text-align: center; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        ${gameEvent ? `<div style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: bold;">${gameEvent}</div>` : ''}
+                        ${dateTimeStr ? `<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 2px;">📅 ${dateTimeStr}</div>` : ''}
+                    </div>
+                    ` : ''}
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                        <div style="flex: 1; text-align: center;">
+                            <div style="color: #818cf8; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${this.state.teams.A.name}</div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: white;">${scoreA}</div>
+                        </div>
+                        <div style="color: rgba(255,255,255,0.3); font-family: 'Bebas Neue', sans-serif; font-size: 24px; padding: 0 16px;">VS</div>
+                        <div style="flex: 1; text-align: center;">
+                            <div style="color: #fb7185; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${this.state.teams.B.name}</div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: white;">${scoreB}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(header);
+                
+                // Stats Comparison Section
+                const statsSection = document.createElement('div');
+                statsSection.style.cssText = `
+                    background: white;
+                    border-radius: 12px;
+                    padding: 16px;
+                    margin-bottom: 12px;
+                `;
+                
+                const calcPct = (m, a) => a > 0 ? (m/a*100).toFixed(1) : '0.0';
+                
+                // Stats comparison data
+                const statsData = [
+                    { label: 'リバウンド', labelEn: 'REB', valueA: tA.orb + tA.drb, valueB: tB.orb + tB.drb, color: '#f97316' },
+                    { label: 'アシスト', labelEn: 'AST', valueA: tA.ast, valueB: tB.ast, color: '#22c55e' },
+                    { label: 'スティール', labelEn: 'STL', valueA: tA.stl, valueB: tB.stl, color: '#06b6d4' },
+                    { label: 'ブロック', labelEn: 'BLK', valueA: tA.blk, valueB: tB.blk, color: '#6366f1' },
+                    { label: 'ターンオーバー', labelEn: 'TO', valueA: tA.to, valueB: tB.to, color: '#ef4444' },
+                ];
+                
+                const pctData = [
+                    { label: '2P成功率', labelEn: '2P%', valueA: calcPct(tA.p2m, tA.p2a), valueB: calcPct(tB.p2m, tB.p2a), unitA: `${tA.p2m}/${tA.p2a}`, unitB: `${tB.p2m}/${tB.p2a}` },
+                    { label: '3P成功率', labelEn: '3P%', valueA: calcPct(tA.p3m, tA.p3a), valueB: calcPct(tB.p3m, tB.p3a), unitA: `${tA.p3m}/${tA.p3a}`, unitB: `${tB.p3m}/${tB.p3a}` },
+                    { label: 'FT成功率', labelEn: 'FT%', valueA: calcPct(tA.ftm, tA.fta), valueB: calcPct(tB.ftm, tB.fta), unitA: `${tA.ftm}/${tA.fta}`, unitB: `${tB.ftm}/${tB.fta}` },
+                ];
+                
+                let statsHTML = `
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">📊 スタッツ比較</div>
+                `;
+                
+                statsData.forEach(stat => {
+                    const total = stat.valueA + stat.valueB;
+                    const pctA = total > 0 ? (stat.valueA / total * 100) : 50;
+                    const pctB = total > 0 ? (stat.valueB / total * 100) : 50;
+                    const winA = stat.label === 'ターンオーバー' ? stat.valueA < stat.valueB : stat.valueA > stat.valueB;
+                    const winB = stat.label === 'ターンオーバー' ? stat.valueB < stat.valueA : stat.valueB > stat.valueA;
+                    
+                    statsHTML += `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-weight: ${winA ? 'bold' : 'normal'}; font-size: 16px; color: ${winA ? '#4f46e5' : '#64748b'};">${stat.valueA}</span>
+                                <span style="font-size: 11px; color: #64748b; font-weight: 500;">${stat.label}</span>
+                                <span style="font-weight: ${winB ? 'bold' : 'normal'}; font-size: 16px; color: ${winB ? '#e11d48' : '#64748b'};">${stat.valueB}</span>
+                            </div>
+                            <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #e5e7eb;">
+                                <div style="width: ${pctA}%; background: #818cf8;"></div>
+                                <div style="width: ${pctB}%; background: #fb7185;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                statsHTML += `</div>`;
+                
+                // Percentage comparison
+                statsHTML += `
+                    <div>
+                        <div style="font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">🎯 成功率比較</div>
+                `;
+                
+                pctData.forEach(stat => {
+                    const valA = parseFloat(stat.valueA);
+                    const valB = parseFloat(stat.valueB);
+                    const winA = valA > valB;
+                    const winB = valB > valA;
+                    
+                    statsHTML += `
+                        <div style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <div style="text-align: left;">
+                                    <span style="font-weight: ${winA ? 'bold' : 'normal'}; font-size: 16px; color: ${winA ? '#4f46e5' : '#64748b'};">${stat.valueA}%</span>
+                                    <span style="font-size: 10px; color: #94a3b8; margin-left: 4px;">(${stat.unitA})</span>
+                                </div>
+                                <span style="font-size: 11px; color: #64748b; font-weight: 500;">${stat.label}</span>
+                                <div style="text-align: right;">
+                                    <span style="font-weight: ${winB ? 'bold' : 'normal'}; font-size: 16px; color: ${winB ? '#e11d48' : '#64748b'};">${stat.valueB}%</span>
+                                    <span style="font-size: 10px; color: #94a3b8; margin-left: 4px;">(${stat.unitB})</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #e5e7eb;">
+                                <div style="width: ${valA}%; background: #818cf8;"></div>
+                                <div style="width: ${100 - valA}%; background: transparent;"></div>
+                            </div>
+                            <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #e5e7eb; margin-top: 2px;">
+                                <div style="width: ${valB}%; background: #fb7185;"></div>
+                                <div style="width: ${100 - valB}%; background: transparent;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                statsHTML += `</div>`;
+                
+                // Team Legend
+                statsHTML += `
+                    <div style="display: flex; justify-content: center; gap: 24px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: #818cf8; border-radius: 2px;"></div>
+                            <span style="font-size: 11px; color: #64748b; font-weight: 500;">${this.state.teams.A.name}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <div style="width: 12px; height: 12px; background: #fb7185; border-radius: 2px;"></div>
+                            <span style="font-size: 11px; color: #64748b; font-weight: 500;">${this.state.teams.B.name}</span>
+                        </div>
+                    </div>
+                `;
+                
+                statsSection.innerHTML = statsHTML;
+                container.appendChild(statsSection);
+                
+                // Footer
+                const footerDate = gameDate 
+                    ? new Date(gameDate).toLocaleDateString('ja-JP') 
+                    : new Date().toLocaleDateString('ja-JP');
+                    
+                const footer = document.createElement('div');
+                footer.innerHTML = `
+                    <div style="text-align: center; margin-top: 12px; color: rgba(255,255,255,0.5); font-size: 10px;">
+                        ${footerDate} | statstoo.com
+                    </div>
+                `;
+                container.appendChild(footer);
+                
+                return container;
+            }
+
+            async shareComparisonImage() {
+                if (!this.comparisonImageBlob) return;
+                
+                const scoreA = this.calculateTeamScore('A');
+                const scoreB = this.calculateTeamScore('B');
+                const shareText = `🏀 ${this.state.teams.A.name} ${scoreA} - ${scoreB} ${this.state.teams.B.name}\n\n📊 Team Comparison\n#StatsToo #バスケ`;
+                
+                try {
+                    if (navigator.canShare && navigator.canShare({ files: [new File([this.comparisonImageBlob], 'comparison.png', { type: 'image/png' })] })) {
+                        const file = new File([this.comparisonImageBlob], 'comparison.png', { type: 'image/png' });
+                        await navigator.share({
+                            title: 'Team Comparison - StatsToo',
+                            text: shareText,
+                            files: [file]
+                        });
+                    } else if (navigator.share) {
+                        await navigator.share({
+                            title: 'Team Comparison - StatsToo',
+                            text: shareText,
+                            url: window.location.href
+                        });
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('Share failed:', error);
+                        this.downloadComparisonImage();
+                    }
+                }
+            }
+
+            downloadComparisonImage() {
+                if (!this.comparisonImageDataUrl) return;
+                
+                const link = document.createElement('a');
+                link.href = this.comparisonImageDataUrl;
+                link.download = `team_comparison_${new Date().toISOString().slice(0, 10)}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            async copyComparisonImageToClipboard() {
+                if (!this.comparisonImageBlob) return;
+                
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': this.comparisonImageBlob })
+                    ]);
+                    
+                    const btn = document.getElementById('comparison-copy-btn');
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        コピーしました！
+                    `;
+                    btn.classList.add('bg-green-100', 'text-green-700');
+                    btn.classList.remove('bg-gray-100', 'text-gray-700');
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.classList.remove('bg-green-100', 'text-green-700');
+                        btn.classList.add('bg-gray-100', 'text-gray-700');
+                    }, 2000);
+                    
+                } catch (error) {
+                    console.error('Copy failed:', error);
+                    alert('クリップボードへのコピーに失敗しました。ダウンロードをお試しください。');
+                }
+            }
+
+            closeComparisonImageModal() {
+                document.getElementById('comparison-image-modal').classList.remove('active');
             }
 
             // =============================
