@@ -1,730 +1,281 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ヘルプ | StatsToo（スタッツー）</title>
-    <meta name="description" content="StatsToo（スタッツー）の使い方ガイド。試合スタッツ記録ツールの基本操作、よくある質問、トラブルシューティングをご案内します。">
-    <link rel="canonical" href="https://statstoo.com/help/">
-    
-    <!-- OGP -->
-    <meta property="og:title" content="ヘルプ | StatsToo（スタッツー）">
-    <meta property="og:description" content="StatsToo（スタッツー）の使い方ガイド">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://statstoo.com/help/">
-    <meta property="og:site_name" content="StatsToo">
-    <meta property="og:image" content="https://statstoo.com/ogp.png">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="ヘルプ | StatsToo（スタッツー）">
-    <meta name="twitter:description" content="StatsToo（スタッツー）の使い方ガイド">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#EA580C',
-                            light: '#FB923C',
-                            dark: '#C2410C',
-                        },
-                        secondary: {
-                            DEFAULT: '#1e293b',
-                            light: '#334155',
-                        }
-                    },
-                    fontFamily: {
-                        'display': ['Bebas Neue', 'sans-serif'],
-                        'body': ['Noto Sans JP', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #faf8f5;
-            color: #1e293b;
-        }
-
-        .font-display {
-            font-family: 'Bebas Neue', sans-serif;
-        }
-
-        /* Logo bounce animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .logo-bounce {
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        /* Page Header Background Pattern */
-        .page-header-pattern::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 80px,
-                    rgba(255,255,255,0.02) 80px,
-                    rgba(255,255,255,0.02) 82px
-                );
-        }
-
-        /* Help section styles */
-        .help-section h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1rem;
-            padding-left: 1rem;
-            border-left: 4px solid #EA580C;
-        }
-
-        .help-section p {
-            color: #1e293b;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .help-section a {
-            color: #EA580C;
-            text-decoration: underline;
-            transition: color 0.2s;
-        }
-
-        .help-section a:hover {
-            color: #C2410C;
-        }
-
-        /* Step cards */
-        .step-card {
-            background: #f8fafc;
-            border-radius: 12px;
-            padding: 1.25rem;
-            position: relative;
-            padding-left: 4rem;
-        }
-
-        .step-number {
-            position: absolute;
-            left: 1rem;
-            top: 1.25rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1.125rem;
-        }
-
-        .step-card h4 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-card p {
-            font-size: 0.875rem;
-            color: #64748b;
-            margin-bottom: 0;
-        }
-
-        /* FAQ Accordion */
-        .faq-item {
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 0.75rem;
-        }
-
-        .faq-question {
-            width: 100%;
-            text-align: left;
-            padding: 1rem 1.25rem;
-            background: #f9fafb;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 0.95rem;
-            transition: background 0.2s;
-        }
-
-        .faq-question:hover {
-            background: #f1f5f9;
-        }
-
-        .faq-question .icon {
-            transition: transform 0.3s;
-            color: #EA580C;
-            font-size: 1.25rem;
-        }
-
-        .faq-item.active .faq-question .icon {
-            transform: rotate(45deg);
-        }
-
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background: white;
-        }
-
-        .faq-item.active .faq-answer {
-            max-height: 500px;
-        }
-
-        .faq-answer-content {
-            padding: 1rem 1.25rem;
-            font-size: 0.9rem;
-            color: #475569;
-            line-height: 1.8;
-        }
-
-        /* Feature cards */
-        .feature-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            transition: all 0.2s;
-        }
-
-        .feature-card:hover {
-            border-color: #EA580C;
-            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.1);
-        }
-
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.75rem;
-            font-size: 1.5rem;
-        }
-
-        .feature-card h4 {
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-            font-size: 0.95rem;
-        }
-
-        .feature-card p {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin: 0;
-        }
-
-        /* Keyboard shortcuts */
-        .kbd {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #475569;
-        }
-
-        /* Stats glossary mini */
-        .stat-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.85rem;
-        }
-
-        .stat-badge strong {
-            color: #EA580C;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Global Navigation -->
-    <nav class="bg-secondary-light border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-12">
-                <!-- Logo (Mobile & Desktop) -->
-                <a href="/" class="flex items-center gap-2 text-decoration-none md:hidden">
-                    <span class="text-xl logo-bounce">🏀</span>
-                    <span class="font-display text-lg tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center gap-1 w-full">
-                    <a href="/" class="flex items-center gap-2 text-decoration-none mr-6">
-                        <span class="text-xl logo-bounce">🏀</span>
-                        <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <a href="/tools/game-stats/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📊</span> 試合スタッツ記録
-                    </a>
-                    <a href="/tools/practice/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>🎯</span> 個人練習ツール-開発中
-                    </a>
-                    <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📝</span> バスケコラム-執筆中
-                    </a>
-                    <div class="flex-grow"></div>
-                    <a href="/help/" class="nav-link text-white bg-primary/80 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
-            <div class="px-4 py-3 space-y-1">
-                <a href="/tools/game-stats/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📊</span> 試合スタッツ記録
-                </a>
-                <a href="/tools/practice/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>🎯</span> 個人練習ツール-開発中
-                </a>
-                <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📝</span> バスケコラム
-                </a>
-                <div class="border-t border-white/10 my-2 pt-2">
-                    <a href="/help/" class="block text-white bg-primary/80 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Page Header -->
-    <section class="bg-gradient-to-br from-secondary to-secondary-light py-16 md:py-20 relative overflow-hidden page-header-pattern">
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <p class="font-display text-sm md:text-base tracking-widest text-primary-light mb-2">HELP</p>
-            <h1 class="font-display text-3xl md:text-4xl lg:text-5xl text-white tracking-wide">ヘルプ</h1>
-            <p class="text-white/60 mt-4 text-sm md:text-base">StatsTooの使い方をご案内します</p>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="flex-grow">
-        <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
-            
-            <!-- Quick Links -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-                <a href="#basic-usage" class="feature-card">
-                    <div class="feature-icon">📖</div>
-                    <h4>基本の使い方</h4>
-                    <p>はじめての方へ</p>
-                </a>
-                <a href="#features" class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h4>便利な機能</h4>
-                    <p>活用テクニック</p>
-                </a>
-                <a href="#faq" class="feature-card">
-                    <div class="feature-icon">❓</div>
-                    <h4>よくある質問</h4>
-                    <p>FAQ</p>
-                </a>
-                <a href="#trouble" class="feature-card">
-                    <div class="feature-icon">🔧</div>
-                    <h4>困ったときは</h4>
-                    <p>トラブル対処</p>
-                </a>
-            </div>
-            
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
-                
-                <!-- Basic Usage -->
-                <div id="basic-usage" class="help-section mb-10">
-                    <h2>基本の使い方</h2>
-                    <p>試合スタッツ記録ツールの基本的な操作方法をご紹介します。</p>
-                    
-                    <div class="space-y-4 mt-6">
-                        <div class="step-card">
-                            <div class="step-number">1</div>
-                            <h4>メンバーを登録する</h4>
-                            <p>「メンバー編集」ボタンをタップして、選手の名前を入力します。チェックボックスでコート上の選手を選択できます。</p>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">2</div>
-                            <h4>選手を選択する</h4>
-                            <p>スタッツを記録したい選手の名前をタップして選択します。選択中の選手は色付きで表示されます。</p>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">3</div>
-                            <h4>スタッツを記録する</h4>
-                            <p>画面下部のボタンで各スタッツを記録します。シュート成功（2P/3P/FT）、リバウンド（OR/DR）、アシスト、スティール、ブロック、ターンオーバーなど。</p>
-                        </div>
-                        
-                        <div class="step-card">
-                            <div class="step-number">4</div>
-                            <h4>結果を確認・共有する</h4>
-                            <p>BOX SCOREセクションで全選手のスタッツを確認。「画像生成」でSNS共有用の画像を作成、「CSV」でデータをダウンロードできます。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Features -->
-                <div id="features" class="help-section mb-10">
-                    <h2>便利な機能</h2>
-                    
-                    <div class="space-y-4 mt-6">
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                                <span>↩️</span> 元に戻す機能
-                            </h4>
-                            <p class="text-sm text-gray-600 mb-0">誤って記録してしまった場合は、「元に戻す」ボタンで直前の操作を取り消せます。</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                                <span>📸</span> 画像生成・シェア
-                            </h4>
-                            <p class="text-sm text-gray-600 mb-0">BOX SCOREとTEAM COMPARISONそれぞれで画像を生成できます。SNSへのシェアやダウンロードが可能です。</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                                <span>📊</span> チーム比較グラフ
-                            </h4>
-                            <p class="text-sm text-gray-600 mb-0">TEAM COMPARISONセクションでは、両チームのスタッツと成功率をグラフで視覚的に比較できます。</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                                <span>📥</span> CSVエクスポート
-                            </h4>
-                            <p class="text-sm text-gray-600 mb-0">記録したスタッツをCSVファイルでダウンロードできます。Excelやスプレッドシートでの分析に活用できます。</p>
-                        </div>
-                        
-                        <div class="bg-gray-50 rounded-xl p-4">
-                            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                                <span>✏️</span> チーム名の編集
-                            </h4>
-                            <p class="text-sm text-gray-600 mb-0">スコアボード上のチーム名をタップすると、自由に名前を変更できます。画像生成にも反映されます。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Stats Glossary Mini -->
-                <div class="help-section mb-10">
-                    <h2>スタッツ用語</h2>
-                    <p>主な略語の意味をご紹介します。</p>
-                    
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        <span class="stat-badge"><strong>PTS</strong> 得点</span>
-                        <span class="stat-badge"><strong>2P</strong> 2ポイント</span>
-                        <span class="stat-badge"><strong>3P</strong> 3ポイント</span>
-                        <span class="stat-badge"><strong>FT</strong> フリースロー</span>
-                        <span class="stat-badge"><strong>OR</strong> オフェンスリバウンド</span>
-                        <span class="stat-badge"><strong>DR</strong> ディフェンスリバウンド</span>
-                        <span class="stat-badge"><strong>AST</strong> アシスト</span>
-                        <span class="stat-badge"><strong>STL</strong> スティール</span>
-                        <span class="stat-badge"><strong>BLK</strong> ブロック</span>
-                        <span class="stat-badge"><strong>TO</strong> ターンオーバー</span>
-                        <span class="stat-badge"><strong>PF</strong> パーソナルファウル</span>
-                        <span class="stat-badge"><strong>EFF</strong> エフィシエンシー</span>
-                    </div>
-                    
-                    <p class="text-sm text-gray-500 mt-4">※ 詳しい説明は、ツールページ内の「STATS GLOSSARY」セクションをご覧ください。</p>
-                </div>
-                
-                <!-- FAQ -->
-                <div id="faq" class="help-section mb-10">
-                    <h2>よくある質問（FAQ）</h2>
-                    
-                    <div class="mt-6">
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>データはどこに保存されますか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    データはお使いのブラウザのローカルストレージに保存されます。サーバーには送信されないため、プライバシーは保護されますが、ブラウザのキャッシュクリアや端末の変更でデータが消える場合があります。大切なデータはCSV出力でバックアップを取ることをおすすめします。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>スマートフォンでも使えますか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    はい、スマートフォンやタブレットでも快適にお使いいただけます。試合中の記録はスマートフォンでの操作を想定して設計されています。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>利用料金はかかりますか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    StatsTooは完全無料でご利用いただけます。アカウント登録も不要です。ただし、インターネット接続に必要な通信料はお客様のご負担となります。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>選手は何人まで登録できますか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    各チーム制限なく選手を追加できます。「メンバー編集」モードで「＋ 選手を追加」ボタンをタップして追加してください。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>間違えて記録した場合はどうすればいいですか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    画面下部の「元に戻す」ボタンで直前の操作を取り消すことができます。何度でも戻すことが可能です。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>EFF（エフィシエンシー）とは何ですか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    EFFは選手の総合的な貢献度を示す指標です。計算式は「(得点 + リバウンド + アシスト + スティール + ブロック) - (シュートミス + フリースローミス + ターンオーバー)」です。プラスが大きいほど貢献度が高いことを示します。
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="faq-item">
-                            <button class="faq-question" onclick="toggleFaq(this)">
-                                <span>生成した画像はどこに保存されますか？</span>
-                                <span class="icon">+</span>
-                            </button>
-                            <div class="faq-answer">
-                                <div class="faq-answer-content">
-                                    「画像をダウンロード」ボタンを押すと、お使いの端末のダウンロードフォルダに保存されます。スマートフォンの場合は「SNSでシェア」から直接LINEやX（Twitter）などに共有することもできます。
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Troubleshooting -->
-                <div id="trouble" class="help-section mb-10">
-                    <h2>困ったときは</h2>
-                    
-                    <div class="space-y-4 mt-6">
-                        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-                            <h4 class="font-bold text-red-800 mb-2">データが消えてしまった</h4>
-                            <p class="text-sm text-red-700 mb-0">ブラウザのキャッシュクリアや、シークレットモードでの使用、別のブラウザ・端末での利用によりデータが消える場合があります。残念ながら復元はできません。今後は定期的にCSVでバックアップを取ることをおすすめします。</p>
-                        </div>
-                        
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <h4 class="font-bold text-amber-800 mb-2">画面が正しく表示されない</h4>
-                            <p class="text-sm text-amber-700 mb-0">ブラウザを最新版に更新してお試しください。推奨ブラウザはChrome、Safari、Edge、Firefoxの最新版です。</p>
-                        </div>
-                        
-                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                            <h4 class="font-bold text-blue-800 mb-2">画像がダウンロードできない</h4>
-                            <p class="text-sm text-blue-700 mb-0">ブラウザの設定でダウンロードがブロックされている可能性があります。設定を確認するか、「クリップボードにコピー」機能をお試しください。</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Contact CTA -->
-                <div class="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-6 border border-primary/20 text-center">
-                    <h3 class="font-bold text-secondary mb-2">解決しない場合は</h3>
-                    <p class="text-sm text-gray-600 mb-4">上記で解決しない問題やご要望がございましたら、お気軽にお問い合わせください。</p>
-                    <a href="/contact/" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded-lg transition">
-                        <span>📧</span> お問い合わせ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-secondary text-white/80">
-        <!-- Main Footer -->
-        <div class="max-w-6xl mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Brand -->
-                <div class="md:col-span-1">
-                    <a href="/" class="flex items-center gap-2 mb-4">
-                        <span class="text-2xl">🏀</span>
-                        <span class="font-display text-2xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <p class="text-white/60 text-sm leading-relaxed">
-                        バスケットボールのスタッツ分析ツール。試合から個人練習まで、バスケを楽しむ全ての人をサポートします。
-                    </p>
-                </div>
-
-                <!-- Tools -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">ツール</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/tools/game-stats/" class="text-white/60 hover:text-primary-light transition">📊 試合スタッツ記録</a></li>
-                        <li><a href="/tools/practice/" class="text-white/60 hover:text-primary-light transition">🎯 個人練習ツール-開発中</a></li>
-                        <li><a href="/tools/shot-chart/" class="text-white/60 hover:text-primary-light transition">🗺️ ショットチャート-開発中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">コンテンツ</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/column/" class="text-white/60 hover:text-primary-light transition">📝 バスケコラム-執筆中</a></li>
-                        <li><a href="/column/rules/" class="text-white/60 hover:text-primary-light transition">📖 ルール解説-執筆中</a></li>
-                        <li><a href="/column/tips/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Support -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">サポート</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/help/" class="text-primary-light transition">❓ ヘルプ</a></li>
-                        <li><a href="/contact/" class="text-white/60 hover:text-primary-light transition">📧 お問い合わせ</a></li>
-                        <li><a href="/about/" class="text-white/60 hover:text-primary-light transition">👤 運営者情報</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Footer -->
-        <div class="border-t border-white/10">
-            <div class="max-w-6xl mx-auto px-4 py-4">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/50">
-                    <p>© 2025 StatsToo. All rights reserved.</p>
-                    <div class="flex gap-4">
-                        <a href="/privacy/" class="hover:text-primary-light transition">プライバシーポリシー</a>
-                        <a href="/terms/" class="hover:text-primary-light transition">利用規約</a>
-                        <a href="/sitemap/" class="hover:text-primary-light transition">サイトマップ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const iconOpen = document.getElementById('menu-icon-open');
-            const iconClose = document.getElementById('menu-icon-close');
-            
-            menu.classList.toggle('hidden');
-            iconOpen.classList.toggle('hidden');
-            iconClose.classList.toggle('hidden');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('mobile-menu');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (!menu.contains(e.target) && !btn.contains(e.target) && !menu.classList.contains('hidden')) {
-                toggleMobileMenu();
-            }
+---
+title: ヘルプ
+description: StatsToo（スタッツー）の使い方ガイド。試合スタッツ記録ツールの基本操作、よくある質問、トラブルシューティングをご案内します。
+page_label: HELP
+page_title: ヘルプ
+page_subtitle: StatsTooの使い方をご案内します
+extra_css: |
+    .help-section h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-left: 1rem;
+        border-left: 4px solid #EA580C;
+    }
+    .help-section p { color: #1e293b; margin-bottom: 1rem; font-size: 0.95rem; line-height: 1.8; }
+    .help-section a { color: #EA580C; text-decoration: underline; }
+    .step-card { background: #f8fafc; border-radius: 12px; padding: 1.25rem; position: relative; padding-left: 4rem; }
+    .step-number {
+        position: absolute; left: 1rem; top: 1.25rem; width: 2.5rem; height: 2.5rem;
+        background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        color: white; font-weight: 700; font-size: 1.125rem;
+    }
+    .step-card h4 { font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+    .step-card p { font-size: 0.875rem; color: #64748b; margin-bottom: 0; }
+    .faq-item { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; margin-bottom: 0.75rem; }
+    .faq-question {
+        width: 100%; text-align: left; padding: 1rem 1.25rem; background: #f9fafb; border: none;
+        cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        font-weight: 600; color: #1e293b; font-size: 0.95rem; transition: background 0.2s;
+    }
+    .faq-question:hover { background: #f1f5f9; }
+    .faq-question .icon { transition: transform 0.3s; color: #EA580C; font-size: 1.25rem; }
+    .faq-item.active .faq-question .icon { transform: rotate(45deg); }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background: white; }
+    .faq-item.active .faq-answer { max-height: 500px; }
+    .faq-answer-content { padding: 1rem 1.25rem; font-size: 0.9rem; color: #475569; line-height: 1.8; }
+    .feature-card {
+        background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem;
+        text-align: center; transition: all 0.2s; text-decoration: none; display: block;
+    }
+    .feature-card:hover { border-color: #EA580C; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.1); }
+    .feature-icon {
+        width: 48px; height: 48px; background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
+        border-radius: 12px; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 0.75rem; font-size: 1.5rem;
+    }
+    .feature-card h4 { font-weight: 700; color: #1e293b; margin-bottom: 0.25rem; font-size: 0.95rem; }
+    .feature-card p { font-size: 0.8rem; color: #64748b; margin: 0; }
+    .stat-badge {
+        display: inline-flex; align-items: center; gap: 0.5rem; background: #f8fafc;
+        border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem 0.75rem; font-size: 0.85rem;
+    }
+    .stat-badge strong { color: #EA580C; }
+extra_js: |
+    function toggleFaq(button) {
+        const faqItem = button.parentElement;
+        const wasActive = faqItem.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(item => { item.classList.remove('active'); });
+        if (!wasActive) { faqItem.classList.add('active'); }
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
+    });
+---
 
-        // FAQ Accordion
-        function toggleFaq(button) {
-            const faqItem = button.parentElement;
-            const wasActive = faqItem.classList.contains('active');
-            
-            // Close all FAQ items
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Open clicked item if it wasn't active
-            if (!wasActive) {
-                faqItem.classList.add('active');
-            }
-        }
+<!-- Quick Links -->
+<div class="max-w-3xl mx-auto px-4 pt-10 md:pt-16">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+        <a href="#basic-usage" class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h4>基本の使い方</h4>
+            <p>はじめての方へ</p>
+        </a>
+        <a href="#features" class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h4>便利な機能</h4>
+            <p>活用テクニック</p>
+        </a>
+        <a href="#faq" class="feature-card">
+            <div class="feature-icon">❓</div>
+            <h4>よくある質問</h4>
+            <p>FAQ</p>
+        </a>
+        <a href="#trouble" class="feature-card">
+            <div class="feature-icon">🔧</div>
+            <h4>困ったときは</h4>
+            <p>トラブル対処</p>
+        </a>
+    </div>
+</div>
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+<div class="max-w-3xl mx-auto px-4 pb-10 md:pb-16">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        
+        <!-- Basic Usage -->
+        <div id="basic-usage" class="help-section mb-10">
+            <h2>基本の使い方</h2>
+            <p>試合スタッツ記録ツールの基本的な操作方法をご紹介します。</p>
+            
+            <div class="space-y-4 mt-6">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>メンバーを登録する</h4>
+                    <p>「メンバー編集」ボタンをタップして、選手の名前を入力します。チェックボックスでコート上の選手を選択できます。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>選手を選択する</h4>
+                    <p>スタッツを記録したい選手の名前をタップして選択します。選択中の選手は色付きで表示されます。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>スタッツを記録する</h4>
+                    <p>画面下部のボタンで各スタッツを記録します。シュート成功（2P/3P/FT）、リバウンド（OR/DR）、アシスト、スティール、ブロック、ターンオーバーなど。</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>結果を確認・共有する</h4>
+                    <p>BOX SCOREセクションで全選手のスタッツを確認。「画像生成」でSNS共有用の画像を作成、「CSV」でデータをダウンロードできます。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Features -->
+        <div id="features" class="help-section mb-10">
+            <h2>便利な機能</h2>
+            
+            <div class="space-y-4 mt-6">
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2"><span>↩️</span> 元に戻す機能</h4>
+                    <p class="text-sm text-gray-600 mb-0">誤って記録してしまった場合は、「元に戻す」ボタンで直前の操作を取り消せます。</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2"><span>📸</span> 画像生成・シェア</h4>
+                    <p class="text-sm text-gray-600 mb-0">BOX SCOREとTEAM COMPARISONそれぞれで画像を生成できます。SNSへのシェアやダウンロードが可能です。</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2"><span>📊</span> チーム比較グラフ</h4>
+                    <p class="text-sm text-gray-600 mb-0">TEAM COMPARISONセクションでは、両チームのスタッツと成功率をグラフで視覚的に比較できます。</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2"><span>📥</span> CSVエクスポート</h4>
+                    <p class="text-sm text-gray-600 mb-0">記録したスタッツをCSVファイルでダウンロードできます。Excelやスプレッドシートでの分析に活用できます。</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2"><span>✏️</span> チーム名の編集</h4>
+                    <p class="text-sm text-gray-600 mb-0">スコアボード上のチーム名をタップすると、自由に名前を変更できます。画像生成にも反映されます。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Glossary Mini -->
+        <div class="help-section mb-10">
+            <h2>スタッツ用語</h2>
+            <p>主な略語の意味をご紹介します。</p>
+            
+            <div class="flex flex-wrap gap-2 mt-4">
+                <span class="stat-badge"><strong>PTS</strong> 得点</span>
+                <span class="stat-badge"><strong>2P</strong> 2ポイント</span>
+                <span class="stat-badge"><strong>3P</strong> 3ポイント</span>
+                <span class="stat-badge"><strong>FT</strong> フリースロー</span>
+                <span class="stat-badge"><strong>OR</strong> オフェンスリバウンド</span>
+                <span class="stat-badge"><strong>DR</strong> ディフェンスリバウンド</span>
+                <span class="stat-badge"><strong>AST</strong> アシスト</span>
+                <span class="stat-badge"><strong>STL</strong> スティール</span>
+                <span class="stat-badge"><strong>BLK</strong> ブロック</span>
+                <span class="stat-badge"><strong>TO</strong> ターンオーバー</span>
+                <span class="stat-badge"><strong>PF</strong> パーソナルファウル</span>
+                <span class="stat-badge"><strong>EFF</strong> エフィシエンシー</span>
+            </div>
+            
+            <p class="text-sm text-gray-500 mt-4">※ 詳しい説明は、ツールページ内の「STATS GLOSSARY」セクションをご覧ください。</p>
+        </div>
+        
+        <!-- FAQ -->
+        <div id="faq" class="help-section mb-10">
+            <h2>よくある質問（FAQ）</h2>
+            
+            <div class="mt-6">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>データはどこに保存されますか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">データはお使いのブラウザのローカルストレージに保存されます。サーバーには送信されないため、プライバシーは保護されますが、ブラウザのキャッシュクリアや端末の変更でデータが消える場合があります。大切なデータはCSV出力でバックアップを取ることをおすすめします。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>スマートフォンでも使えますか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">はい、スマートフォンやタブレットでも快適にお使いいただけます。試合中の記録はスマートフォンでの操作を想定して設計されています。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>利用料金はかかりますか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">StatsTooは完全無料でご利用いただけます。アカウント登録も不要です。ただし、インターネット接続に必要な通信料はお客様のご負担となります。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>選手は何人まで登録できますか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">各チーム制限なく選手を追加できます。「メンバー編集」モードで「＋ 選手を追加」ボタンをタップして追加してください。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>間違えて記録した場合はどうすればいいですか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">画面下部の「元に戻す」ボタンで直前の操作を取り消すことができます。何度でも戻すことが可能です。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>EFF（エフィシエンシー）とは何ですか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">EFFは選手の総合的な貢献度を示す指標です。計算式は「(得点 + リバウンド + アシスト + スティール + ブロック) - (シュートミス + フリースローミス + ターンオーバー)」です。プラスが大きいほど貢献度が高いことを示します。</div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        <span>生成した画像はどこに保存されますか？</span>
+                        <span class="icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">「画像をダウンロード」ボタンを押すと、お使いの端末のダウンロードフォルダに保存されます。スマートフォンの場合は「SNSでシェア」から直接LINEやX（Twitter）などに共有することもできます。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Troubleshooting -->
+        <div id="trouble" class="help-section mb-10">
+            <h2>困ったときは</h2>
+            
+            <div class="space-y-4 mt-6">
+                <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+                    <h4 class="font-bold text-red-800 mb-2">データが消えてしまった</h4>
+                    <p class="text-sm text-red-700 mb-0">ブラウザのキャッシュクリアや、シークレットモードでの使用、別のブラウザ・端末での利用によりデータが消える場合があります。残念ながら復元はできません。今後は定期的にCSVでバックアップを取ることをおすすめします。</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <h4 class="font-bold text-amber-800 mb-2">画面が正しく表示されない</h4>
+                    <p class="text-sm text-amber-700 mb-0">ブラウザを最新版に更新してお試しください。推奨ブラウザはChrome、Safari、Edge、Firefoxの最新版です。</p>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <h4 class="font-bold text-blue-800 mb-2">画像がダウンロードできない</h4>
+                    <p class="text-sm text-blue-700 mb-0">ブラウザの設定でダウンロードがブロックされている可能性があります。設定を確認するか、「クリップボードにコピー」機能をお試しください。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact CTA -->
+        <div class="bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-6 border border-primary/20 text-center">
+            <h3 class="font-bold text-secondary mb-2">解決しない場合は</h3>
+            <p class="text-sm text-gray-600 mb-4">上記で解決しない問題やご要望がございましたら、お気軽にお問い合わせください。</p>
+            <a href="/contact/" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-6 rounded-lg transition">
+                <span>📧</span> お問い合わせ
+            </a>
+        </div>
+    </div>
+</div>
