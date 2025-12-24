@@ -378,11 +378,16 @@
         </section>
 
         <!-- Charts Section -->
-        <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
-            <h3 class="font-bold text-sm mb-4 text-secondary flex items-center gap-2">
-                <span class="text-lg">📊</span> 
-                <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
-            </h3>
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                    <span class="text-lg">📊</span> 
+                    <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
+                </h3>
+                <button onclick="app.generateComparisonImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
+                    <span>📸</span> 画像生成
+                </button>
+            </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <p class="text-xs font-bold text-gray-500 mb-2 text-center uppercase tracking-wide">スタッツ比較</p>
