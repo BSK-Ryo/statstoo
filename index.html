@@ -788,6 +788,54 @@
             </div>
         </div>
     </div>
+    <div id="comparison-image-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-lg">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>📸</span> Team Comparison 画像
+                </h3>
+                <button onclick="app.closeComparisonImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+            
+            <div id="comparison-image-loading" class="flex flex-col items-center justify-center py-8">
+                <div class="spinner mb-4"></div>
+                <p class="text-gray-500 text-sm">画像を生成中...</p>
+            </div>
+            
+            <div id="comparison-image-preview-wrapper" class="hidden">
+                <div class="image-preview-container mb-4 border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                    <img id="comparison-generated-image" class="w-full" alt="Team Comparison">
+                </div>
+                
+                <div class="space-y-2">
+                    <button id="comparison-share-btn" onclick="app.shareComparisonImage()" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                        </svg>
+                        SNSでシェア
+                    </button>
+                    
+                    <button onclick="app.downloadComparisonImage()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        画像をダウンロード
+                    </button>
+                    
+                    <button id="comparison-copy-btn" onclick="app.copyComparisonImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                        </svg>
+                        クリップボードにコピー
+                    </button>
+                </div>
+                
+                <p class="text-xs text-gray-400 text-center mt-3">
+                    💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます
+                </p>
+            </div>
+        </div>
+    </div>
 
     <!-- Controller Panel -->
     <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
