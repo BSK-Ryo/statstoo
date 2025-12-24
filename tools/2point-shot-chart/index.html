@@ -1,0 +1,970 @@
+---
+layout: default
+title: 2Pシュートチャート
+description: 2Pシュートのエリア別成功率を記録・分析。ゴール下からミッドレンジまで細かく記録。
+---
+
+<script>
+    // このページ専用のカラー設定（Indigo）で上書き
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5' },
+                    secondary: { DEFAULT: '#1e293b', light: '#334155' }
+                },
+                fontFamily: {
+                    'display': ['Bebas Neue', 'sans-serif'],
+                    'body': ['Noto Sans JP', 'sans-serif'],
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    /* 独自のCSS変数を定義 */
+    :root {
+        --primary: #6366f1; --primary-light: #818cf8; --primary-dark: #4f46e5;
+        --secondary: #1e293b; --secondary-light: #334155;
+        --text-dark: #0f172a; --text-muted: #64748b; --bg-light: #f8fafc; --white: #FFFFFF;
+        --heat-cold: #3b82f6; --heat-cool: #60a5fa; --heat-neutral: #fbbf24; --heat-warm: #f97316; --heat-hot: #22c55e;
+    }
+
+    /* Game Info */
+    .game-info { background: var(--white); border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 0.75rem; overflow: hidden; }
+    .game-info-header { padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; user-select: none; }
+    .game-info-header:hover { background: var(--bg-light); }
+    .game-info-title { font-size: 0.75rem; font-weight: 700; color: var(--secondary); display: flex; align-items: center; gap: 0.5rem; margin: 0; }
+    .game-info-toggle { display: flex; align-items: center; gap: 0.5rem; }
+    .game-info-preview { font-size: 0.7rem; color: var(--text-muted); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .game-info-arrow { font-size: 0.75rem; color: var(--text-muted); transition: transform 0.3s ease; }
+    .game-info.open .game-info-arrow { transform: rotate(180deg); }
+    .game-info-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 1rem; }
+    .game-info.open .game-info-content { max-height: 200px; padding: 0 1rem 1rem 1rem; }
+    .game-info-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+    @media (min-width: 640px) { .game-info-grid { grid-template-columns: 2fr 1fr 1fr; } }
+    .game-info-label { display: block; font-size: 0.625rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+    .game-info-input { width: 100%; font-size: 0.875rem; padding: 0.5rem 0.75rem; border: 1px solid #e5e5e5; border-radius: 8px; transition: all 0.2s; font-family: inherit; }
+    .game-info-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1); }
+    
+    .stats-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.75rem; }
+    .stat-card { background: var(--white); border-radius: 10px; padding: 0.625rem 0.5rem; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .stat-label { font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.125rem; }
+    .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--secondary); line-height: 1; }
+    .stat-value.highlight { color: var(--primary); }
+    
+    .court-container { background: var(--white); border-radius: 12px; padding: 0.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 0.75rem; }
+    .court-title { font-size: 0.75rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .court-title span { font-size: 0.875rem; }
+    .court-wrapper { position: relative; width: 100%; aspect-ratio: 1 / 1.15; max-width: 420px; margin: 0 auto; }
+    .court-svg { width: 100%; height: 100%; }
+    
+    .shot-spot { cursor: pointer; transition: all 0.2s ease; }
+    .spot-circle { transition: all 0.2s ease; }
+    .shot-spot.selected .spot-circle { stroke: var(--primary); stroke-width: 4; filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5)); }
+    .spot-text { font-family: 'Bebas Neue', sans-serif; font-size: 11px; fill: white; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+    .spot-pct { font-family: 'Noto Sans JP', sans-serif; font-size: 8px; fill: white; text-anchor: middle; pointer-events: none; opacity: 0.9; }
+    
+    .fixed-controller { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 100; transform: translateY(100%); transition: transform 0.3s ease; }
+    .fixed-controller.visible { transform: translateY(0); }
+    .fixed-controller-inner { max-width: 600px; margin: 0 auto; position: relative; }
+    .btn-close-controller { position: absolute; top: -0.25rem; right: 0; background: transparent; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; padding: 0.25rem; line-height: 1; transition: color 0.2s; }
+    .btn-close-controller:hover { color: var(--text-dark); }
+    .selected-spot-info { text-align: center; margin-bottom: 0.5rem; }
+    .selected-spot-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; color: var(--secondary); line-height: 1.2; }
+    .selected-spot-stats { font-size: 0.75rem; color: var(--text-muted); }
+    .no-spot-selected { color: var(--text-muted); font-size: 0.85rem; }
+    .shot-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .btn-shot { padding: 0.875rem 1rem; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-shot:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-shot-icon { font-size: 1.25rem; }
+    .btn-made { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: white; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); }
+    .btn-made:not(:disabled):active { transform: scale(0.97); }
+    .btn-missed { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
+    .btn-missed:not(:disabled):active { transform: scale(0.97); }
+    .undo-container { text-align: center; margin-top: 0.5rem; }
+    .btn-undo { background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.75rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-undo:not(:disabled):hover { color: var(--text-dark); }
+    .btn-undo:disabled { opacity: 0.4; cursor: not-allowed; }
+    .bottom-spacer { height: 160px; }
+    
+    .legend { background: var(--white); border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 1rem; }
+    .legend-title { font-size: 0.75rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem; }
+    .legend-scale { display: flex; align-items: center; gap: 0.5rem; }
+    .legend-label { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; }
+    .legend-bar { flex: 1; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--heat-cold) 0%, var(--heat-cool) 25%, var(--heat-neutral) 50%, var(--heat-warm) 75%, var(--heat-hot) 100%); }
+    
+    /* Zone Legend */
+    .zone-legend { background: var(--white); border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 1rem; }
+    .zone-legend-title { font-size: 0.75rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem; }
+    .zone-legend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+    .zone-legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; color: var(--text-muted); }
+    .zone-legend-color { width: 12px; height: 12px; border-radius: 3px; }
+    .zone-rim { background: #ef4444; }
+    .zone-paint { background: #f97316; }
+    .zone-mid { background: #6366f1; }
+    
+    .spot-details { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+    .spot-details-header { background: var(--secondary); color: var(--white); padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .spot-table { width: 100%; border-collapse: collapse; }
+    .spot-table th, .spot-table td { padding: 0.625rem 0.75rem; text-align: left; font-size: 0.8rem; }
+    .spot-table th { background: var(--bg-light); font-weight: 700; color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .spot-table td { border-bottom: 1px solid #f1f1f1; }
+    .spot-table tr:last-child td { border-bottom: none; }
+    .spot-table .spot-name-cell { display: flex; align-items: center; gap: 0.5rem; }
+    .spot-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .spot-table .pct-cell { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; }
+    .spot-table .zone-label { font-size: 0.6rem; color: var(--text-muted); background: var(--bg-light); padding: 0.125rem 0.375rem; border-radius: 3px; margin-left: 0.25rem; }
+    
+    /* History Section */
+    .history-section { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+    .history-header { background: var(--secondary); color: var(--white); padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+    .history-header-left { display: flex; align-items: center; gap: 0.5rem; }
+    .history-header-actions { display: flex; gap: 0.5rem; }
+    .btn-history-action { background: rgba(255,255,255,0.15); border: none; color: white; font-size: 0.7rem; padding: 0.375rem 0.625rem; border-radius: 6px; cursor: pointer; font-family: inherit; font-weight: 500; transition: background 0.2s; display: flex; align-items: center; gap: 0.25rem; }
+    .btn-history-action:hover { background: rgba(255,255,255,0.25); }
+    .history-empty { padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+    .history-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    
+    /* History Table */
+    .history-table-wrapper { overflow-x: auto; }
+    .history-table { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .history-table th { background: var(--bg-light); padding: 0.5rem 0.375rem; font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.02em; text-align: center; border-bottom: 2px solid #e5e5e5; white-space: nowrap; }
+    .history-table th:first-child { text-align: left; padding-left: 0.75rem; }
+    .history-table td { padding: 0.5rem 0.375rem; font-size: 0.75rem; text-align: center; border-bottom: 1px solid #f1f1f1; }
+    .history-table td:first-child { text-align: left; padding-left: 0.75rem; }
+    .history-table tr:hover { background: var(--bg-light); }
+    .history-table .date-cell { font-weight: 600; color: var(--text-dark); white-space: nowrap; font-size: 0.7rem; }
+    .history-table .venue-cell { color: var(--text-muted); font-size: 0.65rem; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-table .time-cell { color: var(--text-muted); font-size: 0.65rem; white-space: nowrap; }
+    .history-table .pct-cell { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; }
+    .history-table .total-cell { font-family: 'Bebas Neue', sans-serif; font-size: 0.95rem; color: var(--primary); font-weight: bold; }
+    .history-table .action-cell { padding: 0.375rem; }
+    .btn-row-delete { background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 0.25rem; opacity: 0.5; transition: all 0.2s; }
+    .btn-row-delete:hover { opacity: 1; color: #ef4444; }
+    
+    /* Pct badge colors */
+    .pct-badge { display: inline-block; padding: 0.0625rem 0.25rem; border-radius: 3px; font-size: 0.75rem; font-weight: 600; min-width: 38px; }
+    .pct-cold { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+    .pct-cool { background: rgba(96, 165, 250, 0.15); color: #3b82f6; }
+    .pct-neutral { background: rgba(251, 191, 36, 0.15); color: #d97706; }
+    .pct-warm { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+    .pct-hot { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+    .pct-none { background: rgba(156, 163, 175, 0.15); color: #6b7280; }
+    
+    /* Modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: all 0.2s; padding: 1rem; }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal { background: var(--white); border-radius: 16px; padding: 1.5rem; max-width: 500px; width: 100%; text-align: center; transform: scale(0.9); transition: transform 0.2s; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .modal-title { font-size: 1.125rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem; }
+    .modal-text { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .modal-buttons { display: flex; gap: 0.75rem; }
+    .modal-btn { flex: 1; padding: 0.75rem 1rem; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; }
+    .modal-btn-cancel { background: var(--bg-light); color: var(--text-muted); }
+    .modal-btn-cancel:hover { background: #e5e5e5; }
+    .modal-btn-confirm { background: #ef4444; color: white; }
+    .modal-btn-confirm:hover { background: #dc2626; }
+    
+    /* Image Modal */
+    .modal-lg { max-width: 95vw; max-height: 95vh; }
+    .modal-lg .modal-title { margin-bottom: 1rem; }
+    .image-preview { max-width: 100%; max-height: 60vh; border-radius: 8px; border: 1px solid #e5e5e5; }
+    .image-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+    .btn-image-action { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-download { background: var(--primary); color: white; }
+    .btn-download:hover { background: var(--primary-dark); }
+    .btn-share { background: #1DA1F2; color: white; }
+    .btn-share:hover { background: #1a8cd8; }
+    .btn-close-modal { background: var(--secondary); color: white; }
+    .btn-close-modal:hover { background: var(--secondary-light); }
+    
+    /* Loading */
+    .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; visibility: hidden; transition: all 0.2s; }
+    .loading-overlay.active { opacity: 1; visibility: visible; }
+    .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--secondary); color: var(--white); padding: 0.75rem 1.5rem; border-radius: 50px; font-size: 0.875rem; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: all 0.3s; z-index: 150; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    
+    /* Hidden container for image generation */
+    .export-container { position: absolute; left: -9999px; top: 0; background: white; padding: 20px; }
+    
+    /* Article Section */
+    .article-section { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; }
+    .article-header { background: var(--secondary); color: var(--white); padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+    .article-icon { font-size: 1.25rem; }
+    .article-title { font-size: 1rem; font-weight: 700; margin: 0; }
+    .article-content { padding: 1.25rem; }
+    .article-lead { font-size: 0.95rem; color: var(--text-dark); line-height: 1.8; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f1f1; }
+    .article-block { margin-bottom: 2rem; }
+    .article-block:last-child { margin-bottom: 0; }
+    .article-block h3 { font-size: 1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .article-block p { font-size: 0.875rem; color: var(--text-dark); line-height: 1.8; margin-bottom: 0.75rem; }
+    .article-block p:last-child { margin-bottom: 0; }
+    
+    .article-list { list-style: none; padding: 0; margin: 1rem 0; }
+    .article-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0; font-size: 0.875rem; border-bottom: 1px solid #f5f5f5; }
+    .article-list li:last-child { border-bottom: none; }
+    .list-badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; min-width: 70px; text-align: center; }
+    .list-badge.hot { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+    .list-badge.warm { background: rgba(249, 115, 22, 0.15); color: #ea580c; }
+    .list-badge.neutral { background: rgba(251, 191, 36, 0.15); color: #d97706; }
+    .list-badge.cool { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+    
+    .article-list-check { list-style: none; padding: 0; margin: 1rem 0; }
+    .article-list-check li { position: relative; padding: 0.5rem 0 0.5rem 1.75rem; font-size: 0.875rem; line-height: 1.6; }
+    .article-list-check li::before { content: "✓"; position: absolute; left: 0; top: 0.5rem; color: var(--primary); font-weight: 700; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<header class="bg-secondary sticky top-0 z-30 border-b-[3px] border-primary -mx-4 md:-mx-8 px-4 md:px-8 mb-4">
+    <div class="max-w-4xl mx-auto py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="text-xl">🎯</span>
+                <span class="font-display text-xl tracking-wide text-white">2P SHOT <span class="text-primary-light">CHART</span></span>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="app.saveToHistory()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
+                    <span>💾</span> 保存
+                </button>
+                <button onclick="app.showResetModal()" class="text-xs bg-white/10 hover:bg-red-500 text-white/80 hover:text-white px-3 py-1.5 rounded transition font-medium">
+                    リセット
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="max-w-4xl mx-auto w-full pt-4 space-y-4">
+    
+    <div class="game-info open" id="game-info-section">
+        <div class="game-info-header" onclick="app.toggleGameInfo()">
+            <div class="game-info-title"><span>📝</span> 練習情報</div>
+            <div class="game-info-toggle">
+                <span class="game-info-preview" id="game-info-preview"></span>
+                <span class="game-info-arrow">▼</span>
+            </div>
+        </div>
+        <div class="game-info-content">
+            <div class="game-info-grid">
+                <div>
+                    <label class="game-info-label">🏟️ 会場・大会名</label>
+                    <input type="text" id="game-venue" class="game-info-input" placeholder="例: 〇〇体育館 / 朝練" oninput="app.updateGameInfoPreview()">
+                </div>
+                <div>
+                    <label class="game-info-label">📅 日付</label>
+                    <input type="date" id="game-date" class="game-info-input" onchange="app.updateGameInfoPreview()">
+                </div>
+                <div>
+                    <label class="game-info-label">🕐 時間</label>
+                    <input type="time" id="game-time" class="game-info-input" onchange="app.updateGameInfoPreview()">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-summary">
+        <div class="stat-card"><div class="stat-label">総シュート</div><div class="stat-value" id="total-shots">0</div></div>
+        <div class="stat-card"><div class="stat-label">成功</div><div class="stat-value highlight" id="total-made">0</div></div>
+        <div class="stat-card"><div class="stat-label">2P成功率</div><div class="stat-value" id="total-pct">-</div></div>
+    </div>
+    
+    <div class="court-container">
+        <div class="court-title"><span>🎯</span> エリアをタップして選択</div>
+        <div class="court-wrapper">
+            <svg class="court-svg" viewBox="0 0 300 345" preserveAspectRatio="xMidYMid meet">
+                <rect x="0" y="0" width="300" height="345" fill="#D4956B" rx="8"/>
+                <rect x="10" y="10" width="280" height="325" fill="none" stroke="#fff" stroke-width="2" rx="4"/>
+                
+                <path d="M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="8,4" opacity="0.6"/>
+                
+                <rect x="90" y="215" width="120" height="120" fill="#6366f1" fill-opacity="0.15" stroke="#fff" stroke-width="2"/>
+                
+                <path d="M 120 335 L 120 295 A 30 30 0 0 1 180 295 L 180 335" fill="#ef4444" fill-opacity="0.15" stroke="#fff" stroke-width="2"/>
+                
+                <circle cx="150" cy="215" r="45" fill="none" stroke="#fff" stroke-width="2"/>
+                
+                <line x1="90" y1="215" x2="210" y2="215" stroke="#fff" stroke-width="2"/>
+                
+                <rect x="125" y="320" width="50" height="4" fill="#fff"/>
+                
+                <circle cx="150" cy="305" r="8" fill="none" stroke="#fff" stroke-width="2"/>
+                
+                <line x1="90" y1="255" x2="95" y2="255" stroke="#fff" stroke-width="2"/>
+                <line x1="90" y1="275" x2="95" y2="275" stroke="#fff" stroke-width="2"/>
+                <line x1="90" y1="295" x2="95" y2="295" stroke="#fff" stroke-width="2"/>
+                <line x1="205" y1="255" x2="210" y2="255" stroke="#fff" stroke-width="2"/>
+                <line x1="205" y1="275" x2="210" y2="275" stroke="#fff" stroke-width="2"/>
+                <line x1="205" y1="295" x2="210" y2="295" stroke="#fff" stroke-width="2"/>
+                
+                <g id="shot-spots"></g>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="zone-legend">
+        <div class="zone-legend-title">エリア区分</div>
+        <div class="zone-legend-grid">
+            <div class="zone-legend-item"><span class="zone-legend-color zone-rim"></span> ゴール下</div>
+            <div class="zone-legend-item"><span class="zone-legend-color zone-paint"></span> ペイント内</div>
+            <div class="zone-legend-item"><span class="zone-legend-color zone-mid"></span> ミッドレンジ</div>
+        </div>
+        <div style="margin-top: 0.5rem; font-size: 0.65rem; color: var(--text-muted);">※ 点線は3Pライン（参考表示）</div>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-title">成功率ヒートマップ</div>
+        <div class="legend-scale">
+            <span class="legend-label">0%</span>
+            <div class="legend-bar"></div>
+            <span class="legend-label">100%</span>
+        </div>
+    </div>
+    
+    <div class="spot-details">
+        <div class="spot-details-header"><span>📋</span> エリア別成績</div>
+        <table class="spot-table">
+            <thead><tr><th>エリア</th><th>ゾーン</th><th>成功/試投</th><th>成功率</th></tr></thead>
+            <tbody id="spot-table-body"></tbody>
+        </table>
+    </div>
+    
+    <div class="history-section">
+        <div class="history-header">
+            <div class="history-header-left"><span>📅</span> 練習履歴</div>
+            <div class="history-header-actions">
+                <button class="btn-history-action" onclick="app.generateHistoryImage()"><span>📸</span> 画像</button>
+                <button class="btn-history-action" onclick="app.exportAllHistoryCSV()"><span>📥</span> CSV</button>
+            </div>
+        </div>
+        <div id="history-content">
+            <div class="history-empty">
+                <div class="history-empty-icon">📝</div>
+                <div>まだ履歴がありません</div>
+                <div style="font-size: 0.75rem; margin-top: 0.25rem;">「保存」ボタンで記録を保存できます</div>
+            </div>
+        </div>
+    </div>
+    
+    <article class="article-section">
+        <div class="article-header">
+            <span class="article-icon">📖</span>
+            <h2 class="article-title">2Pシュートを上達させるために</h2>
+        </div>
+        
+        <div class="article-content">
+            <p class="article-lead">
+                2Pシュートはバスケットボールの基本であり、最も頻繁に打つシュートです。エリア別に成功率を把握し、得意なシュートを増やしましょう。
+            </p>
+            
+            <section class="article-block">
+                <h3>🎯 2Pシュートとは</h3>
+                <p>
+                    2ポイントシュート（2Pシュート）は、3ポイントラインの内側から放つシュートで、成功すると2点が入ります。ゴール下のレイアップから、ミッドレンジのジャンプシュートまで様々な種類があります。
+                </p>
+            </section>
+            
+            <section class="article-block">
+                <h3>📊 成功率の目安</h3>
+                <ul class="article-list">
+                    <li><span class="list-badge hot">70%以上</span> ゴール下（レイアップ含む）</li>
+                    <li><span class="list-badge warm">50-60%</span> ペイント内</li>
+                    <li><span class="list-badge neutral">40-50%</span> ミッドレンジ</li>
+                </ul>
+            </section>
+            
+            <section class="article-block">
+                <h3>🏀 3つのゾーンについて</h3>
+                <ul class="article-list-check">
+                    <li><strong>ゴール下（RIM）</strong>：リング直下。レイアップやダンクなど、最も高確率で決められるエリア。</li>
+                    <li><strong>ペイント内</strong>：制限区域内。フローターやフックシュートが有効。</li>
+                    <li><strong>ミッドレンジ</strong>：ペイント外〜3Pライン内。ジャンプシュートが基本。</li>
+                </ul>
+            </section>
+        </div>
+    </article>
+    
+    <div class="bottom-spacer"></div>
+</div>
+
+<div class="fixed-controller" id="fixed-controller">
+    <div class="fixed-controller-inner">
+        <button class="btn-close-controller" onclick="app.hideController()" title="閉じる">✕</button>
+        <div class="selected-spot-info" id="selected-spot-info"><div class="no-spot-selected">エリアを選択してください</div></div>
+        <div class="shot-buttons">
+            <button class="btn-shot btn-made" id="btn-made" onclick="app.recordShot(true)" disabled><span class="btn-shot-icon">⭕</span><span>成功</span></button>
+            <button class="btn-shot btn-missed" id="btn-missed" onclick="app.recordShot(false)" disabled><span class="btn-shot-icon">✕</span><span>失敗</span></button>
+        </div>
+        <div class="undo-container"><button class="btn-undo" id="btn-undo" onclick="app.undo()" disabled>↩ 取り消す</button></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="reset-modal">
+    <div class="modal">
+        <div class="modal-icon">⚠️</div>
+        <div class="modal-title">データをリセット</div>
+        <div class="modal-text">現在の記録が削除されます。<br>（履歴は保持されます）</div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="app.hideResetModal()">キャンセル</button>
+            <button class="modal-btn modal-btn-confirm" onclick="app.confirmReset()">リセット</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="delete-history-modal">
+    <div class="modal">
+        <div class="modal-icon">🗑️</div>
+        <div class="modal-title">履歴を削除</div>
+        <div class="modal-text" id="delete-history-text">この記録を削除しますか？</div>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" onclick="app.hideDeleteHistoryModal()">キャンセル</button>
+            <button class="modal-btn modal-btn-confirm" onclick="app.confirmDeleteHistory()">削除</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="image-modal">
+    <div class="modal modal-lg">
+        <div class="modal-title">📸 練習履歴画像</div>
+        <img id="generated-image" class="image-preview" alt="練習履歴">
+        <div class="image-actions">
+            <button class="btn-image-action btn-download" onclick="app.downloadImage()"><span>📥</span> 保存</button>
+            <button class="btn-image-action btn-share" onclick="app.shareToTwitter()"><span>𝕏</span> シェア</button>
+            <button class="btn-image-action btn-close-modal" onclick="app.hideImageModal()">閉じる</button>
+        </div>
+    </div>
+</div>
+
+<div class="loading-overlay" id="loading"><div class="loading-spinner"></div></div>
+<div class="toast" id="toast"></div>
+
+<div id="export-container" class="export-container"></div>
+
+<script>
+    // 2P Shot Spots - organized by zone
+    const SPOTS = [
+        // ゴール下 (Rim)
+        { id: 'rim', name: 'ゴール下', shortName: 'RIM', zone: 'rim', x: 150, y: 295 },
+        
+        // ペイント内 (Paint)
+        { id: 'paint-left', name: 'ペイント左', shortName: 'PL', zone: 'paint', x: 105, y: 265 },
+        { id: 'paint-right', name: 'ペイント右', shortName: 'PR', zone: 'paint', x: 195, y: 265 },
+        { id: 'paint-top', name: 'フリースロー', shortName: 'FT', zone: 'paint', x: 150, y: 215 },
+        
+        // ミッドレンジ (Mid-range) - 3Pライン内側に配置
+        { id: 'baseline-left', name: '左ベースライン', shortName: 'LBL', zone: 'mid', x: 50, y: 285 },
+        { id: 'baseline-right', name: '右ベースライン', shortName: 'RBL', zone: 'mid', x: 250, y: 285 },
+        { id: 'elbow-left', name: '左エルボー', shortName: 'LE', zone: 'mid', x: 65, y: 215 },
+        { id: 'elbow-right', name: '右エルボー', shortName: 'RE', zone: 'mid', x: 235, y: 215 },
+        { id: 'mid-left', name: '左ミッドレンジ', shortName: 'LM', zone: 'mid', x: 55, y: 160 },
+        { id: 'mid-right', name: '右ミッドレンジ', shortName: 'RM', zone: 'mid', x: 245, y: 160 },
+        { id: 'mid-top', name: 'トップ', shortName: 'TOP', zone: 'mid', x: 150, y: 115 },
+    ];
+    
+    const ZONE_NAMES = { rim: 'ゴール下', paint: 'ペイント', mid: 'ミッドレンジ' };
+    
+    class ShotChartApp {
+        constructor() {
+            this.selectedSpot = null;
+            this.undoHistory = [];
+            this.data = this.loadData();
+            this.savedHistory = this.loadHistory();
+            this.deleteTargetId = null;
+            this.generatedImageData = null;
+            this.init();
+        }
+        
+        init() {
+            document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
+            this.renderSpots();
+            this.updateUI();
+            this.renderHistory();
+            this.updateGameInfoPreview();
+        }
+        
+        toggleGameInfo() {
+            document.getElementById('game-info-section').classList.toggle('open');
+        }
+        
+        updateGameInfoPreview() {
+            const venue = document.getElementById('game-venue').value.trim();
+            const date = document.getElementById('game-date').value;
+            const time = document.getElementById('game-time').value;
+            let preview = '';
+            if (date) { const [y, m, d] = date.split('-'); preview = `${parseInt(m)}/${parseInt(d)}`; }
+            if (time) preview += (preview ? ' ' : '') + time;
+            if (venue) preview += (preview ? ' ' : '') + venue;
+            document.getElementById('game-info-preview').textContent = preview || '未設定';
+        }
+        
+        loadData() {
+            const saved = localStorage.getItem('statstoo-2p-shot-chart');
+            return saved ? JSON.parse(saved) : this.getEmptyData();
+        }
+        
+        getEmptyData() {
+            const data = {};
+            SPOTS.forEach(spot => { data[spot.id] = { made: 0, missed: 0 }; });
+            return data;
+        }
+        
+        saveData() { localStorage.setItem('statstoo-2p-shot-chart', JSON.stringify(this.data)); }
+        loadHistory() { const saved = localStorage.getItem('statstoo-2p-shot-chart-history'); return saved ? JSON.parse(saved) : []; }
+        saveHistoryToStorage() { localStorage.setItem('statstoo-2p-shot-chart-history', JSON.stringify(this.savedHistory)); }
+        
+        getGameInfo() {
+            return {
+                venue: document.getElementById('game-venue').value.trim(),
+                date: document.getElementById('game-date').value,
+                time: document.getElementById('game-time').value
+            };
+        }
+        
+        saveToHistory() {
+            let totalShots = 0;
+            SPOTS.forEach(spot => { totalShots += this.data[spot.id].made + this.data[spot.id].missed; });
+            if (totalShots === 0) { this.showToast('保存するデータがありません'); return false; }
+            
+            const gameInfo = this.getGameInfo();
+            const entry = { id: Date.now(), createdAt: new Date().toISOString(), venue: gameInfo.venue, date: gameInfo.date, time: gameInfo.time, data: JSON.parse(JSON.stringify(this.data)) };
+            this.savedHistory.unshift(entry);
+            this.saveHistoryToStorage();
+            this.renderHistory();
+            
+            this.data = this.getEmptyData();
+            this.undoHistory = [];
+            this.selectedSpot = null;
+            this.hideController();
+            this.saveData();
+            this.updateUI();
+            
+            document.getElementById('game-venue').value = '';
+            document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('game-time').value = '';
+            this.updateGameInfoPreview();
+            
+            this.showToast('保存しました');
+            return true;
+        }
+        
+        deleteHistoryEntry(id) {
+            this.savedHistory = this.savedHistory.filter(entry => entry.id !== id);
+            this.saveHistoryToStorage();
+            this.renderHistory();
+        }
+        
+        getPctClass(pct) {
+            if (pct === null) return 'pct-none';
+            if (pct < 20) return 'pct-cold';
+            if (pct < 40) return 'pct-cool';
+            if (pct < 60) return 'pct-neutral';
+            if (pct < 80) return 'pct-warm';
+            return 'pct-hot';
+        }
+        
+        renderHistory() {
+            const container = document.getElementById('history-content');
+            if (this.savedHistory.length === 0) {
+                container.innerHTML = `<div class="history-empty"><div class="history-empty-icon">📝</div><div>まだ履歴がありません</div><div style="font-size: 0.75rem; margin-top: 0.25rem;">「保存」ボタンで記録を保存できます</div></div>`;
+                return;
+            }
+            
+            // Sort by date (oldest first)
+            const sortedHistory = [...this.savedHistory].sort((a, b) => {
+                const dateA = a.date || a.createdAt.slice(0, 10);
+                const dateB = b.date || b.createdAt.slice(0, 10);
+                if (dateA !== dateB) return dateA.localeCompare(dateB);
+                const timeA = a.time || '00:00';
+                const timeB = b.time || '00:00';
+                return timeA.localeCompare(timeB);
+            });
+            
+            // Create header with spot short names
+            let html = `<div class="history-table-wrapper"><table class="history-table"><thead><tr>
+                <th>日付</th><th>会場</th><th>時間</th>`;
+            SPOTS.forEach(spot => { html += `<th>${spot.shortName}</th>`; });
+            html += `<th>総合</th><th></th></tr></thead><tbody>`;
+            
+            sortedHistory.forEach(entry => {
+                const dateStr = entry.date || entry.createdAt.slice(0, 10);
+                const [y, m, d] = dateStr.split('-');
+                const displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                const venueStr = entry.venue || '-';
+                const timeStr = entry.time || '-';
+                
+                let totalMade = 0, totalShots = 0;
+                const spotPcts = SPOTS.map(spot => {
+                    const stats = entry.data[spot.id];
+                    const total = stats.made + stats.missed;
+                    totalMade += stats.made;
+                    totalShots += total;
+                    const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
+                    return { pct, display: pct !== null ? `${pct}%` : '-' };
+                });
+                const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : null;
+                
+                html += `<tr>
+                    <td class="date-cell">${displayDate}</td>
+                    <td class="venue-cell" title="${venueStr}">${venueStr}</td>
+                    <td class="time-cell">${timeStr}</td>`;
+                
+                spotPcts.forEach(sp => {
+                    html += `<td><span class="pct-badge ${this.getPctClass(sp.pct)}">${sp.display}</span></td>`;
+                });
+                
+                html += `<td class="total-cell"><span class="pct-badge ${this.getPctClass(totalPct)}">${totalPct !== null ? totalPct + '%' : '-'}</span></td>
+                    <td class="action-cell"><button class="btn-row-delete" onclick="app.showDeleteHistoryModal(${entry.id})" title="削除">🗑️</button></td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+        }
+        
+        renderSpots() {
+            const container = document.getElementById('shot-spots');
+            container.innerHTML = '';
+            SPOTS.forEach(spot => {
+                const stats = this.data[spot.id];
+                const total = stats.made + stats.missed;
+                const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
+                const color = this.getHeatColor(pct);
+                const radius = spot.zone === 'rim' ? 20 : 18;
+                
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                group.classList.add('shot-spot');
+                group.dataset.spotId = spot.id;
+                group.onclick = () => this.selectSpot(spot.id);
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.classList.add('spot-circle');
+                circle.setAttribute('cx', spot.x); circle.setAttribute('cy', spot.y); circle.setAttribute('r', radius);
+                circle.setAttribute('fill', color); circle.setAttribute('stroke', '#fff'); circle.setAttribute('stroke-width', 2);
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.classList.add('spot-text');
+                text.setAttribute('x', spot.x); text.setAttribute('y', spot.y - 3);
+                text.textContent = spot.shortName;
+                
+                const pctText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                pctText.classList.add('spot-pct');
+                pctText.setAttribute('x', spot.x); pctText.setAttribute('y', spot.y + 8);
+                pctText.textContent = pct !== null ? `${pct}%` : '-';
+                
+                group.appendChild(circle); group.appendChild(text); group.appendChild(pctText);
+                container.appendChild(group);
+            });
+        }
+        
+        getHeatColor(pct) {
+            if (pct === null) return '#9ca3af';
+            if (pct < 20) return '#3b82f6';
+            if (pct < 40) return '#60a5fa';
+            if (pct < 60) return '#fbbf24';
+            if (pct < 80) return '#f97316';
+            return '#22c55e';
+        }
+        
+        selectSpot(spotId) {
+            document.querySelectorAll('.shot-spot').forEach(el => el.classList.remove('selected'));
+            const spotEl = document.querySelector(`.shot-spot[data-spot-id="${spotId}"]`);
+            if (spotEl) spotEl.classList.add('selected');
+            this.selectedSpot = spotId;
+            this.updateSelectedSpotInfo();
+            this.showController();
+            document.getElementById('btn-made').disabled = false;
+            document.getElementById('btn-missed').disabled = false;
+        }
+        
+        showController() { document.getElementById('fixed-controller').classList.add('visible'); }
+        hideController() {
+            document.getElementById('fixed-controller').classList.remove('visible');
+            document.querySelectorAll('.shot-spot').forEach(el => el.classList.remove('selected'));
+            this.selectedSpot = null;
+            document.getElementById('btn-made').disabled = true;
+            document.getElementById('btn-missed').disabled = true;
+            document.getElementById('selected-spot-info').innerHTML = '<div class="no-spot-selected">エリアを選択してください</div>';
+        }
+        
+        updateSelectedSpotInfo() {
+            const infoEl = document.getElementById('selected-spot-info');
+            if (!this.selectedSpot) { infoEl.innerHTML = '<div class="no-spot-selected">エリアを選択してください</div>'; return; }
+            const spot = SPOTS.find(s => s.id === this.selectedSpot);
+            const stats = this.data[this.selectedSpot];
+            const total = stats.made + stats.missed;
+            const pct = total > 0 ? Math.round((stats.made / total) * 100) : 0;
+            infoEl.innerHTML = `<div class="selected-spot-name">${spot.name}</div><div class="selected-spot-stats">${stats.made}/${total} (${total > 0 ? pct + '%' : '-'}) | 2P</div>`;
+        }
+        
+        recordShot(made) {
+            if (!this.selectedSpot) return;
+            this.undoHistory.push({ spotId: this.selectedSpot, made: made });
+            if (made) this.data[this.selectedSpot].made++; else this.data[this.selectedSpot].missed++;
+            this.saveData(); this.updateUI();
+            const spot = SPOTS.find(s => s.id === this.selectedSpot);
+            this.showToast(`${spot.name}: ${made ? '⭕ 成功' : '✕ 失敗'}`);
+        }
+        
+        undo() {
+            if (this.undoHistory.length === 0) return;
+            const last = this.undoHistory.pop();
+            if (last.made) this.data[last.spotId].made--; else this.data[last.spotId].missed--;
+            this.saveData(); this.updateUI();
+            const spot = SPOTS.find(s => s.id === last.spotId);
+            this.showToast(`${spot.name}の記録を取り消しました`);
+        }
+        
+        updateUI() {
+            this.renderSpots();
+            if (this.selectedSpot) {
+                const spotEl = document.querySelector(`.shot-spot[data-spot-id="${this.selectedSpot}"]`);
+                if (spotEl) spotEl.classList.add('selected');
+                this.updateSelectedSpotInfo();
+            }
+            let totalMade = 0, totalMissed = 0;
+            SPOTS.forEach(spot => { totalMade += this.data[spot.id].made; totalMissed += this.data[spot.id].missed; });
+            const totalShots = totalMade + totalMissed;
+            const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : null;
+            document.getElementById('total-shots').textContent = totalShots;
+            document.getElementById('total-made').textContent = totalMade;
+            document.getElementById('total-pct').textContent = totalPct !== null ? `${totalPct}%` : '-';
+            document.getElementById('btn-undo').disabled = this.undoHistory.length === 0;
+            this.updateTable();
+        }
+        
+        updateTable() {
+            const tbody = document.getElementById('spot-table-body');
+            tbody.innerHTML = '';
+            SPOTS.forEach(spot => {
+                const stats = this.data[spot.id];
+                const total = stats.made + stats.missed;
+                const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
+                const color = this.getHeatColor(pct);
+                const row = document.createElement('tr');
+                row.innerHTML = `<td><div class="spot-name-cell"><span class="spot-color-dot" style="background: ${color}"></span>${spot.name}</div></td><td><span class="zone-label">${ZONE_NAMES[spot.zone]}</span></td><td>${stats.made}/${total}</td><td class="pct-cell">${pct !== null ? pct + '%' : '-'}</td>`;
+                tbody.appendChild(row);
+            });
+        }
+        
+        showResetModal() { document.getElementById('reset-modal').classList.add('active'); }
+        hideResetModal() { document.getElementById('reset-modal').classList.remove('active'); }
+        confirmReset() {
+            this.data = this.getEmptyData();
+            this.undoHistory = [];
+            this.selectedSpot = null;
+            document.getElementById('btn-made').disabled = true;
+            document.getElementById('btn-missed').disabled = true;
+            this.hideController();
+            this.saveData(); this.updateUI(); this.hideResetModal();
+            this.showToast('データをリセットしました');
+        }
+        
+        showDeleteHistoryModal(id) {
+            this.deleteTargetId = id;
+            const entry = this.savedHistory.find(e => e.id === id);
+            if (entry) {
+                const dateStr = entry.date || entry.createdAt.slice(0, 10);
+                const [y, m, d] = dateStr.split('-');
+                document.getElementById('delete-history-text').textContent = `${parseInt(m)}/${parseInt(d)} の記録を削除しますか？`;
+            }
+            document.getElementById('delete-history-modal').classList.add('active');
+        }
+        hideDeleteHistoryModal() { document.getElementById('delete-history-modal').classList.remove('active'); this.deleteTargetId = null; }
+        confirmDeleteHistory() {
+            if (this.deleteTargetId) { this.deleteHistoryEntry(this.deleteTargetId); this.showToast('履歴を削除しました'); }
+            this.hideDeleteHistoryModal();
+        }
+        
+        // Export all history to CSV
+        exportAllHistoryCSV() {
+            if (this.savedHistory.length === 0) { this.showToast('履歴がありません'); return; }
+            
+            // Sort by date (oldest first)
+            const sortedHistory = [...this.savedHistory].sort((a, b) => {
+                const dateA = a.date || a.createdAt.slice(0, 10);
+                const dateB = b.date || b.createdAt.slice(0, 10);
+                if (dateA !== dateB) return dateA.localeCompare(dateB);
+                const timeA = a.time || '00:00';
+                const timeB = b.time || '00:00';
+                return timeA.localeCompare(timeB);
+            });
+            
+            let csv = '2Pシュート練習履歴\n\n';
+            csv += '日付,会場,時間,' + SPOTS.map(s => s.name).join(',') + ',総合成功率,総成功数,総試投数\n';
+            
+            sortedHistory.forEach(entry => {
+                const dateStr = entry.date || entry.createdAt.slice(0, 10);
+                const venue = (entry.venue || '').replace(/,/g, '，');
+                const time = entry.time || '';
+                
+                let totalMade = 0, totalShots = 0;
+                const spotPcts = SPOTS.map(spot => {
+                    const stats = entry.data[spot.id];
+                    const total = stats.made + stats.missed;
+                    totalMade += stats.made;
+                    totalShots += total;
+                    return total > 0 ? Math.round((stats.made / total) * 100) + '%' : '-';
+                });
+                const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) + '%' : '-';
+                
+                csv += `${dateStr},${venue},${time},${spotPcts.join(',')},${totalPct},${totalMade},${totalShots}\n`;
+            });
+            
+            const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+            const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `2p-shot-history_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            this.showToast('CSVをダウンロードしました');
+        }
+        
+        // Generate history image
+        async generateHistoryImage() {
+            if (this.savedHistory.length === 0) { this.showToast('履歴がありません'); return; }
+            
+            this.showLoading();
+            
+            // Sort by date (oldest first)
+            const sortedHistory = [...this.savedHistory].sort((a, b) => {
+                const dateA = a.date || a.createdAt.slice(0, 10);
+                const dateB = b.date || b.createdAt.slice(0, 10);
+                if (dateA !== dateB) return dateA.localeCompare(dateB);
+                const timeA = a.time || '00:00';
+                const timeB = b.time || '00:00';
+                return timeA.localeCompare(timeB);
+            });
+            
+            const container = document.getElementById('export-container');
+            let html = `
+                <div style="font-family: 'Noto Sans JP', sans-serif; background: #f8fafc; padding: 24px; min-width: 1000px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <span style="font-size: 32px;">🏀</span>
+                        <div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #1e293b;">2P SHOT <span style="color: #6366f1;">CHART</span></div>
+                            <div style="font-size: 12px; color: #64748b;">練習履歴 - StatsToo</div>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <thead>
+                            <tr style="background: #1e293b; color: white;">
+                                <th style="padding: 10px 6px; font-size: 10px; text-align: left;">日付</th>
+                                <th style="padding: 10px 6px; font-size: 10px; text-align: left;">会場</th>
+                                <th style="padding: 10px 6px; font-size: 10px; text-align: center;">時間</th>`;
+            SPOTS.forEach(spot => { html += `<th style="padding: 10px 4px; font-size: 9px; text-align: center;">${spot.shortName}</th>`; });
+            html += `<th style="padding: 10px 6px; font-size: 10px; text-align: center; background: #6366f1;">総合</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+            
+            sortedHistory.slice(0, 15).forEach((entry, idx) => {
+                const dateStr = entry.date || entry.createdAt.slice(0, 10);
+                const [y, m, d] = dateStr.split('-');
+                const displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                const venue = entry.venue || '-';
+                const time = entry.time || '-';
+                
+                let totalMade = 0, totalShots = 0;
+                const spotPcts = SPOTS.map(spot => {
+                    const stats = entry.data[spot.id];
+                    const total = stats.made + stats.missed;
+                    totalMade += stats.made;
+                    totalShots += total;
+                    const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
+                    return { pct, display: pct !== null ? `${pct}%` : '-' };
+                });
+                const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : null;
+                
+                const bgColor = idx % 2 === 0 ? '#fff' : '#f8fafc';
+                
+                html += `<tr style="background: ${bgColor};">
+                    <td style="padding: 8px 6px; font-size: 11px; font-weight: 600;">${displayDate}</td>
+                    <td style="padding: 8px 6px; font-size: 10px; color: #64748b; max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${venue}</td>
+                    <td style="padding: 8px 6px; font-size: 10px; color: #64748b; text-align: center;">${time}</td>`;
+                
+                spotPcts.forEach(sp => {
+                    const color = sp.pct === null ? '#6b7280' : sp.pct >= 60 ? '#16a34a' : sp.pct >= 40 ? '#d97706' : '#3b82f6';
+                    html += `<td style="padding: 8px 4px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 12px; color: ${color};">${sp.display}</td>`;
+                });
+                
+                const totalColor = totalPct === null ? '#6b7280' : totalPct >= 60 ? '#16a34a' : totalPct >= 40 ? '#d97706' : '#3b82f6';
+                html += `<td style="padding: 8px 6px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 14px; font-weight: bold; color: ${totalColor};">${totalPct !== null ? totalPct + '%' : '-'}</td></tr>`;
+            });
+            
+            html += `</tbody></table>
+                <div style="text-align: right; margin-top: 12px; font-size: 11px; color: #64748b;">
+                    ${new Date().toLocaleDateString('ja-JP')} | statstoo.com
+                </div>
+            </div>`;
+            
+            container.innerHTML = html;
+            
+            try {
+                const canvas = await html2canvas(container.firstElementChild, { scale: 2, backgroundColor: '#f8fafc' });
+                this.generatedImageData = canvas.toDataURL('image/png');
+                document.getElementById('generated-image').src = this.generatedImageData;
+                this.hideLoading();
+                document.getElementById('image-modal').classList.add('active');
+            } catch (err) {
+                console.error(err);
+                this.hideLoading();
+                this.showToast('画像生成に失敗しました');
+            }
+            
+            container.innerHTML = '';
+        }
+        
+        downloadImage() {
+            if (!this.generatedImageData) return;
+            const link = document.createElement('a');
+            link.href = this.generatedImageData;
+            link.download = `2p-shot-history_${new Date().toISOString().slice(0,10)}.png`;
+            link.click();
+            this.showToast('画像を保存しました');
+        }
+        
+        shareToTwitter() {
+            const text = encodeURIComponent('2Pシュート練習の記録です🏀\n#StatsToo #バスケ #2P練習');
+            const url = encodeURIComponent('https://statstoo.com/tools/2p-shot-chart/');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+        
+        hideImageModal() { document.getElementById('image-modal').classList.remove('active'); }
+        showLoading() { document.getElementById('loading').classList.add('active'); }
+        hideLoading() { document.getElementById('loading').classList.remove('active'); }
+        
+        showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+    }
+    
+    const app = new ShotChartApp();
+    
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose = document.getElementById('menu-icon-close');
+        menu.classList.toggle('hidden');
+        iconOpen.classList.toggle('hidden');
+        iconClose.classList.toggle('hidden');
+    }
+    
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('mobile-menu');
+        const btn = document.getElementById('mobile-menu-btn');
+        if (!menu.contains(e.target) && !btn.contains(e.target) && !menu.classList.contains('hidden')) toggleMobileMenu();
+    });
+</script>
