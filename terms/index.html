@@ -1,471 +1,186 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>利用規約 | StatsToo（スタッツー）</title>
-    <meta name="description" content="StatsToo（スタッツー）の利用規約。サービスのご利用にあたっての注意事項、禁止事項、免責事項などについてご説明します。">
-    <link rel="canonical" href="https://statstoo.com/terms/">
-    
-    <!-- OGP -->
-    <meta property="og:title" content="利用規約 | StatsToo（スタッツー）">
-    <meta property="og:description" content="StatsToo（スタッツー）の利用規約">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://statstoo.com/terms/">
-    <meta property="og:site_name" content="StatsToo">
-    <meta property="og:image" content="https://statstoo.com/ogp.png">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="利用規約 | StatsToo（スタッツー）">
-    <meta name="twitter:description" content="StatsToo（スタッツー）の利用規約">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#EA580C',
-                            light: '#FB923C',
-                            dark: '#C2410C',
-                        },
-                        secondary: {
-                            DEFAULT: '#1e293b',
-                            light: '#334155',
-                        }
-                    },
-                    fontFamily: {
-                        'display': ['Bebas Neue', 'sans-serif'],
-                        'body': ['Noto Sans JP', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+---
+title: 利用規約
+description: StatsToo（スタッツー）の利用規約。サービスのご利用にあたっての注意事項、禁止事項、免責事項などについてご説明します。
+page_label: TERMS OF SERVICE
+page_title: 利用規約
+extra_css: |
+    .terms-section h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-left: 1rem;
+        border-left: 4px solid #EA580C;
+    }
+    .terms-section p {
+        color: #1e293b;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    .terms-section ul, .terms-section ol {
+        margin: 1rem 0;
+        padding-left: 0;
+        list-style: none;
+    }
+    .terms-section ul li, .terms-section ol li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    .terms-section ul li::before {
+        content: '•';
+        position: absolute;
+        left: 0.5rem;
+        color: #EA580C;
+        font-weight: bold;
+    }
+    .terms-section ol {
+        counter-reset: item;
+    }
+    .terms-section ol li {
+        counter-increment: item;
+    }
+    .terms-section ol li::before {
+        content: counter(item) ".";
+        position: absolute;
+        left: 0;
+        color: #EA580C;
+        font-weight: bold;
+    }
+    .terms-section a {
+        color: #EA580C;
+        text-decoration: underline;
+    }
+    .highlight-box {
+        background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+        border: 1px solid #fcd34d;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+    }
+    .highlight-box p { margin-bottom: 0; font-size: 0.9rem; }
+    .contact-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-top: 1rem;
+    }
+    .contact-box p { margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .contact-box p:last-child { margin-bottom: 0; }
+---
 
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #faf8f5;
-            color: #1e293b;
-        }
-
-        .font-display {
-            font-family: 'Bebas Neue', sans-serif;
-        }
-
-        /* Logo bounce animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .logo-bounce {
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        /* Page Header Background Pattern */
-        .page-header-pattern::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 80px,
-                    rgba(255,255,255,0.02) 80px,
-                    rgba(255,255,255,0.02) 82px
-                );
-        }
-
-        /* Terms content styles */
-        .terms-section h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1rem;
-            padding-left: 1rem;
-            border-left: 4px solid #EA580C;
-        }
-
-        .terms-section p {
-            color: #1e293b;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .terms-section ul,
-        .terms-section ol {
-            margin: 1rem 0;
-            padding-left: 0;
-        }
-
-        .terms-section ul li,
-        .terms-section ol li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .terms-section ul li::before {
-            content: '•';
-            position: absolute;
-            left: 0.5rem;
-            color: #EA580C;
-            font-weight: bold;
-        }
-
-        .terms-section ol {
-            counter-reset: item;
-            list-style: none;
-        }
-
-        .terms-section ol li {
-            counter-increment: item;
-        }
-
-        .terms-section ol li::before {
-            content: counter(item) ".";
-            position: absolute;
-            left: 0;
-            color: #EA580C;
-            font-weight: bold;
-        }
-
-        .terms-section a {
-            color: #EA580C;
-            text-decoration: underline;
-            transition: color 0.2s;
-        }
-
-        .terms-section a:hover {
-            color: #C2410C;
-        }
-
-        .highlight-box {
-            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
-            border: 1px solid #fcd34d;
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-            margin: 1rem 0;
-        }
-
-        .highlight-box p {
-            margin-bottom: 0;
-            font-size: 0.9rem;
-        }
-
-        .contact-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-            margin-top: 1rem;
-        }
-
-        .contact-box p {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .contact-box p:last-child {
-            margin-bottom: 0;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Global Navigation -->
-    <nav class="bg-secondary-light border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-12">
-                <!-- Logo (Mobile & Desktop) -->
-                <a href="/" class="flex items-center gap-2 text-decoration-none md:hidden">
-                    <span class="text-xl logo-bounce">🏀</span>
-                    <span class="font-display text-lg tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center gap-1 w-full">
-                    <a href="/" class="flex items-center gap-2 text-decoration-none mr-6">
-                        <span class="text-xl logo-bounce">🏀</span>
-                        <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <a href="/tools/game-stats/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📊</span> 試合スタッツ記録
-                    </a>
-                    <a href="/tools/practice/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>🎯</span> 個人練習ツール-開発中
-                    </a>
-                    <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📝</span> バスケコラム-執筆中
-                    </a>
-                    <div class="flex-grow"></div>
-                    <a href="/help/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+<div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        <p class="text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">最終更新日: 2024年12月22日</p>
+        
+        <div class="terms-section mb-8">
+            <h2>第1条（適用）</h2>
+            <p>本利用規約（以下「本規約」）は、StatsToo（スタッツー）（以下「当サイト」）が提供するすべてのサービス（以下「本サービス」）の利用条件を定めるものです。ユーザーの皆様には、本規約に同意いただいた上で、本サービスをご利用いただきます。</p>
+            <p>本サービスをご利用になった時点で、本規約に同意いただいたものとみなします。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第2条（サービスの内容）</h2>
+            <p>当サイトは、バスケットボールに関するスタッツ（統計データ）を記録・管理するためのWebツールを提供します。主なサービス内容は以下の通りです。</p>
+            <ul>
+                <li>試合中のスタッツ記録ツール</li>
+                <li>シュート成功率の記録・分析ツール</li>
+                <li>その他、当サイトが提供するバスケットボール関連ツール</li>
+            </ul>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第3条（利用料金）</h2>
+            <p>本サービスは無料でご利用いただけます。ただし、インターネット接続に必要な通信料等は、ユーザーのご負担となります。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第4条（データの保存について）</h2>
+            <p>本サービスで入力されたデータは、ユーザーのブラウザのローカルストレージに保存されます。</p>
+            <div class="highlight-box">
+                <p><strong>⚠️ ご注意:</strong> ブラウザのキャッシュクリア、ローカルストレージの削除、ブラウザの変更、端末の変更等により、保存されたデータが失われる場合があります。重要なデータは、CSV出力機能などを利用して別途バックアップを取ることを推奨します。</p>
+            </div>
+            <p>当サイトは、ユーザーのデータの消失について一切の責任を負いません。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第5条（禁止事項）</h2>
+            <p>ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。</p>
+            <ol>
+                <li>法令または公序良俗に違反する行為</li>
+                <li>犯罪行為に関連する行為</li>
+                <li>当サイトのサーバーまたはネットワークの機能を破壊したり、妨害したりする行為</li>
+                <li>当サイトのサービスの運営を妨害するおそれのある行為</li>
+                <li>他のユーザーに関する個人情報等を収集または蓄積する行為</li>
+                <li>他のユーザーに成りすます行為</li>
+                <li>当サイトのサービスに関連して、反社会的勢力に対して直接または間接に利益を供与する行為</li>
+                <li>当サイトまたは第三者の知的財産権、肖像権、プライバシー、名誉その他の権利または利益を侵害する行為</li>
+                <li>当サイトのコンテンツを無断で複製、転載、改変、販売する行為</li>
+                <li>本サービスを商業目的で利用する行為（当サイトが許可した場合を除く）</li>
+                <li>その他、当サイトが不適切と判断する行為</li>
+            </ol>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第6条（サービスの変更・停止・終了）</h2>
+            <p>当サイトは、以下の場合には、ユーザーに事前に通知することなく、本サービスの全部または一部の提供を停止または中断することができるものとします。</p>
+            <ol>
+                <li>本サービスにかかるシステムの保守点検または更新を行う場合</li>
+                <li>地震、落雷、火災、停電または天災などの不可抗力により、本サービスの提供が困難となった場合</li>
+                <li>コンピュータまたは通信回線等が事故により停止した場合</li>
+                <li>その他、当サイトが本サービスの提供が困難と判断した場合</li>
+            </ol>
+            <p>当サイトは、本サービスの提供の停止または中断により、ユーザーまたは第三者が被ったいかなる損害についても、一切の責任を負いません。</p>
+            <p>また、当サイトは、いつでも本サービスの内容を変更し、または本サービスの提供を終了することができます。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第7条（免責事項）</h2>
+            <p>当サイトは、本サービスに事実上または法律上の瑕疵（安全性、信頼性、正確性、完全性、有効性、特定の目的への適合性、セキュリティなどに関する欠陥、エラーやバグ、権利侵害などを含みます）がないことを明示的にも黙示的にも保証しておりません。</p>
+            <p>当サイトは、本サービスに起因してユーザーに生じたあらゆる損害について、当サイトの故意または重過失による場合を除き、一切の責任を負いません。</p>
+            <p>当サイトは、本サービスに関して、ユーザーと他のユーザーまたは第三者との間において生じた取引、連絡または紛争等について一切責任を負いません。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第8条（著作権）</h2>
+            <p>本サービスおよび本サービスに関連する一切のコンテンツ（テキスト、画像、デザイン、プログラム等）に関する著作権その他の知的財産権は、当サイトまたは正当な権利を有する第三者に帰属します。</p>
+            <p>ユーザーは、本サービスを通じて提供される情報を、当サイトの事前の承諾なく、複製、出版、放送、公衆送信その他方法のいかんを問わず第三者に提供してはなりません。ただし、私的使用の範囲内での利用はこの限りではありません。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第9条（リンクについて）</h2>
+            <p>当サイトへのリンクは、営利・非営利を問わず原則として自由です。ただし、以下の場合はリンクをお断りします。</p>
+            <ul>
+                <li>当サイトの内容が、リンク元のサイトの一部であるかのような誤解を招くおそれがある場合</li>
+                <li>公序良俗に反するサイトからのリンク</li>
+                <li>当サイトや運営者の名誉・信用を毀損するおそれがあるサイトからのリンク</li>
+            </ul>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第10条（利用規約の変更）</h2>
+            <p>当サイトは、必要と判断した場合には、ユーザーに通知することなくいつでも本規約を変更することができるものとします。変更後の利用規約は、当サイトに掲載した時点で効力を生じるものとします。</p>
+            <p>本規約の変更後、本サービスの利用を継続した場合には、当該ユーザーは変更後の規約に同意したものとみなします。</p>
+        </div>
+        
+        <div class="terms-section mb-8">
+            <h2>第11条（準拠法・管轄裁判所）</h2>
+            <p>本規約の解釈にあたっては、日本法を準拠法とします。</p>
+            <p>本サービスに関して紛争が生じた場合には、当サイト運営者の所在地を管轄する裁判所を専属的合意管轄とします。</p>
+        </div>
+        
+        <div class="terms-section">
+            <h2>お問い合わせ</h2>
+            <p>本規約に関するお問い合わせは、下記までご連絡ください。</p>
+            <div class="contact-box">
+                <p><strong>サイト名:</strong> StatsToo（スタッツー）</p>
+                <p><strong>運営者:</strong> 多田諒聖</p>
+                <p><strong>お問い合わせ:</strong> <a href="/contact/">お問い合わせフォーム</a></p>
             </div>
         </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
-            <div class="px-4 py-3 space-y-1">
-                <a href="/tools/game-stats/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📊</span> 試合スタッツ記録
-                </a>
-                <a href="/tools/practice/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>🎯</span> 個人練習ツール-開発中
-                </a>
-                <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📝</span> バスケコラム
-                </a>
-                <div class="border-t border-white/10 my-2 pt-2">
-                    <a href="/help/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Page Header -->
-    <section class="bg-gradient-to-br from-secondary to-secondary-light py-16 md:py-20 relative overflow-hidden page-header-pattern">
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <p class="font-display text-sm md:text-base tracking-widest text-primary-light mb-2">TERMS OF SERVICE</p>
-            <h1 class="font-display text-3xl md:text-4xl lg:text-5xl text-white tracking-wide">利用規約</h1>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="flex-grow">
-        <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
-                <p class="text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">最終更新日: 2025年12月22日</p>
-                
-                <div class="terms-section mb-8">
-                    <h2>第1条（適用）</h2>
-                    <p>本利用規約（以下「本規約」）は、StatsToo（スタッツー）（以下「当サイト」）が提供するすべてのサービス（以下「本サービス」）の利用条件を定めるものです。ユーザーの皆様には、本規約に同意いただいた上で、本サービスをご利用いただきます。</p>
-                    <p>本サービスをご利用になった時点で、本規約に同意いただいたものとみなします。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第2条（サービスの内容）</h2>
-                    <p>当サイトは、バスケットボールに関するスタッツ（統計データ）を記録・管理するためのWebツールを提供します。主なサービス内容は以下の通りです。</p>
-                    <ul>
-                        <li>試合中のスタッツ記録ツール</li>
-                        <li>シュート成功率の記録・分析ツール</li>
-                        <li>その他、当サイトが提供するバスケットボール関連ツール</li>
-                    </ul>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第3条（利用料金）</h2>
-                    <p>本サービスは無料でご利用いただけます。ただし、インターネット接続に必要な通信料等は、ユーザーのご負担となります。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第4条（データの保存について）</h2>
-                    <p>本サービスで入力されたデータは、ユーザーのブラウザのローカルストレージに保存されます。</p>
-                    <div class="highlight-box">
-                        <p><strong>⚠️ ご注意:</strong> ブラウザのキャッシュクリア、ローカルストレージの削除、ブラウザの変更、端末の変更等により、保存されたデータが失われる場合があります。重要なデータは、CSV出力機能などを利用して別途バックアップを取ることを推奨します。</p>
-                    </div>
-                    <p>当サイトは、ユーザーのデータの消失について一切の責任を負いません。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第5条（禁止事項）</h2>
-                    <p>ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。</p>
-                    <ol>
-                        <li>法令または公序良俗に違反する行為</li>
-                        <li>犯罪行為に関連する行為</li>
-                        <li>当サイトのサーバーまたはネットワークの機能を破壊したり、妨害したりする行為</li>
-                        <li>当サイトのサービスの運営を妨害するおそれのある行為</li>
-                        <li>他のユーザーに関する個人情報等を収集または蓄積する行為</li>
-                        <li>他のユーザーに成りすます行為</li>
-                        <li>当サイトのサービスに関連して、反社会的勢力に対して直接または間接に利益を供与する行為</li>
-                        <li>当サイトまたは第三者の知的財産権、肖像権、プライバシー、名誉その他の権利または利益を侵害する行為</li>
-                        <li>当サイトのコンテンツを無断で複製、転載、改変、販売する行為</li>
-                        <li>本サービスを商業目的で利用する行為（当サイトが許可した場合を除く）</li>
-                        <li>その他、当サイトが不適切と判断する行為</li>
-                    </ol>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第6条（サービスの変更・停止・終了）</h2>
-                    <p>当サイトは、以下の場合には、ユーザーに事前に通知することなく、本サービスの全部または一部の提供を停止または中断することができるものとします。</p>
-                    <ol>
-                        <li>本サービスにかかるシステムの保守点検または更新を行う場合</li>
-                        <li>地震、落雷、火災、停電または天災などの不可抗力により、本サービスの提供が困難となった場合</li>
-                        <li>コンピュータまたは通信回線等が事故により停止した場合</li>
-                        <li>その他、当サイトが本サービスの提供が困難と判断した場合</li>
-                    </ol>
-                    <p>当サイトは、本サービスの提供の停止または中断により、ユーザーまたは第三者が被ったいかなる損害についても、一切の責任を負いません。</p>
-                    <p>また、当サイトは、いつでも本サービスの内容を変更し、または本サービスの提供を終了することができます。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第7条（免責事項）</h2>
-                    <p>当サイトは、本サービスに事実上または法律上の瑕疵（安全性、信頼性、正確性、完全性、有効性、特定の目的への適合性、セキュリティなどに関する欠陥、エラーやバグ、権利侵害などを含みます）がないことを明示的にも黙示的にも保証しておりません。</p>
-                    <p>当サイトは、本サービスに起因してユーザーに生じたあらゆる損害について、当サイトの故意または重過失による場合を除き、一切の責任を負いません。</p>
-                    <p>当サイトは、本サービスに関して、ユーザーと他のユーザーまたは第三者との間において生じた取引、連絡または紛争等について一切責任を負いません。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第8条（著作権）</h2>
-                    <p>本サービスおよび本サービスに関連する一切のコンテンツ（テキスト、画像、デザイン、プログラム等）に関する著作権その他の知的財産権は、当サイトまたは正当な権利を有する第三者に帰属します。</p>
-                    <p>ユーザーは、本サービスを通じて提供される情報を、当サイトの事前の承諾なく、複製、出版、放送、公衆送信その他方法のいかんを問わず第三者に提供してはなりません。ただし、私的使用の範囲内での利用はこの限りではありません。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第9条（リンクについて）</h2>
-                    <p>当サイトへのリンクは、営利・非営利を問わず原則として自由です。ただし、以下の場合はリンクをお断りします。</p>
-                    <ul>
-                        <li>当サイトの内容が、リンク元のサイトの一部であるかのような誤解を招くおそれがある場合</li>
-                        <li>公序良俗に反するサイトからのリンク</li>
-                        <li>当サイトや運営者の名誉・信用を毀損するおそれがあるサイトからのリンク</li>
-                    </ul>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第10条（利用規約の変更）</h2>
-                    <p>当サイトは、必要と判断した場合には、ユーザーに通知することなくいつでも本規約を変更することができるものとします。変更後の利用規約は、当サイトに掲載した時点で効力を生じるものとします。</p>
-                    <p>本規約の変更後、本サービスの利用を継続した場合には、当該ユーザーは変更後の規約に同意したものとみなします。</p>
-                </div>
-                
-                <div class="terms-section mb-8">
-                    <h2>第11条（準拠法・管轄裁判所）</h2>
-                    <p>本規約の解釈にあたっては、日本法を準拠法とします。</p>
-                    <p>本サービスに関して紛争が生じた場合には、当サイト運営者の所在地を管轄する裁判所を専属的合意管轄とします。</p>
-                </div>
-                
-                <div class="terms-section">
-                    <h2>お問い合わせ</h2>
-                    <p>本規約に関するお問い合わせは、下記までご連絡ください。</p>
-                    <div class="contact-box">
-                        <p><strong>サイト名:</strong> StatsToo（スタッツー）</p>
-                        <p><strong>運営者:</strong> 栗谷武広</p>
-                        <p><strong>お問い合わせ:</strong> <a href="/contact/">お問い合わせフォーム</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-secondary text-white/80">
-        <!-- Main Footer -->
-        <div class="max-w-6xl mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Brand -->
-                <div class="md:col-span-1">
-                    <a href="/" class="flex items-center gap-2 mb-4">
-                        <span class="text-2xl">🏀</span>
-                        <span class="font-display text-2xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <p class="text-white/60 text-sm leading-relaxed">
-                        バスケットボールのスタッツ分析ツール。試合から個人練習まで、バスケを楽しむ全ての人をサポートします。
-                    </p>
-                </div>
-
-                <!-- Tools -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">ツール</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/tools/game-stats/" class="text-white/60 hover:text-primary-light transition">📊 試合スタッツ記録</a></li>
-                        <li><a href="/tools/practice/" class="text-white/60 hover:text-primary-light transition">🎯 個人練習ツール-開発中</a></li>
-                        <li><a href="/tools/shot-chart/" class="text-white/60 hover:text-primary-light transition">🗺️ ショットチャート-開発中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">コンテンツ</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/column/" class="text-white/60 hover:text-primary-light transition">📝 バスケコラム-執筆中</a></li>
-                        <li><a href="/column/rules/" class="text-white/60 hover:text-primary-light transition">📖 ルール解説-執筆中</a></li>
-                        <li><a href="/column/tips/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Support -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">サポート</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/help/" class="text-white/60 hover:text-primary-light transition">❓ ヘルプ</a></li>
-                        <li><a href="/contact/" class="text-white/60 hover:text-primary-light transition">📧 お問い合わせ</a></li>
-                        <li><a href="/about/" class="text-white/60 hover:text-primary-light transition">👤 運営者情報</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Footer -->
-        <div class="border-t border-white/10">
-            <div class="max-w-6xl mx-auto px-4 py-4">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/50">
-                    <p>© 2025 StatsToo. All rights reserved.</p>
-                    <div class="flex gap-4">
-                        <a href="/privacy/" class="hover:text-primary-light transition">プライバシーポリシー</a>
-                        <a href="/terms/" class="text-primary-light">利用規約</a>
-                        <a href="/sitemap/" class="hover:text-primary-light transition">サイトマップ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const iconOpen = document.getElementById('menu-icon-open');
-            const iconClose = document.getElementById('menu-icon-close');
-            
-            menu.classList.toggle('hidden');
-            iconOpen.classList.toggle('hidden');
-            iconClose.classList.toggle('hidden');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('mobile-menu');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (!menu.contains(e.target) && !btn.contains(e.target) && !menu.classList.contains('hidden')) {
-                toggleMobileMenu();
-            }
-        });
-    </script>
-</body>
-</html>
+    </div>
+</div>
