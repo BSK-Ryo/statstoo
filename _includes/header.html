@@ -20,8 +20,13 @@
                 <a href="/tools/3point-shot-chart/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
                     <span>🎯</span> 3Pショットチャート
                 </a>
-                <a href="/tools/2point-shot-chart/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                    <span>🎯</span> 2Pショットチャート-開発中
+                <a href="/tools/2p-shot-chart/"class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 
+                   {% if page.url contains '/tools/2p-shot-chart/' %}
+                       bg-indigo-500 text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span>🎯</span> 2Pシュートチャート
                 </a>
                 <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
                     <span>📝</span> バスケコラム-執筆中
@@ -56,9 +61,14 @@
             <a href="/tools/3point-shot-chart/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
                 <span>🎯</span> 3Pショットチャート
             </a>
-            <a href="/tools/2point-shot-chart/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                <span>🎯</span> 2Pショットチャート-開発中
-            </a>
+             <a href="/tools/2p-shot-chart/"class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 
+                   {% if page.url contains '/tools/2p-shot-chart/' %}
+                       bg-indigo-500 text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span>🎯</span> 2Pシュートチャート
+                </a>
             <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
                 <span>📝</span> バスケコラム
             </a>
