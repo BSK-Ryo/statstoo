@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    {% include head.html %}
+    {% if page.extra_css %}
+    <style>
+        {{ page.extra_css }}
+    </style>
+    {% endif %}
+</head>
+<body class="min-h-screen flex flex-col">
+
+    {% include header.html %}
+
+    <!-- Page Header -->
+    {% if page.page_label %}
+    <section class="bg-gradient-to-br from-secondary to-secondary-light py-16 md:py-20 relative overflow-hidden page-header-pattern">
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <p class="font-display text-sm md:text-base tracking-widest text-primary-light mb-2">{{ page.page_label }}</p>
+            <h1 class="font-display text-3xl md:text-4xl lg:text-5xl text-white tracking-wide">{{ page.page_title }}</h1>
+            {% if page.page_subtitle %}
+            <p class="text-white/60 mt-4 text-sm md:text-base">{{ page.page_subtitle }}</p>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        {{ content }}
+    </main>
+
+    {% include footer.html %}
+
+    {% if page.extra_js %}
+    <script>
+        {{ page.extra_js }}
+    </script>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ page.title }} | {{ site.title }}</title>
+<meta name="description" content="{{ page.description | default: site.description }}">
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+<!-- OGP -->
+<meta property="og:title" content="{{ page.title }} | {{ site.title }}">
+<meta property="og:description" content="{{ page.description | default: site.description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:image" content="{{ site.url }}/ogp.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.title }} | {{ site.title }}">
+<meta name="twitter:description" content="{{ page.description | default: site.description }}">
+
+<!-- Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: {
+                        DEFAULT: '#EA580C',
+                        light: '#FB923C',
+                        dark: '#C2410C',
+                    },
+                    secondary: {
+                        DEFAULT: '#1e293b',
+                        light: '#334155',
+                    }
+                },
+                fontFamily: {
+                    'display': ['Bebas Neue', 'sans-serif'],
+                    'body': ['Noto Sans JP', 'sans-serif'],
+                }
+            }
+        }
+    }
+</script>
+
+<style>
+    body {
+        font-family: 'Noto Sans JP', sans-serif;
+        background-color: #faf8f5;
+        color: #1e293b;
+    }
+
+    .font-display {
+        font-family: 'Bebas Neue', sans-serif;
+    }
+
+    /* Logo bounce animation */
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    .logo-bounce {
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    /* Page Header Background Pattern */
+    .page-header-pattern::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: 
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 80px,
+                rgba(255,255,255,0.02) 80px,
+                rgba(255,255,255,0.02) 82px
+            );
+    }
+</style>
