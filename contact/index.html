@@ -1,425 +1,128 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お問い合わせ | StatsToo（スタッツー）</title>
-    <meta name="description" content="StatsToo（スタッツー）へのお問い合わせページ。ご質問、ご要望、不具合報告などお気軽にご連絡ください。">
-    <link rel="canonical" href="https://statstoo.com/contact/">
-    
-    <!-- OGP -->
-    <meta property="og:title" content="お問い合わせ | StatsToo（スタッツー）">
-    <meta property="og:description" content="StatsToo（スタッツー）へのお問い合わせ">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://statstoo.com/contact/">
-    <meta property="og:site_name" content="StatsToo">
-    <meta property="og:image" content="https://statstoo.com/ogp.png">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="お問い合わせ | StatsToo（スタッツー）">
-    <meta name="twitter:description" content="StatsToo（スタッツー）へのお問い合わせ">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#EA580C',
-                            light: '#FB923C',
-                            dark: '#C2410C',
-                        },
-                        secondary: {
-                            DEFAULT: '#1e293b',
-                            light: '#334155',
-                        }
-                    },
-                    fontFamily: {
-                        'display': ['Bebas Neue', 'sans-serif'],
-                        'body': ['Noto Sans JP', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #faf8f5;
-            color: #1e293b;
-        }
-
-        .font-display {
-            font-family: 'Bebas Neue', sans-serif;
-        }
-
-        /* Logo bounce animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .logo-bounce {
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        /* Page Header Background Pattern */
-        .page-header-pattern::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 80px,
-                    rgba(255,255,255,0.02) 80px,
-                    rgba(255,255,255,0.02) 82px
-                );
-        }
-
-        /* Google Form Wrapper */
-        .google-form-wrapper {
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-            background: #fafafa;
-        }
-
+---
+title: お問い合わせ
+description: StatsToo（スタッツー）へのお問い合わせページ。ご質問、ご要望、不具合報告などお気軽にご連絡ください。
+page_label: CONTACT
+page_title: お問い合わせ
+extra_css: |
+    .google-form-wrapper {
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        background: #fafafa;
+    }
+    .google-form-wrapper iframe {
+        width: 100%;
+        height: 800px;
+        border: none;
+    }
+    @media (max-width: 640px) {
         .google-form-wrapper iframe {
-            width: 100%;
-            height: 800px;
-            border: none;
+            height: 900px;
         }
+    }
+    .form-placeholder {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+    .form-placeholder-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .form-placeholder h4 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+    .form-placeholder p { color: #64748b; margin-bottom: 1.5rem; }
+    .setup-steps {
+        text-align: left;
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+    .setup-steps h5 { font-weight: 700; margin-bottom: 0.75rem; color: #1e293b; }
+    .setup-steps ol { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+    .setup-steps ol li {
+        counter-increment: step;
+        padding-left: 2rem;
+        position: relative;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #475569;
+    }
+    .setup-steps ol li::before {
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        width: 1.5rem;
+        height: 1.5rem;
+        background: #EA580C;
+        color: white;
+        border-radius: 50%;
+        font-size: 0.75rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .setup-steps a { color: #EA580C; text-decoration: underline; }
+---
 
-        @media (max-width: 640px) {
-            .google-form-wrapper iframe {
-                height: 900px;
-            }
-        }
-
-        /* Form Placeholder */
-        .form-placeholder {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-
-        .form-placeholder-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .form-placeholder h4 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-placeholder p {
-            color: #64748b;
-            margin-bottom: 1.5rem;
-        }
-
-        .setup-steps {
-            text-align: left;
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .setup-steps h5 {
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-            color: #1e293b;
-        }
-
-        .setup-steps ol {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            counter-reset: step;
-        }
-
-        .setup-steps ol li {
-            counter-increment: step;
-            padding-left: 2rem;
-            position: relative;
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-            color: #475569;
-        }
-
-        .setup-steps ol li::before {
-            content: counter(step);
-            position: absolute;
-            left: 0;
-            width: 1.5rem;
-            height: 1.5rem;
-            background: #EA580C;
-            color: white;
-            border-radius: 50%;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .setup-steps a {
-            color: #EA580C;
-            text-decoration: underline;
-        }
-
-        .setup-steps a:hover {
-            color: #C2410C;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Global Navigation -->
-    <nav class="bg-secondary-light border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-12">
-                <!-- Logo (Mobile & Desktop) -->
-                <a href="/" class="flex items-center gap-2 text-decoration-none md:hidden">
-                    <span class="text-xl logo-bounce">🏀</span>
-                    <span class="font-display text-lg tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center gap-1 w-full">
-                    <a href="/" class="flex items-center gap-2 text-decoration-none mr-6">
-                        <span class="text-xl logo-bounce">🏀</span>
-                        <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <a href="/tools/game-stats/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📊</span> 試合スタッツ記録
-                    </a>
-                    <a href="/tools/practice/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>🎯</span> 個人練習ツール-開発中
-                    </a>
-                    <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📝</span> バスケコラム-執筆中
-                    </a>
-                    <div class="flex-grow"></div>
-                    <a href="/help/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="nav-link text-white bg-primary/80 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+<div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        
+        <!-- Intro -->
+        <div class="text-center mb-8 pb-6 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-secondary mb-2">お気軽にご連絡ください</h2>
+            <p class="text-gray-500 text-sm">StatsToo（スタッツー）に関するご質問、ご要望、不具合報告など、<br class="hidden sm:inline">以下のフォームよりお問い合わせください。</p>
+        </div>
+        
+        <!-- Contact Categories -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">❓</div>
+                <span class="text-xs font-medium text-secondary text-center">使い方の<br>ご質問</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">💡</div>
+                <span class="text-xs font-medium text-secondary text-center">機能の<br>ご要望</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">🐛</div>
+                <span class="text-xs font-medium text-secondary text-center">不具合の<br>ご報告</span>
+            </div>
+            <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">📝</div>
+                <span class="text-xs font-medium text-secondary text-center">その他の<br>お問い合わせ</span>
             </div>
         </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
-            <div class="px-4 py-3 space-y-1">
-                <a href="/tools/game-stats/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📊</span> 試合スタッツ記録
-                </a>
-                <a href="/tools/practice/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>🎯</span> 個人練習ツール-開発中
-                </a>
-                <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📝</span> バスケコラム
-                </a>
-                <div class="border-t border-white/10 my-2 pt-2">
-                    <a href="/help/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="block text-white bg-primary/80 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Page Header -->
-    <section class="bg-gradient-to-br from-secondary to-secondary-light py-16 md:py-20 relative overflow-hidden page-header-pattern">
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <p class="font-display text-sm md:text-base tracking-widest text-primary-light mb-2">CONTACT</p>
-            <h1 class="font-display text-3xl md:text-4xl lg:text-5xl text-white tracking-wide">お問い合わせ</h1>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="flex-grow">
-        <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
-                
-                <!-- Intro -->
-                <div class="text-center mb-8 pb-6 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-secondary mb-2">お気軽にご連絡ください</h2>
-                    <p class="text-gray-500 text-sm">StatsToo（スタッツー）に関するご質問、ご要望、不具合報告など、<br class="hidden sm:inline">以下のフォームよりお問い合わせください。</p>
-                </div>
-                
-                <!-- Contact Categories -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-                    <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">❓</div>
-                        <span class="text-xs font-medium text-secondary text-center">使い方の<br>ご質問</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">💡</div>
-                        <span class="text-xs font-medium text-secondary text-center">機能の<br>ご要望</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">🐛</div>
-                        <span class="text-xs font-medium text-secondary text-center">不具合の<br>ご報告</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center text-xl">📝</div>
-                        <span class="text-xs font-medium text-secondary text-center">その他の<br>お問い合わせ</span>
-                    </div>
-                </div>
-                
-                <!-- Form Container -->
-                <div class="mb-8">
-                    <h3 class="font-bold text-secondary mb-4 flex items-center gap-2">
-                        <span>📧</span> お問い合わせフォーム
-                    </h3>
+        
+        <!-- Form Container -->
+        <div class="mb-8">
+            <h3 class="font-bold text-secondary mb-4 flex items-center gap-2">
+                <span>📧</span> お問い合わせフォーム
+            </h3>
                     <div class="google-form-wrapper">
                         <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfSrgffSnk4HylToHwFJHo7hkCMKEynyK1O1yQwVafMvgb8sg/viewform?embedded=true" width="640" height="960" frameborder="0" marginheight="0" marginwidth="0">読み込んでいます…</iframe>
                     </div>
                 </div>
                 
-                <!-- Note Box -->
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                    <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
-                        <span>📌</span> お問い合わせの前に
-                    </h4>
-                    <ul class="text-sm text-gray-600 space-y-1">
-                        <li class="flex items-start gap-2">
-                            <span class="text-amber-500 mt-0.5">•</span>
-                            <span>回答には数日お時間をいただく場合があります</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-amber-500 mt-0.5">•</span>
-                            <span>全てのお問い合わせに回答できない場合があります</span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <span class="text-amber-500 mt-0.5">•</span>
-                            <span>不具合報告の際は、お使いのブラウザと発生状況を詳しくお書きください</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+               <!-- Note Box -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <h4 class="font-bold text-secondary mb-2 flex items-center gap-2">
+                <span>📌</span> お問い合わせの前に
+            </h4>
+            <ul class="text-sm text-gray-600 space-y-1">
+                <li class="flex items-start gap-2">
+                    <span class="text-amber-500 mt-0.5">•</span>
+                    <span>回答には数日お時間をいただく場合があります</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-amber-500 mt-0.5">•</span>
+                    <span>全てのお問い合わせに回答できない場合があります</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-amber-500 mt-0.5">•</span>
+                    <span>不具合報告の際は、お使いのブラウザと発生状況を詳しくお書きください</span>
+                </li>
+            </ul>
         </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-secondary text-white/80">
-        <!-- Main Footer -->
-        <div class="max-w-6xl mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Brand -->
-                <div class="md:col-span-1">
-                    <a href="/" class="flex items-center gap-2 mb-4">
-                        <span class="text-2xl">🏀</span>
-                        <span class="font-display text-2xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <p class="text-white/60 text-sm leading-relaxed">
-                        バスケットボールのスタッツ分析ツール。試合から個人練習まで、バスケを楽しむ全ての人をサポートします。
-                    </p>
-                </div>
-
-                <!-- Tools -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">ツール</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/tools/game-stats/" class="text-white/60 hover:text-primary-light transition">📊 試合スタッツ記録</a></li>
-                        <li><a href="/tools/practice/" class="text-white/60 hover:text-primary-light transition">🎯 個人練習ツール-開発中</a></li>
-                        <li><a href="/tools/shot-chart/" class="text-white/60 hover:text-primary-light transition">🗺️ ショットチャート-開発中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">コンテンツ</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/column/" class="text-white/60 hover:text-primary-light transition">📝 バスケコラム-執筆中</a></li>
-                        <li><a href="/column/rules/" class="text-white/60 hover:text-primary-light transition">📖 ルール解説-執筆中</a></li>
-                        <li><a href="/column/tips/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Support -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">サポート</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/help/" class="text-white/60 hover:text-primary-light transition">❓ ヘルプ</a></li>
-                        <li><a href="/contact/" class="text-primary-light transition">📧 お問い合わせ</a></li>
-                        <li><a href="/about/" class="text-white/60 hover:text-primary-light transition">👤 運営者情報</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Footer -->
-        <div class="border-t border-white/10">
-            <div class="max-w-6xl mx-auto px-4 py-4">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/50">
-                    <p>© 2025 StatsToo. All rights reserved.</p>
-                    <div class="flex gap-4">
-                        <a href="/privacy/" class="hover:text-primary-light transition">プライバシーポリシー</a>
-                        <a href="/terms/" class="hover:text-primary-light transition">利用規約</a>
-                        <a href="/sitemap/" class="hover:text-primary-light transition">サイトマップ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const iconOpen = document.getElementById('menu-icon-open');
-            const iconClose = document.getElementById('menu-icon-close');
-            
-            menu.classList.toggle('hidden');
-            iconOpen.classList.toggle('hidden');
-            iconClose.classList.toggle('hidden');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('mobile-menu');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (!menu.contains(e.target) && !btn.contains(e.target) && !menu.classList.contains('hidden')) {
-                toggleMobileMenu();
-            }
-        });
-    </script>
-</body>
-</html>
+    </div>
+</div>
