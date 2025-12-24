@@ -1,429 +1,155 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プライバシーポリシー | StatsToo（スタッツー）</title>
-    <meta name="description" content="StatsToo（スタッツー）のプライバシーポリシー。個人情報の取り扱い、Cookie、アクセス解析、広告配信についてご説明します。">
-    <link rel="canonical" href="https://statstoo.com/privacy/">
-    
-    <!-- OGP -->
-    <meta property="og:title" content="プライバシーポリシー | StatsToo（スタッツー）">
-    <meta property="og:description" content="StatsToo（スタッツー）のプライバシーポリシー">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://statstoo.com/privacy/">
-    <meta property="og:site_name" content="StatsToo">
-    <meta property="og:image" content="https://statstoo.com/ogp.png">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="プライバシーポリシー | StatsToo（スタッツー）">
-    <meta name="twitter:description" content="StatsToo（スタッツー）のプライバシーポリシー">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏀</text></svg>">
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#EA580C',
-                            light: '#FB923C',
-                            dark: '#C2410C',
-                        },
-                        secondary: {
-                            DEFAULT: '#1e293b',
-                            light: '#334155',
-                        }
-                    },
-                    fontFamily: {
-                        'display': ['Bebas Neue', 'sans-serif'],
-                        'body': ['Noto Sans JP', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+---
+title: プライバシーポリシー
+description: StatsToo（スタッツー）のプライバシーポリシー。個人情報の取り扱い、Cookie、アクセス解析、広告配信についてご説明します。
+page_label: PRIVACY POLICY
+page_title: プライバシーポリシー
+extra_css: |
+    .policy-section h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-left: 1rem;
+        border-left: 4px solid #EA580C;
+    }
+    .policy-section p {
+        color: #1e293b;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    .policy-section ul {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 1rem;
+    }
+    .policy-section ul li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        line-height: 1.8;
+    }
+    .policy-section ul li::before {
+        content: '•';
+        position: absolute;
+        left: 0.5rem;
+        color: #EA580C;
+        font-weight: bold;
+    }
+    .policy-section a {
+        color: #EA580C;
+        text-decoration: underline;
+        transition: color 0.2s;
+    }
+    .policy-section a:hover {
+        color: #C2410C;
+    }
+    .contact-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-top: 1rem;
+    }
+    .contact-box p {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+    .contact-box p:last-child {
+        margin-bottom: 0;
+    }
+---
 
-    <style>
-        body {
-            font-family: 'Noto Sans JP', sans-serif;
-            background-color: #faf8f5;
-            color: #1e293b;
-        }
-
-        .font-display {
-            font-family: 'Bebas Neue', sans-serif;
-        }
-
-        /* Logo bounce animation */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .logo-bounce {
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        /* Page Header Background Pattern */
-        .page-header-pattern::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: 
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 80px,
-                    rgba(255,255,255,0.02) 80px,
-                    rgba(255,255,255,0.02) 82px
-                );
-        }
-
-        /* Policy content styles */
-        .policy-section h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 1rem;
-            padding-left: 1rem;
-            border-left: 4px solid #EA580C;
-        }
-
-        .policy-section h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .policy-section p {
-            color: #1e293b;
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .policy-section ul {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 1rem;
-        }
-
-        .policy-section ul li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-
-        .policy-section ul li::before {
-            content: '•';
-            position: absolute;
-            left: 0.5rem;
-            color: #EA580C;
-            font-weight: bold;
-        }
-
-        .policy-section a {
-            color: #EA580C;
-            text-decoration: underline;
-            transition: color 0.2s;
-        }
-
-        .policy-section a:hover {
-            color: #C2410C;
-        }
-
-        .contact-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-            margin-top: 1rem;
-        }
-
-        .contact-box p {
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .contact-box p:last-child {
-            margin-bottom: 0;
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col">
-
-    <!-- Global Navigation -->
-    <nav class="bg-secondary-light border-b border-white/10">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-12">
-                <!-- Logo (Mobile & Desktop) -->
-                <a href="/" class="flex items-center gap-2 text-decoration-none md:hidden">
-                    <span class="text-xl logo-bounce">🏀</span>
-                    <span class="font-display text-lg tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                </a>
-                
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center gap-1 w-full">
-                    <a href="/" class="flex items-center gap-2 text-decoration-none mr-6">
-                        <span class="text-xl logo-bounce">🏀</span>
-                        <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <a href="/tools/game-stats/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📊</span> 試合スタッツ記録
-                    </a>
-                    <a href="/tools/practice/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>🎯</span> 個人練習ツール-開発中
-                    </a>
-                    <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📝</span> バスケコラム-執筆中
-                    </a>
-                    <div class="flex-grow"></div>
-                    <a href="/help/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition">
-                    <svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                    <svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
+<div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
+        <p class="text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">最終更新日: 2024年12月22日</p>
+        
+        <div class="policy-section mb-8">
+            <h2>はじめに</h2>
+            <p>StatsToo（スタッツー）（以下「当サイト」）は、ユーザーのプライバシーを尊重し、個人情報の保護に努めています。本プライバシーポリシーでは、当サイトにおける個人情報の取り扱いについて説明します。</p>
         </div>
-
-        <!-- Mobile Navigation Menu -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
-            <div class="px-4 py-3 space-y-1">
-                <a href="/tools/game-stats/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📊</span> 試合スタッツ記録
-                </a>
-                <a href="/tools/practice/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>🎯</span> 個人練習ツール-開発中
-                </a>
-                <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📝</span> バスケコラム
-                </a>
-                <div class="border-t border-white/10 my-2 pt-2">
-                    <a href="/help/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        ヘルプ
-                    </a>
-                    <a href="/contact/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
-                        お問い合わせ
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Page Header -->
-    <section class="bg-gradient-to-br from-secondary to-secondary-light py-16 md:py-20 relative overflow-hidden page-header-pattern">
-        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <p class="font-display text-sm md:text-base tracking-widest text-primary-light mb-2">PRIVACY POLICY</p>
-            <h1 class="font-display text-3xl md:text-4xl lg:text-5xl text-white tracking-wide">プライバシーポリシー</h1>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="flex-grow">
-        <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
-                <p class="text-sm text-gray-500 mb-6 pb-4 border-b border-gray-200">最終更新日: 2025年12月22日</p>
-                
-                <div class="policy-section mb-8">
-                    <h2>はじめに</h2>
-                    <p>StatsToo（スタッツー）（以下「当サイト」）は、ユーザーのプライバシーを尊重し、個人情報の保護に努めています。本プライバシーポリシーでは、当サイトにおける個人情報の取り扱いについて説明します。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>収集する情報</h2>
-                    <p>当サイトでは、以下の情報を収集する場合があります。</p>
-                    
-                    <h3>1. 自動的に収集される情報</h3>
-                    <p>当サイトにアクセスした際、以下の情報が自動的に収集されることがあります。</p>
-                    <ul>
-                        <li>IPアドレス</li>
-                        <li>ブラウザの種類とバージョン</li>
-                        <li>オペレーティングシステム</li>
-                        <li>参照元URL</li>
-                        <li>アクセス日時</li>
-                        <li>閲覧したページ</li>
-                    </ul>
-                    
-                    <h3>2. お問い合わせ時に提供される情報</h3>
-                    <p>お問い合わせフォームをご利用いただく際に、メールアドレス等の情報をご提供いただく場合があります。</p>
-                    
-                    <h3>3. ローカルストレージに保存される情報</h3>
-                    <p>当サイトのツールでは、ユーザーの利便性のため、入力されたスタッツデータをブラウザのローカルストレージに保存します。この情報は当サイトのサーバーには送信されず、ユーザーのブラウザ内にのみ保存されます。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>Cookieの使用について</h2>
-                    <p>当サイトでは、ユーザー体験の向上やアクセス解析のためにCookie（クッキー）を使用しています。Cookieとは、ウェブサイトがユーザーのブラウザに送信する小さなテキストファイルです。</p>
-                    <p>ブラウザの設定により、Cookieの受け入れを拒否することができますが、その場合、当サイトの一部機能が正常に動作しない可能性があります。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>アクセス解析ツールについて</h2>
-                    <p>当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しています。Googleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。このトラフィックデータは匿名で収集されており、個人を特定するものではありません。</p>
-                    <p>この機能はCookieを無効にすることで収集を拒否することができますので、お使いのブラウザの設定をご確認ください。Googleアナリティクスの利用規約については、<a href="https://marketingplatform.google.com/about/analytics/terms/jp/" target="_blank" rel="noopener noreferrer">Googleアナリティクス利用規約</a>をご覧ください。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>広告配信について</h2>
-                    <p>当サイトでは、第三者配信の広告サービス「Google AdSense」を利用しています。広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。</p>
-                    <p>Google AdSenseに関する詳細は、<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer">Googleの広告に関するポリシー</a>をご覧ください。</p>
-                    <p>ユーザーは、Googleの広告設定ページ（<a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">https://www.google.com/settings/ads</a>）でパーソナライズ広告を無効にすることができます。また、<a href="https://optout.aboutads.info/" target="_blank" rel="noopener noreferrer">www.aboutads.info</a>にアクセスすることで、パーソナライズ広告に使用される第三者配信事業者のCookieを無効にすることができます。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>情報の利用目的</h2>
-                    <p>当サイトで収集した情報は、以下の目的で利用します。</p>
-                    <ul>
-                        <li>当サイトのサービス提供・運営のため</li>
-                        <li>ユーザーからのお問い合わせに対応するため</li>
-                        <li>当サイトの利用状況を分析し、サービスの改善に役立てるため</li>
-                        <li>利用規約に違反した行為への対応のため</li>
-                    </ul>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>情報の第三者提供</h2>
-                    <p>当サイトは、以下の場合を除き、ユーザーの個人情報を第三者に提供することはありません。</p>
-                    <ul>
-                        <li>ユーザーの同意がある場合</li>
-                        <li>法令に基づく場合</li>
-                        <li>人の生命、身体または財産の保護のために必要がある場合</li>
-                    </ul>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>セキュリティ</h2>
-                    <p>当サイトは、個人情報の漏洩、滅失、毀損の防止その他の個人情報の安全管理のために必要かつ適切な措置を講じます。</p>
-                </div>
-                
-                <div class="policy-section mb-8">
-                    <h2>プライバシーポリシーの変更</h2>
-                    <p>当サイトは、必要に応じて本プライバシーポリシーを変更することがあります。変更した場合は、当ページにて通知します。変更後のプライバシーポリシーは、当ページに掲載した時点で効力を生じるものとします。</p>
-                </div>
-                
-                <div class="policy-section">
-                    <h2>お問い合わせ</h2>
-                    <p>本プライバシーポリシーに関するお問い合わせは、下記までご連絡ください。</p>
-                    <div class="contact-box">
-                        <p><strong>サイト名:</strong> StatsToo（スタッツー）</p>
-                        <p><strong>運営者:</strong> 多田諒聖</p>
-                        <p><strong>お問い合わせ:</strong> <a href="/contact/">お問い合わせフォーム</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-secondary text-white/80">
-        <!-- Main Footer -->
-        <div class="max-w-6xl mx-auto px-4 py-10">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Brand -->
-                <div class="md:col-span-1">
-                    <a href="/" class="flex items-center gap-2 mb-4">
-                        <span class="text-2xl">🏀</span>
-                        <span class="font-display text-2xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
-                    </a>
-                    <p class="text-white/60 text-sm leading-relaxed">
-                        バスケットボールのスタッツ分析ツール。試合から個人練習まで、バスケを楽しむ全ての人をサポートします。
-                    </p>
-                </div>
-
-                <!-- Tools -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">ツール</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/tools/game-stats/" class="text-white/60 hover:text-primary-light transition">📊 試合スタッツ記録</a></li>
-                        <li><a href="/tools/practice/" class="text-white/60 hover:text-primary-light transition">🎯 個人練習ツール-開発中</a></li>
-                        <li><a href="/tools/shot-chart/" class="text-white/60 hover:text-primary-light transition">🗺️ ショットチャート-開発中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">コンテンツ</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/column/" class="text-white/60 hover:text-primary-light transition">📝 バスケコラム-執筆中</a></li>
-                        <li><a href="/column/rules/" class="text-white/60 hover:text-primary-light transition">📖 ルール解説-執筆中</a></li>
-                        <li><a href="/column/tips/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
-                    </ul>
-                </div>
-
-                <!-- Support -->
-                <div>
-                    <h4 class="font-bold text-white mb-4 text-sm">サポート</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="/help/" class="text-white/60 hover:text-primary-light transition">❓ ヘルプ</a></li>
-                        <li><a href="/contact/" class="text-white/60 hover:text-primary-light transition">📧 お問い合わせ</a></li>
-                        <li><a href="/about/" class="text-white/60 hover:text-primary-light transition">👤 運営者情報</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Footer -->
-        <div class="border-t border-white/10">
-            <div class="max-w-6xl mx-auto px-4 py-4">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/50">
-                    <p>© 2025 StatsToo. All rights reserved.</p>
-                    <div class="flex gap-4">
-                        <a href="/privacy/" class="text-primary-light">プライバシーポリシー</a>
-                        <a href="/terms/" class="hover:text-primary-light transition">利用規約</a>
-                        <a href="/sitemap/" class="hover:text-primary-light transition">サイトマップ</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile Menu Toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const iconOpen = document.getElementById('menu-icon-open');
-            const iconClose = document.getElementById('menu-icon-close');
+        
+        <div class="policy-section mb-8">
+            <h2>収集する情報</h2>
+            <p>当サイトでは、以下の情報を収集する場合があります。</p>
             
-            menu.classList.toggle('hidden');
-            iconOpen.classList.toggle('hidden');
-            iconClose.classList.toggle('hidden');
-        }
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            const menu = document.getElementById('mobile-menu');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (!menu.contains(e.target) && !btn.contains(e.target) && !menu.classList.contains('hidden')) {
-                toggleMobileMenu();
-            }
-        });
-    </script>
-</body>
-</html>
+            <h3 class="text-base font-bold text-secondary mt-6 mb-3">1. 自動的に収集される情報</h3>
+            <p>当サイトにアクセスした際、以下の情報が自動的に収集されることがあります。</p>
+            <ul>
+                <li>IPアドレス</li>
+                <li>ブラウザの種類とバージョン</li>
+                <li>オペレーティングシステム</li>
+                <li>参照元URL</li>
+                <li>アクセス日時</li>
+                <li>閲覧したページ</li>
+            </ul>
+            
+            <h3 class="text-base font-bold text-secondary mt-6 mb-3">2. お問い合わせ時に提供される情報</h3>
+            <p>お問い合わせフォームをご利用いただく際に、メールアドレス等の情報をご提供いただく場合があります。</p>
+            
+            <h3 class="text-base font-bold text-secondary mt-6 mb-3">3. ローカルストレージに保存される情報</h3>
+            <p>当サイトのツールでは、ユーザーの利便性のため、入力されたスタッツデータをブラウザのローカルストレージに保存します。この情報は当サイトのサーバーには送信されず、ユーザーのブラウザ内にのみ保存されます。</p>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>Cookieの使用について</h2>
+            <p>当サイトでは、ユーザー体験の向上やアクセス解析のためにCookie（クッキー）を使用しています。Cookieとは、ウェブサイトがユーザーのブラウザに送信する小さなテキストファイルです。</p>
+            <p>ブラウザの設定により、Cookieの受け入れを拒否することができますが、その場合、当サイトの一部機能が正常に動作しない可能性があります。</p>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>アクセス解析ツールについて</h2>
+            <p>当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を使用しています。Googleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。このトラフィックデータは匿名で収集されており、個人を特定するものではありません。</p>
+            <p>この機能はCookieを無効にすることで収集を拒否することができますので、お使いのブラウザの設定をご確認ください。Googleアナリティクスの利用規約については、<a href="https://marketingplatform.google.com/about/analytics/terms/jp/" target="_blank" rel="noopener noreferrer">Googleアナリティクス利用規約</a>をご覧ください。</p>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>広告配信について</h2>
+            <p>当サイトでは、第三者配信の広告サービス「Google AdSense」を利用しています。広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookieを使用することがあります。</p>
+            <p>Google AdSenseに関する詳細は、<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" rel="noopener noreferrer">Googleの広告に関するポリシー</a>をご覧ください。</p>
+            <p>ユーザーは、Googleの広告設定ページ（<a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer">https://www.google.com/settings/ads</a>）でパーソナライズ広告を無効にすることができます。また、<a href="https://optout.aboutads.info/" target="_blank" rel="noopener noreferrer">www.aboutads.info</a>にアクセスすることで、パーソナライズ広告に使用される第三者配信事業者のCookieを無効にすることができます。</p>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>情報の利用目的</h2>
+            <p>当サイトで収集した情報は、以下の目的で利用します。</p>
+            <ul>
+                <li>当サイトのサービス提供・運営のため</li>
+                <li>ユーザーからのお問い合わせに対応するため</li>
+                <li>当サイトの利用状況を分析し、サービスの改善に役立てるため</li>
+                <li>利用規約に違反した行為への対応のため</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>情報の第三者提供</h2>
+            <p>当サイトは、以下の場合を除き、ユーザーの個人情報を第三者に提供することはありません。</p>
+            <ul>
+                <li>ユーザーの同意がある場合</li>
+                <li>法令に基づく場合</li>
+                <li>人の生命、身体または財産の保護のために必要がある場合</li>
+            </ul>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>セキュリティ</h2>
+            <p>当サイトは、個人情報の漏洩、滅失、毀損の防止その他の個人情報の安全管理のために必要かつ適切な措置を講じます。</p>
+        </div>
+        
+        <div class="policy-section mb-8">
+            <h2>プライバシーポリシーの変更</h2>
+            <p>当サイトは、必要に応じて本プライバシーポリシーを変更することがあります。変更した場合は、当ページにて通知します。変更後のプライバシーポリシーは、当ページに掲載した時点で効力を生じるものとします。</p>
+        </div>
+        
+        <div class="policy-section">
+            <h2>お問い合わせ</h2>
+            <p>本プライバシーポリシーに関するお問い合わせは、下記までご連絡ください。</p>
+            <div class="contact-box">
+                <p><strong>サイト名:</strong> StatsToo（スタッツー）</p>
+                <p><strong>運営者:</strong> 多田諒聖</p>
+                <p><strong>お問い合わせ:</strong> <a href="/contact/">お問い合わせフォーム</a></p>
+            </div>
+        </div>
+    </div>
+</div>
