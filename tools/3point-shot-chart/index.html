@@ -5,7 +5,10 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
 ---
 
 <style>
-    
+    /* Tailwindの基本設定は default.html 側で読み込まれているため
+       ここではこのツール独自のスタイルだけを記述します。
+    */
+
     :root {
         --heat-cold: #3b82f6; --heat-cool: #60a5fa; --heat-neutral: #fbbf24; --heat-warm: #f97316; --heat-hot: #22c55e;
     }
@@ -66,7 +69,19 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .btn-undo { background: transparent; border: none; color: #64748b; font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.75rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-undo:not(:disabled):hover { color: #0f172a; }
     .btn-undo:disabled { opacity: 0.4; cursor: not-allowed; }
-    .bottom-spacer { height: 160px; }
+    .direct-input-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e5e5e5; }
+    .direct-input-label { font-size: 0.7rem; color: #64748b; text-align: center; margin-bottom: 0.5rem; }
+    .direct-input-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .direct-input-field { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+    .direct-input-field label { font-size: 0.65rem; color: #64748b; font-weight: 500; }
+    .direct-input-field input { width: 60px; padding: 0.5rem; font-size: 1rem; font-weight: 600; text-align: center; border: 2px solid #e5e5e5; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; transition: border-color 0.2s; }
+    .direct-input-field input:focus { outline: none; border-color: #EA580C; }
+    .direct-input-divider { font-size: 1.25rem; color: #64748b; font-weight: 600; margin-top: 1rem; }
+    .btn-apply { margin-top: 1rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%); color: white; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; box-shadow: 0 2px 8px rgba(234, 88, 12, 0.3); }
+    .btn-apply:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(234, 88, 12, 0.4); }
+    .btn-apply:not(:disabled):active { transform: scale(0.97); }
+    .btn-apply:disabled { opacity: 0.4; cursor: not-allowed; }
+    .bottom-spacer { height: 240px; }
     
     .legend { background: #FFFFFF; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 1rem; }
     .legend-title { font-size: 0.75rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; }
@@ -430,6 +445,21 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             <button class="btn-shot btn-missed" id="btn-missed" onclick="app.recordShot(false)" disabled><span class="btn-shot-icon">✕</span><span>失敗</span></button>
         </div>
         <div class="undo-container"><button class="btn-undo" id="btn-undo" onclick="app.undo()" disabled>↩ 取り消す</button></div>
+        <div class="direct-input-section" id="direct-input-section">
+            <div class="direct-input-label">または直接入力</div>
+            <div class="direct-input-row">
+                <div class="direct-input-field">
+                    <label for="input-made">成功</label>
+                    <input type="number" id="input-made" min="0" max="999" value="0" inputmode="numeric">
+                </div>
+                <div class="direct-input-divider">/</div>
+                <div class="direct-input-field">
+                    <label for="input-total">試投</label>
+                    <input type="number" id="input-total" min="0" max="999" value="0" inputmode="numeric">
+                </div>
+                <button class="btn-apply" id="btn-apply" onclick="app.applyDirectInput()" disabled>反映</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -598,13 +628,23 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         
         getSortedHistory() {
             return [...this.savedHistory].sort((a, b) => {
-                const dateA = a.date || a.createdAt.slice(0, 10);
-                const dateB = b.date || b.createdAt.slice(0, 10);
-                const timeA = a.time || '00:00';
-                const timeB = b.time || '00:00';
-                const dtA = new Date(`${dateA}T${timeA}`);
-                const dtB = new Date(`${dateB}T${timeB}`);
-                return this.sortOrder === 'desc' ? dtB - dtA : dtA - dtB;
+                // 日付を取得（YYYY-MM-DD形式）
+                const dateA = a.date || (a.createdAt ? a.createdAt.slice(0, 10) : '1970-01-01');
+                const dateB = b.date || (b.createdAt ? b.createdAt.slice(0, 10) : '1970-01-01');
+                
+                // 時刻を取得（HH:MM形式）
+                const timeA = a.time && a.time.match(/^\d{1,2}:\d{2}$/) ? a.time.padStart(5, '0') : '00:00';
+                const timeB = b.time && b.time.match(/^\d{1,2}:\d{2}$/) ? b.time.padStart(5, '0') : '00:00';
+                
+                // 日付+時刻で比較用文字列を作成（文字列比較で正しくソート可能）
+                const compareA = `${dateA}T${timeA}`;
+                const compareB = `${dateB}T${timeB}`;
+                
+                if (this.sortOrder === 'asc') {
+                    return compareA.localeCompare(compareB);
+                } else {
+                    return compareB.localeCompare(compareA);
+                }
             });
         }
         
@@ -710,9 +750,11 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             if (spotEl) spotEl.classList.add('selected');
             this.selectedSpot = spotId;
             this.updateSelectedSpotInfo();
+            this.updateDirectInputFields();
             this.showController();
             document.getElementById('btn-made').disabled = false;
             document.getElementById('btn-missed').disabled = false;
+            document.getElementById('btn-apply').disabled = false;
         }
         
         showController() { document.getElementById('fixed-controller').classList.add('visible'); }
@@ -722,6 +764,9 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             this.selectedSpot = null;
             document.getElementById('btn-made').disabled = true;
             document.getElementById('btn-missed').disabled = true;
+            document.getElementById('btn-apply').disabled = true;
+            document.getElementById('input-made').value = 0;
+            document.getElementById('input-total').value = 0;
             document.getElementById('selected-spot-info').innerHTML = '<div class="no-spot-selected">スポットを選択してください</div>';
         }
         
@@ -733,6 +778,39 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             const total = stats.made + stats.missed;
             const pct = total > 0 ? Math.round((stats.made / total) * 100) : 0;
             infoEl.innerHTML = `<div class="selected-spot-name">${spot.name}</div><div class="selected-spot-stats">${stats.made}/${total} (${total > 0 ? pct + '%' : '-'}) | 3P</div>`;
+        }
+        
+        updateDirectInputFields() {
+            if (!this.selectedSpot) return;
+            const stats = this.data[this.selectedSpot];
+            const total = stats.made + stats.missed;
+            document.getElementById('input-made').value = stats.made;
+            document.getElementById('input-total').value = total;
+        }
+        
+        applyDirectInput() {
+            if (!this.selectedSpot) return;
+            const madeInput = parseInt(document.getElementById('input-made').value) || 0;
+            const totalInput = parseInt(document.getElementById('input-total').value) || 0;
+            
+            if (madeInput < 0 || totalInput < 0) {
+                this.showToast('0以上の値を入力してください');
+                return;
+            }
+            if (madeInput > totalInput) {
+                this.showToast('成功数が試投数を超えています');
+                return;
+            }
+            
+            const missed = totalInput - madeInput;
+            this.data[this.selectedSpot].made = madeInput;
+            this.data[this.selectedSpot].missed = missed;
+            this.undoHistory = [];
+            this.saveData();
+            this.updateUI();
+            
+            const spot = SPOTS.find(s => s.id === this.selectedSpot);
+            this.showToast(`${spot.name}: ${madeInput}/${totalInput} を設定しました`);
         }
         
         recordShot(made) {
@@ -759,6 +837,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                 const spotEl = document.querySelector(`.shot-spot[data-spot-id="${this.selectedSpot}"]`);
                 if (spotEl) spotEl.classList.add('selected');
                 this.updateSelectedSpotInfo();
+                this.updateDirectInputFields();
             }
             let totalMade = 0, totalMissed = 0;
             SPOTS.forEach(spot => { totalMade += this.data[spot.id].made; totalMissed += this.data[spot.id].missed; });
@@ -821,7 +900,8 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             let csv = '3Pシュート練習履歴\n\n';
             csv += '日付,会場,時間,RC成功/試投,RC成功率,R45成功/試投,R45成功率,TOP成功/試投,TOP成功率,L45成功/試投,L45成功率,LC成功/試投,LC成功率,総合成功/試投,総合成功率\n';
             
-            this.savedHistory.forEach(entry => {
+            const sortedHistory = this.getSortedHistory();
+            sortedHistory.forEach(entry => {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
                 const venue = (entry.venue || '').replace(/,/g, '，');
                 const time = entry.time || '';
@@ -888,7 +968,8 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                         </thead>
                         <tbody>`;
             
-            this.savedHistory.slice(0, 20).forEach((entry, idx) => {
+            const sortedHistory = this.getSortedHistory();
+            sortedHistory.slice(0, 20).forEach((entry, idx) => {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
                 const [y, m, d] = dateStr.split('-');
                 const displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
