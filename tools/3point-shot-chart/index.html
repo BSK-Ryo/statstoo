@@ -99,6 +99,8 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .btn-sort:hover { background: rgba(234,88,12,0.5); }
     .sort-icon { font-size: 0.65rem; transition: transform 0.2s; }
     .sort-asc .sort-icon { transform: rotate(180deg); }
+    .history-stat { display: flex; flex-direction: column; align-items: center; gap: 0.125rem; }
+    .history-shots { font-size: 0.65rem; color: #64748b; font-weight: 500; }
     .history-empty { padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.875rem; }
     .history-empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
     
@@ -637,7 +639,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                     totalMade += stats.made;
                     totalShots += total;
                     const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
-                    return { pct, display: pct !== null ? `${pct}%` : '-' };
+                    return { made: stats.made, total, pct, display: pct !== null ? `${pct}%` : '-' };
                 });
                 const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : null;
                 
@@ -647,10 +649,12 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                     <td class="time-cell">${timeStr}</td>`;
                 
                 spotPcts.forEach(sp => {
-                    html += `<td><span class="pct-badge ${this.getPctClass(sp.pct)}">${sp.display}</span></td>`;
+                    const shotsDisplay = sp.total > 0 ? `${sp.made}/${sp.total}` : '-';
+                    html += `<td><div class="history-stat"><span class="history-shots">${shotsDisplay}</span><span class="pct-badge ${this.getPctClass(sp.pct)}">${sp.display}</span></div></td>`;
                 });
                 
-                html += `<td class="total-cell"><span class="pct-badge ${this.getPctClass(totalPct)}">${totalPct !== null ? totalPct + '%' : '-'}</span></td>
+                const totalShotsDisplay = totalShots > 0 ? `${totalMade}/${totalShots}` : '-';
+                html += `<td class="total-cell"><div class="history-stat"><span class="history-shots">${totalShotsDisplay}</span><span class="pct-badge ${this.getPctClass(totalPct)}">${totalPct !== null ? totalPct + '%' : '-'}</span></div></td>
                     <td class="action-cell"><button class="btn-row-delete" onclick="app.showDeleteHistoryModal(${entry.id})" title="削除">🗑️</button></td>
                 </tr>`;
             });
@@ -817,7 +821,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             if (this.savedHistory.length === 0) { this.showToast('履歴がありません'); return; }
             
             let csv = '3Pシュート練習履歴\n\n';
-            csv += '日付,会場,時間,右コーナー,右45°,トップ,左45°,左コーナー,総合成功率,総成功数,総試投数\n';
+            csv += '日付,会場,時間,RC成功/試投,RC成功率,R45成功/試投,R45成功率,TOP成功/試投,TOP成功率,L45成功/試投,L45成功率,LC成功/試投,LC成功率,総合成功/試投,総合成功率\n';
             
             this.savedHistory.forEach(entry => {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
@@ -825,16 +829,19 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                 const time = entry.time || '';
                 
                 let totalMade = 0, totalShots = 0;
-                const spotPcts = SPOTS.map(spot => {
+                const spotData = SPOTS.map(spot => {
                     const stats = entry.data[spot.id];
                     const total = stats.made + stats.missed;
                     totalMade += stats.made;
                     totalShots += total;
-                    return total > 0 ? Math.round((stats.made / total) * 100) + '%' : '-';
+                    const shots = total > 0 ? `${stats.made}/${total}` : '-';
+                    const pct = total > 0 ? Math.round((stats.made / total) * 100) + '%' : '-';
+                    return `${shots},${pct}`;
                 });
+                const totalShotsStr = totalShots > 0 ? `${totalMade}/${totalShots}` : '-';
                 const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) + '%' : '-';
                 
-                csv += `${dateStr},${venue},${time},${spotPcts.join(',')},${totalPct},${totalMade},${totalShots}\n`;
+                csv += `${dateStr},${venue},${time},${spotData.join(',')},${totalShotsStr},${totalPct}\n`;
             });
             
             const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
@@ -897,7 +904,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                     totalMade += stats.made;
                     totalShots += total;
                     const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
-                    return { pct, display: pct !== null ? `${pct}%` : '-' };
+                    return { made: stats.made, total, pct, display: pct !== null ? `${pct}%` : '-' };
                 });
                 const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : null;
                 
@@ -910,11 +917,13 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                 
                 spotPcts.forEach(sp => {
                     const color = sp.pct === null ? '#6b7280' : sp.pct >= 60 ? '#16a34a' : sp.pct >= 40 ? '#d97706' : '#3b82f6';
-                    html += `<td style="padding: 10px 8px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: ${color};">${sp.display}</td>`;
+                    const shotsDisplay = sp.total > 0 ? `${sp.made}/${sp.total}` : '-';
+                    html += `<td style="padding: 6px 8px; text-align: center;"><div style="font-size: 10px; color: #64748b;">${shotsDisplay}</div><div style="font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: ${color};">${sp.display}</div></td>`;
                 });
                 
                 const totalColor = totalPct === null ? '#6b7280' : totalPct >= 60 ? '#16a34a' : totalPct >= 40 ? '#d97706' : '#3b82f6';
-                html += `<td style="padding: 10px 8px; text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 16px; font-weight: bold; color: ${totalColor};">${totalPct !== null ? totalPct + '%' : '-'}</td></tr>`;
+                const totalShotsDisplay = totalShots > 0 ? `${totalMade}/${totalShots}` : '-';
+                html += `<td style="padding: 6px 8px; text-align: center;"><div style="font-size: 10px; color: #64748b;">${totalShotsDisplay}</div><div style="font-family: 'Bebas Neue', sans-serif; font-size: 16px; font-weight: bold; color: ${totalColor};">${totalPct !== null ? totalPct + '%' : '-'}</div></td></tr>`;
             });
             
             html += `</tbody></table>
