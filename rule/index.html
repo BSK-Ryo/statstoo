@@ -9,6 +9,11 @@ description: バスケットボールの基本ルールを分かりやすく解�
 <style>
     /* ページ独自のスタイル */
     
+    /* このページのメインコンテンツ幅を維持（max-w-4xl = 896px） */
+    .page-wrapper .main-content {
+        max-width: 896px;
+    }
+    
     /* Logo bounce animation (ページ内独自ヘッダー用) */
     @keyframes bounce {
         0%, 100% { transform: translateY(0); }
@@ -106,7 +111,11 @@ description: バスケットボールの基本ルールを分かりやすく解�
     </div>
 </div>
 
-<div class="max-w-4xl mx-auto w-full px-4 py-8 space-y-12 md:space-y-16">
+<div class="page-wrapper">
+    {% include sidebar-left.html %}
+    
+    <main class="main-content">
+        <div class="py-8 space-y-12 md:space-y-16">
 
     <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
         <div class="flex flex-wrap gap-2 justify-center">
@@ -327,6 +336,10 @@ description: バスケットボールの基本ルールを分かりやすく解�
         </div>
     </section>
 
+        </div>
+    </main>
+    
+    {% include sidebar-right.html %}
 </div>
 
 <script>
