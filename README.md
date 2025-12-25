@@ -26,8 +26,8 @@ statstoo/
 │   └── index.html       # ヘルプ
 ├── sitemap/
 │   └── index.html       # サイトマップ
-├── column/
-│   └── index.html       # コラム一覧ページ
+├── rule/
+│   └── index.html       # 基本ルール一覧ページ
 └── tools/
     └── game-stats/
         └── index.html   # 試合スタッツ記録ツール（※別途配置）
