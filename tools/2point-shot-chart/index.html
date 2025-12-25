@@ -172,9 +172,9 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     .pct-none { background: rgba(156, 163, 175, 0.15); color: #6b7280; }
     
     /* Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; visibility: hidden; transition: all 0.2s; padding: 1rem; }
-    .modal-overlay.active { opacity: 1; visibility: visible; }
-    .modal { background: var(--white); border-radius: 16px; padding: 1.5rem; max-width: 500px; width: 100%; text-align: center; transform: scale(0.9); transition: transform 0.2s; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: all 0.3s; padding: 1rem; }
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
+    .modal { background: var(--white); border-radius: 16px; padding: 1.5rem; max-width: 400px; width: 100%; text-align: center; transform: scale(0.9); transition: transform 0.3s; max-height: 85vh; overflow-y: auto; }
     .modal-overlay.active .modal { transform: scale(1); }
     .modal-icon { font-size: 2.5rem; margin-bottom: 1rem; }
     .modal-title { font-size: 1.125rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem; }
@@ -187,23 +187,33 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     .modal-btn-confirm:hover { background: #dc2626; }
     
     /* Image Modal */
-    .modal-lg { max-width: 95vw; max-height: 95vh; }
-    .modal-lg .modal-title { margin-bottom: 1rem; }
-    .image-preview { max-width: 100%; max-height: 60vh; border-radius: 8px; border: 1px solid #e5e5e5; }
-    .image-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
-    .btn-image-action { flex: 1; padding: 0.75rem; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .modal-lg { max-width: 420px; padding: 1rem; }
+    .modal-lg .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .modal-lg .modal-title { margin: 0; text-align: left; display: flex; align-items: center; gap: 0.5rem; }
+    .modal-close { background: none; border: none; font-size: 1.5rem; color: #9ca3af; cursor: pointer; padding: 0; line-height: 1; }
+    .modal-close:hover { color: #6b7280; }
+    .image-preview-container { max-height: 40vh; overflow: auto; margin-bottom: 1rem; border: 1px solid #e5e7eb; border-radius: 8px; background: #f9fafb; }
+    .image-preview { max-width: 100%; border-radius: 8px; display: block; }
+    .modal-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+    .modal-action-btn { width: 100%; padding: 0.75rem 1rem; border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-share { background: linear-gradient(to right, #3b82f6, #8b5cf6); color: white; }
+    .btn-share:hover { background: linear-gradient(to right, #2563eb, #7c3aed); }
     .btn-download { background: var(--primary); color: white; }
-    .btn-download:hover { background: var(--primary-dark); }
-    .btn-share { background: #1DA1F2; color: white; }
-    .btn-share:hover { background: #1a8cd8; }
-    .btn-close-modal { background: var(--secondary); color: white; }
-    .btn-close-modal:hover { background: var(--secondary-light); }
+    .btn-download:hover { background: #4f46e5; }
+    .btn-copy { background: #f3f4f6; color: #374151; }
+    .btn-copy:hover { background: #e5e7eb; }
+    .btn-copy.copied { background: #dcfce7; color: #166534; }
+    .modal-hint { font-size: 0.7rem; color: #9ca3af; text-align: center; margin-top: 0.75rem; }
+    
+    /* Loading State */
+    .modal-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     
     /* Loading */
     .loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 300; opacity: 0; visibility: hidden; transition: all 0.2s; }
     .loading-overlay.active { opacity: 1; visibility: visible; }
     .loading-spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     
     .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--secondary); color: var(--white); padding: 0.75rem 1.5rem; border-radius: 50px; font-size: 0.875rem; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: all 0.3s; z-index: 150; }
     .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -465,12 +475,45 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
 
 <div class="modal-overlay" id="image-modal">
     <div class="modal modal-lg">
-        <div class="modal-title">📸 練習履歴画像</div>
-        <img id="generated-image" class="image-preview" alt="練習履歴">
-        <div class="image-actions">
-            <button class="btn-image-action btn-download" onclick="app.downloadImage()"><span>📥</span> 保存</button>
-            <button class="btn-image-action btn-share" onclick="app.shareToTwitter()"><span>𝕏</span> シェア</button>
-            <button class="btn-image-action btn-close-modal" onclick="app.hideImageModal()">閉じる</button>
+        <div class="modal-header">
+            <div class="modal-title"><span>📸</span> 練習履歴画像</div>
+            <button class="modal-close" onclick="app.hideImageModal()">&times;</button>
+        </div>
+        
+        <!-- Loading State -->
+        <div class="modal-loading" id="image-loading">
+            <div class="spinner"></div>
+            <p style="color: #6b7280; font-size: 0.875rem;">画像を生成中...</p>
+        </div>
+        
+        <!-- Image Preview -->
+        <div id="image-preview-wrapper" style="display: none;">
+            <div class="image-preview-container">
+                <img id="generated-image" class="image-preview" alt="練習履歴">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-action-btn btn-share" onclick="app.shareImage()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    SNSでシェア
+                </button>
+                <button class="modal-action-btn btn-download" onclick="app.downloadImage()">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    画像をダウンロード
+                </button>
+                <button class="modal-action-btn btn-copy" id="copy-btn" onclick="app.copyImageToClipboard()">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    </svg>
+                    クリップボードにコピー
+                </button>
+            </div>
+            
+            <p class="modal-hint">💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます</p>
         </div>
     </div>
 </div>
@@ -511,6 +554,7 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             this.savedHistory = this.loadHistory();
             this.deleteTargetId = null;
             this.generatedImageData = null;
+            this.generatedImageBlob = null;
             this.sortOrder = 'desc'; // 'desc' = 新しい順, 'asc' = 古い順
             this.init();
         }
@@ -929,7 +973,14 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
         async generateHistoryImage() {
             if (this.savedHistory.length === 0) { this.showToast('履歴がありません'); return; }
             
-            this.showLoading();
+            // Show modal with loading state
+            const modal = document.getElementById('image-modal');
+            const loading = document.getElementById('image-loading');
+            const previewWrapper = document.getElementById('image-preview-wrapper');
+            
+            modal.classList.add('active');
+            loading.style.display = 'flex';
+            previewWrapper.style.display = 'none';
             
             const sortedHistory = this.getSortedHistory();
             
@@ -1002,12 +1053,18 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             try {
                 const canvas = await html2canvas(container.firstElementChild, { scale: 2, backgroundColor: '#f8fafc' });
                 this.generatedImageData = canvas.toDataURL('image/png');
+                
+                // Create blob for sharing
+                canvas.toBlob((blob) => {
+                    this.generatedImageBlob = blob;
+                }, 'image/png');
+                
                 document.getElementById('generated-image').src = this.generatedImageData;
-                this.hideLoading();
-                document.getElementById('image-modal').classList.add('active');
+                loading.style.display = 'none';
+                previewWrapper.style.display = 'block';
             } catch (err) {
                 console.error(err);
-                this.hideLoading();
+                modal.classList.remove('active');
                 this.showToast('画像生成に失敗しました');
             }
             
@@ -1019,14 +1076,70 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             const link = document.createElement('a');
             link.href = this.generatedImageData;
             link.download = `2p-shot-history_${new Date().toISOString().slice(0,10)}.png`;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
             this.showToast('画像を保存しました');
         }
         
-        shareToTwitter() {
-            const text = encodeURIComponent('2Pシュート練習の記録です🏀\n#StatsToo #バスケ #2P練習');
-            const url = encodeURIComponent('https://statstoo.com/tools/2p-shot-chart/');
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        async shareImage() {
+            if (!this.generatedImageBlob) return;
+            
+            const total = this.savedHistory.reduce((sum, e) => sum + (e.totalMade || 0), 0);
+            const attempts = this.savedHistory.reduce((sum, e) => sum + (e.totalAttempts || 0), 0);
+            const pct = attempts > 0 ? (total / attempts * 100).toFixed(1) : 0;
+            const shareText = `🏀 2Pシュート練習記録\n成功率: ${pct}% (${total}/${attempts})\n\n#StatsToo #バスケ #2P練習`;
+            
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [new File([this.generatedImageBlob], '2p-shot-chart.png', { type: 'image/png' })] })) {
+                    const file = new File([this.generatedImageBlob], '2p-shot-chart.png', { type: 'image/png' });
+                    await navigator.share({
+                        title: '2P Shot Chart - StatsToo',
+                        text: shareText,
+                        files: [file]
+                    });
+                } else if (navigator.share) {
+                    await navigator.share({
+                        title: '2P Shot Chart - StatsToo',
+                        text: shareText,
+                        url: window.location.href
+                    });
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Share failed:', error);
+                    this.downloadImage();
+                }
+            }
+        }
+        
+        async copyImageToClipboard() {
+            if (!this.generatedImageBlob) return;
+            
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': this.generatedImageBlob })
+                ]);
+                
+                const btn = document.getElementById('copy-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    コピーしました！
+                `;
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Copy failed:', error);
+                this.showToast('コピーに失敗しました');
+            }
         }
         
         hideImageModal() { document.getElementById('image-modal').classList.remove('active'); }
