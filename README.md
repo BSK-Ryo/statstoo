@@ -26,6 +26,8 @@ statstoo/
 │   └── index.html       # ヘルプ
 ├── sitemap/
 │   └── index.html       # サイトマップ
+├── column/
+│   └── index.html       # コラム一覧ページ
 └── tools/
     └── game-stats/
         └── index.html   # 試合スタッツ記録ツール（※別途配置）
@@ -112,6 +114,32 @@ jobs:
 `/tools/game-stats/index.html` には、試合スタッツ記録ツールの完全なHTMLを配置してください。
 
 このツールは複雑なJavaScriptを含むため、Jekyllのレイアウトシステムとは別に、単独のHTMLファイルとして管理することをおすすめします。
+
+## コラムについて
+
+`/column/index.html` はコラム一覧ページです。
+
+個別のコラム記事は `_posts/` ディレクトリに以下の形式で作成できます：
+
+```
+_posts/
+└── 2024-01-15-basketball-tips.md
+```
+
+ファイル名は `YYYY-MM-DD-タイトル.md` の形式にしてください。
+
+### コラム記事のテンプレート
+
+```markdown
+---
+layout: default
+title: 記事タイトル
+date: 2024-01-15
+category: column
+---
+
+記事の本文をここに書きます。
+```
 
 ## ローカルでの確認方法
 
