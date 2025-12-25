@@ -1,0 +1,889 @@
+---
+layout: default
+title: バスケットボール基本ルールブック
+description: バスケットボールの基本ルールを分かりやすく解説。コートマップ、ポジション、バイオレーション、ファウルなど初心者から観戦者まで役立つガイド。
+---
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* ページ独自のスタイル */
+    
+    /* Logo bounce animation (ページ内独自ヘッダー用) */
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    .logo-bounce {
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    /* Chart Container */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 300px;
+        max-height: 400px;
+    }
+    
+    @media (min-width: 768px) {
+        .chart-container {
+            height: 350px;
+        }
+    }
+
+    /* Canvas Styles */
+    #courtCanvas {
+        cursor: pointer;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        touch-action: none;
+        width: 100%;
+        height: auto;
+    }
+
+    .active-tab {
+        background-color: #EA580C;
+        color: white;
+        border-color: #EA580C;
+    }
+    .inactive-tab {
+        background-color: white;
+        color: #4b5563;
+        border-color: #e2e8f0;
+    }
+    .inactive-tab:hover {
+        background-color: #ffedd5;
+        color: #c2410c;
+    }
+
+    .active-pos {
+        background-color: #EA580C;
+        color: white;
+        border-color: #EA580C;
+    }
+    
+    /* Animation utilities */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar Hiding */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>
+
+<header class="bg-secondary sticky top-0 z-30 border-b-[3px] border-primary">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+        <div class="flex items-center gap-3">
+            <span class="text-xl">📖</span>
+            <span class="font-display text-xl tracking-wide text-white">BASKETBALL <span class="text-primary-light">RULEBOOK</span></span>
+        </div>
+        <p class="text-white/60 text-xs mt-1">初心者・観戦者向けルールガイド</p>
+    </div>
+</header>
+
+<div class="bg-white border-b border-gray-100">
+    <div class="max-w-4xl mx-auto px-4 py-2">
+        <nav class="text-xs text-gray-500">
+            <a href="/" class="hover:text-primary transition">ホーム</a>
+            <span class="mx-2">/</span>
+            <a href="/column/" class="hover:text-primary transition">コラム</a>
+            <span class="mx-2">/</span>
+            <a href="/column/rules/" class="hover:text-primary transition">ルール解説</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-700">基本ルールブック</span>
+        </nav>
+    </div>
+</div>
+
+<div class="max-w-4xl mx-auto w-full px-4 py-8 space-y-12 md:space-y-16">
+
+    <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+        <div class="flex flex-wrap gap-2 justify-center">
+            <button onclick="scrollToSection('intro')" class="text-sm px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-lg font-medium transition">📊 基本情報</button>
+            <button onclick="scrollToSection('court-section')" class="text-sm px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-lg font-medium transition">🏟️ コート解説</button>
+            <button onclick="scrollToSection('positions-section')" class="text-sm px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-lg font-medium transition">👥 ポジション</button>
+            <button onclick="scrollToSection('rules-section')" class="text-sm px-4 py-2 bg-gray-100 hover:bg-primary hover:text-white rounded-lg font-medium transition">📋 ルール一覧</button>
+        </div>
+    </div>
+
+    <section id="intro" class="text-center space-y-6 max-w-4xl mx-auto pt-4 scroll-mt-24">
+        <div class="inline-block px-4 py-1 bg-primary/10 text-primary-dark rounded-full text-xs font-bold tracking-wide mb-2">初心者・観戦者向けガイド</div>
+        <h1 class="text-3xl md:text-4xl font-bold text-secondary leading-tight">
+            バスケットボールの<br><span class="text-primary">ルールと魅力を知ろう</span>
+        </h1>
+        <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+            5人対5人のチームスポーツ。リングにボールを入れて得点を競います。<br class="hidden md:inline">
+            複雑に見えるルールも、エリアと役割を理解すればシンプルです。
+        </p>
+        
+        <div class="flex justify-center gap-2 mt-6">
+            <button onclick="switchRuleMode('standard')" id="btn-standard" class="rule-mode-btn px-5 py-2 rounded-full text-sm font-bold transition bg-primary text-white shadow-md">
+                🏀 一般ルール
+            </button>
+            <button onclick="switchRuleMode('minibas')" id="btn-minibas" class="rule-mode-btn px-5 py-2 rounded-full text-sm font-bold transition bg-gray-200 text-gray-600 hover:bg-gray-300">
+                🧒 ミニバスルール
+            </button>
+        </div>
+        
+        <div id="rules-standard" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <div class="text-primary text-2xl font-bold mb-1">10分 x 4Q</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">試合時間</div>
+                <p class="text-sm text-gray-600 mt-2">計40分。延長は5分。<br>（NBAは12分×4Q）</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <div class="text-primary text-2xl font-bold mb-1">5人制</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">プレイヤー</div>
+                <p class="text-sm text-gray-600 mt-2">コート上は各チーム5人。<br>交代は何度でも可能。</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+                <div class="text-primary text-2xl font-bold mb-1">1 / 2 / 3点</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">得点種類</div>
+                <p class="text-sm text-gray-600 mt-2">FT=1点、通常=2点、<br>3Pライン外=3点。</p>
+            </div>
+        </div>
+        
+        <div id="rules-minibas" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+            <div class="bg-gradient-to-br from-green-50 to-white p-5 rounded-xl shadow-md border border-green-200">
+                <div class="text-green-600 text-2xl font-bold mb-1">6分 x 4Q</div>
+                <div class="text-xs font-bold text-green-400 uppercase">試合時間</div>
+                <p class="text-sm text-gray-600 mt-2">計24分。延長は3分。<br>子どもの体力に配慮した設定。</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-50 to-white p-5 rounded-xl shadow-md border border-green-200">
+                <div class="text-green-600 text-2xl font-bold mb-1">10人出場</div>
+                <div class="text-xs font-bold text-green-400 uppercase">出場ルール</div>
+                <p class="text-sm text-gray-600 mt-2">登録選手は全員出場。<br>1人が出られるのは3Q以内。</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-50 to-white p-5 rounded-xl shadow-md border border-green-200">
+                <div class="text-green-600 text-2xl font-bold mb-1">1 / 2点のみ</div>
+                <div class="text-xs font-bold text-green-400 uppercase">得点種類</div>
+                <p class="text-sm text-gray-600 mt-2">3ポイントはなし。<br>FT=1点、通常=2点。</p>
+            </div>
+        </div>
+        
+        <div id="minibas-info" class="hidden mt-4 p-4 bg-green-50 rounded-xl border border-green-200 text-left max-w-2xl mx-auto">
+            <h4 class="font-bold text-green-700 text-sm mb-2 flex items-center gap-2">
+                <span>📚</span> ミニバスケットボールとは？
+            </h4>
+            <p class="text-sm text-gray-600 leading-relaxed">
+                小学生以下を対象としたバスケットボール。リングの高さは260cm（一般は305cm）、ボールは5号球（一般男子は7号球）を使用します。全員が試合に出場できるルールや、1人あたりの出場時間制限など、子どもたちが楽しく成長できる工夫がされています。
+            </p>
+        </div>
+    </section>
+
+    <section id="court-section" class="scroll-mt-24">
+        <div class="flex flex-col md:flex-row items-center justify-between mb-6 gap-4">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3">
+                    <span class="w-2 h-8 bg-primary rounded-full"></span>
+                    コートマップ
+                </h2>
+                <p class="text-gray-500 mt-1 text-sm md:text-base">
+                    コート上のエリアをクリック（タップ）してルールを確認してください。
+                </p>
+            </div>
+        </div>
+        
+        <div class="mb-4 flex flex-wrap gap-3 text-xs">
+            <div class="bg-white px-3 py-2 rounded-lg shadow-sm border border-gray-100 flex items-center gap-2">
+                <span class="text-primary font-bold">📏 一般コート</span>
+                <span class="text-gray-600">28m × 15m</span>
+            </div>
+            <div class="bg-gradient-to-r from-green-50 to-white px-3 py-2 rounded-lg shadow-sm border border-green-200 flex items-center gap-2">
+                <span class="text-green-600 font-bold">🧒 ミニバス</span>
+                <span class="text-gray-600">22〜28m × 12〜15m（会場により異なる）</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-6 items-start">
+            <div class="w-full lg:w-2/3 bg-gray-100 rounded-xl p-2 md:p-4 border border-gray-200 relative">
+                <canvas id="courtCanvas" width="800" height="450"></canvas>
+                <div class="absolute bottom-4 right-4 bg-white/90 px-2 py-1 text-xs text-gray-500 rounded shadow pointer-events-none">
+                    👆 タップして詳細を表示
+                </div>
+            </div>
+
+            <div class="w-full lg:w-1/3 flex flex-col gap-4">
+                <div id="court-info-card" class="bg-white border border-gray-100 p-6 rounded-xl shadow-md relative overflow-hidden min-h-[200px]">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 id="zone-title" class="text-xl font-bold text-secondary">コートを選択</h3>
+                        <span class="text-[10px] uppercase font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">Area Info</span>
+                    </div>
+                    <p id="zone-desc" class="text-gray-600 text-sm leading-relaxed mb-4">
+                        コート図の各エリアをクリックすると、名称や関連するルールが表示されます。<br>
+                        まずは色のついたエリア（3ポイントラインの内側や外側）を触ってみてください。
+                    </p>
+                    <div id="zone-rule-highlight" class="bg-primary/10 rounded-lg p-3 border border-primary/20 hidden fade-in">
+                        <strong class="text-primary-dark text-xs block mb-1">🔑 関連ルール</strong>
+                        <span id="zone-rule-text" class="text-sm text-gray-700 font-medium"></span>
+                    </div>
+                </div>
+                
+
+            </div>
+        </div>
+    </section>
+
+    <section id="positions-section" class="scroll-mt-24">
+        <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3 mb-6">
+            <span class="w-2 h-8 bg-primary rounded-full"></span>
+            ポジションと役割
+        </h2>
+
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="p-6 md:p-8 flex flex-col justify-center border-b md:border-b-0 md:border-r border-gray-100">
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-3">ポジションを選択して比較</label>
+                    <div class="flex flex-wrap gap-2 mb-8">
+                        <button onclick="updatePosition('PG')" class="pos-btn px-3 py-2 rounded text-sm font-bold border transition active-pos" data-pos="PG">PG</button>
+                        <button onclick="updatePosition('SG')" class="pos-btn px-3 py-2 rounded text-sm font-bold border transition" data-pos="SG">SG</button>
+                        <button onclick="updatePosition('SF')" class="pos-btn px-3 py-2 rounded text-sm font-bold border transition" data-pos="SF">SF</button>
+                        <button onclick="updatePosition('PF')" class="pos-btn px-3 py-2 rounded text-sm font-bold border transition" data-pos="PF">PF</button>
+                        <button onclick="updatePosition('C')" class="pos-btn px-3 py-2 rounded text-sm font-bold border transition" data-pos="C">C</button>
+                    </div>
+
+                    <div class="fade-in">
+                        <div class="flex items-baseline gap-3 mb-2">
+                            <h3 id="pos-title" class="text-2xl font-bold text-secondary">PG (ポイントガード)</h3>
+                            <span id="pos-tag" class="text-sm text-primary font-bold bg-primary/10 px-2 py-0.5 rounded">司令塔</span>
+                        </div>
+                        <p id="pos-desc" class="text-gray-600 text-sm leading-relaxed mb-6">
+                            コート上の監督。ボール運び、パス、指示出しを行い、チームのリズムを作ります。
+                        </p>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                            <h4 class="text-xs font-bold text-gray-400 mb-2">代表的な役割</h4>
+                            <ul id="pos-roles" class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+                                <li>ゲームメイク</li>
+                                <li>アシストパス</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 md:p-8 bg-gray-50 flex items-center justify-center">
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rules-section" class="scroll-mt-24">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3">
+                <span class="w-2 h-8 bg-primary rounded-full"></span>
+                反則と罰則 (ルール)
+            </h2>
+            
+            <div class="flex p-1 bg-gray-200 rounded-lg">
+                <button onclick="filterRules('all')" class="rule-tab px-4 py-1.5 rounded-md text-xs font-bold transition active-tab" data-cat="all">全て</button>
+                <button onclick="filterRules('violation')" class="rule-tab px-4 py-1.5 rounded-md text-xs font-bold transition inactive-tab" data-cat="violation">バイオレーション</button>
+                <button onclick="filterRules('foul')" class="rule-tab px-4 py-1.5 rounded-md text-xs font-bold transition inactive-tab" data-cat="foul">ファウル</button>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100 inline-block">
+            💡 <strong>バイオレーション</strong>は相手ボールでの再開、<strong>ファウル</strong>は反則累積やフリースローにつながります。
+        </p>
+
+        <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+    </section>
+
+    <section class="bg-secondary rounded-xl p-8 text-white text-center relative overflow-hidden shadow-lg">
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold mb-8 font-display tracking-wide">覚えておきたい「秒数」のルール</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-primary mb-2 font-display">24</div>
+                    <h3 class="font-bold text-lg mb-2">ショットクロック</h3>
+                    <p class="text-xs text-white/60">攻撃チームは24秒以内にシュートを打ち、ボールがリングに当たらなければなりません。</p>
+                </div>
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-primary mb-2 font-display">8</div>
+                    <h3 class="font-bold text-lg mb-2">フロントコート</h3>
+                    <p class="text-xs text-white/60">ボールを持ったチームは8秒以内に相手側のコートへボールを運ぶ必要があります。</p>
+                </div>
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-primary mb-2 font-display">3</div>
+                    <h3 class="font-bold text-lg mb-2">3秒ルール</h3>
+                    <p class="text-xs text-white/60">攻撃プレイヤーは、相手ゴール下のペイントエリア内に3秒以上とどまれません。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // --- ルールモード切り替え ---
+    function switchRuleMode(mode) {
+        const standardRules = document.getElementById('rules-standard');
+        const minibasRules = document.getElementById('rules-minibas');
+        const minibasInfo = document.getElementById('minibas-info');
+        const btnStandard = document.getElementById('btn-standard');
+        const btnMinibas = document.getElementById('btn-minibas');
+        
+        if (mode === 'standard') {
+            standardRules.classList.remove('hidden');
+            minibasRules.classList.add('hidden');
+            minibasInfo.classList.add('hidden');
+            btnStandard.classList.add('bg-primary', 'text-white', 'shadow-md');
+            btnStandard.classList.remove('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+            btnMinibas.classList.remove('bg-green-500', 'text-white', 'shadow-md');
+            btnMinibas.classList.add('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+        } else {
+            standardRules.classList.add('hidden');
+            minibasRules.classList.remove('hidden');
+            minibasInfo.classList.remove('hidden');
+            btnStandard.classList.remove('bg-primary', 'text-white', 'shadow-md');
+            btnStandard.classList.add('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+            btnMinibas.classList.add('bg-green-500', 'text-white', 'shadow-md');
+            btnMinibas.classList.remove('bg-gray-200', 'text-gray-600', 'hover:bg-gray-300');
+        }
+    }
+
+    // --- DATA ---
+    const positions = {
+        'PG': { 
+            title: "PG (ポイントガード)", tag: "司令塔", 
+            desc: "チームの攻撃を指揮するリーダー。ドリブルでボールを運び、味方に最適なパスを出します。",
+            roles: ["ゲームメイク", "ボール運び", "アシスト"],
+            data: [9, 7, 3, 3, 9]
+        },
+        'SG': { 
+            title: "SG (シューティングガード)", tag: "得点源", 
+            desc: "3ポイントシュートなど、外からの得点能力が求められるポジション。PGの補佐も行います。",
+            roles: ["3ポイントシュート", "ドライブ", "エースディフェンス"],
+            data: [6, 9, 4, 4, 8]
+        },
+        'SF': { 
+            title: "SF (スモールフォワード)", tag: "エース", 
+            desc: "内からも外からも得点できるオールラウンダー。チームの主役として得点を量産します。",
+            roles: ["得点", "リバウンド", "速攻のフィニッシュ"],
+            data: [7, 8, 6, 6, 8]
+        },
+        'PF': { 
+            title: "PF (パワーフォワード)", tag: "仕事人", 
+            desc: "ゴール下での力強いプレーと、中距離からのシュートを両立。リバウンドも重要な役割です。",
+            roles: ["リバウンド", "スクリーン", "ミドルシュート"],
+            data: [5, 6, 9, 8, 6]
+        },
+        'C': { 
+            title: "C (センター)", tag: "守護神", 
+            desc: "チームで最も背の高い選手が務めることが多い。ゴール下を支配し、最後の砦としてリングを守ります。",
+            roles: ["ゴール下ディフェンス", "リバウンド", "ポストプレー"],
+            data: [3, 5, 10, 10, 4]
+        }
+    };
+
+    const rulesData = [
+        { cat: 'violation', name: 'トラベリング', desc: 'ボールを持ったまま3歩以上歩くこと。', minibas: true },
+        { cat: 'violation', name: 'ダブルドリブル', desc: 'ドリブルを止めた後、再びドリブルを開始すること。', minibas: true },
+        { cat: 'violation', name: '3秒ルール', desc: '攻撃側がペイントエリア内に3秒以上いること。', minibas: false, minibasNote: 'ミニバスでは適用されません' },
+        { cat: 'violation', name: '5秒ルール', desc: 'スローインやフリースローで5秒以内にボールを離さないこと。', minibas: true },
+        { cat: 'violation', name: '8秒ルール', desc: 'バックコートから8秒以内にフロントコートへボールを運ばないこと。', minibas: false, minibasNote: 'ミニバスでは適用されません' },
+        { cat: 'violation', name: '24秒ルール', desc: '24秒以内にシュートを打ち、リングに当てないこと。', minibas: 'partial', minibasNote: 'ミニバスでは30秒ルールが適用される場合があります' },
+        { cat: 'violation', name: 'バックコートバイオレーション', desc: 'フロントコートからバックコートへボールを戻すこと。', minibas: false, minibasNote: 'ミニバスでは適用されません' },
+        { cat: 'violation', name: 'アウトオブバウンズ', desc: 'ボールがコートの外に出ること。', minibas: true },
+        { cat: 'foul', name: 'パーソナルファウル', desc: '相手プレイヤーへの不当な身体接触。', minibas: true },
+        { cat: 'foul', name: 'プッシング', desc: '相手を押す反則。', minibas: true },
+        { cat: 'foul', name: 'ホールディング', desc: '相手をつかむ反則。', minibas: true },
+        { cat: 'foul', name: 'チャージング', desc: 'ボールを持った攻撃側が相手に体当たりする反則。', minibas: true },
+        { cat: 'foul', name: 'ブロッキング', desc: '守備側が正しいポジション以外で相手の進路を妨害すること。', minibas: true },
+        { cat: 'foul', name: 'テクニカルファウル', desc: 'スポーツマンシップに反する行為や審判への暴言など。', minibas: true },
+        { cat: 'foul', name: 'アンスポーツマンライクファウル', desc: '故意でプレーに関係ないファウル。', minibas: true },
+    ];
+    
+    let skillsChart;
+
+    // --- CHART ---
+    function initChart() {
+        const ctx = document.getElementById('skillsChart').getContext('2d');
+        skillsChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['パス', 'シュート', 'リバウンド', 'パワー', 'スピード'],
+                datasets: [{
+                    label: 'スキル分布',
+                    data: positions['PG'].data,
+                    backgroundColor: 'rgba(234, 88, 12, 0.2)',
+                    borderColor: '#EA580C',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#EA580C',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 10,
+                        ticks: { 
+                            stepSize: 2, 
+                            display: false 
+                        },
+                        pointLabels: { 
+                            font: { size: 12, family: 'Noto Sans JP' },
+                            color: '#4b5563'
+                        },
+                        grid: { color: 'rgba(0,0,0,0.08)' },
+                        angleLines: { color: 'rgba(0,0,0,0.08)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function updatePosition(key) {
+        const p = positions[key];
+        document.getElementById('pos-title').innerText = p.title;
+        document.getElementById('pos-tag').innerText = p.tag;
+        document.getElementById('pos-desc').innerText = p.desc;
+        const rolesList = document.getElementById('pos-roles');
+        rolesList.innerHTML = p.roles.map(r => `<li>${r}</li>`).join('');
+        
+        skillsChart.data.datasets[0].data = p.data;
+        skillsChart.update();
+        
+        document.querySelectorAll('.pos-btn').forEach(btn => {
+            if(btn.dataset.pos === key) {
+                btn.classList.add('active-pos');
+                btn.classList.remove('border-gray-300');
+            } else {
+                btn.classList.remove('active-pos');
+                btn.classList.add('border-gray-300');
+            }
+        });
+    }
+
+    // --- RULES ---
+    function renderRules(filter) {
+        const grid = document.getElementById('rules-grid');
+        const filtered = filter === 'all' ? rulesData : rulesData.filter(r => r.cat === filter);
+        grid.innerHTML = filtered.map(r => {
+            let minibasLabel = '';
+            if (r.minibas === false) {
+                minibasLabel = `<div class="mt-2 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-lg inline-block">🧒 ${r.minibasNote}</div>`;
+            } else if (r.minibas === 'partial') {
+                minibasLabel = `<div class="mt-2 text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-lg inline-block">🧒 ${r.minibasNote}</div>`;
+            }
+            
+            return `
+            <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition fade-in">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs font-bold px-2 py-1 rounded ${r.cat === 'violation' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800'}">
+                        ${r.cat === 'violation' ? 'Violation' : 'Foul'}
+                    </span>
+                    ${r.minibas === false ? '<span class="text-xs text-gray-400">※一般ルール</span>' : ''}
+                </div>
+                <h4 class="font-bold text-secondary">${r.name}</h4>
+                <p class="text-sm text-gray-600 mt-1">${r.desc}</p>
+                ${minibasLabel}
+            </div>
+        `}).join('');
+    }
+    
+    function filterRules(cat) {
+        renderRules(cat);
+        document.querySelectorAll('.rule-tab').forEach(btn => {
+            if(btn.dataset.cat === cat) {
+                btn.classList.add('active-tab');
+                btn.classList.remove('inactive-tab');
+            } else {
+                btn.classList.remove('active-tab');
+                btn.classList.add('inactive-tab');
+            }
+        });
+    }
+
+    // --- CANVAS ---
+    function initCanvas() {
+        const canvas = document.getElementById('courtCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            ctx.clearRect(0,0,w,h);
+            
+            // Floor - バックコート（右側）とフロントコート（左側）で色分け
+            // バックコート（右半分）- 薄い色
+            ctx.fillStyle = '#fef9c3';
+            ctx.fillRect(w/2, 0, w/2, h);
+            
+            // フロントコート（左半分）- 濃い色
+            ctx.fillStyle = '#fef3c7';
+            ctx.fillRect(0, 0, w/2, h);
+            
+            // Lines
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            
+            const m = 30;
+            const activeW = w - m*2;
+            const activeH = h - m*2;
+            
+            ctx.strokeRect(m, m, activeW, activeH);
+            
+            // Center Line
+            ctx.beginPath();
+            ctx.moveTo(w/2, m);
+            ctx.lineTo(w/2, h-m);
+            ctx.stroke();
+            
+            // Center Circle
+            ctx.beginPath();
+            ctx.arc(w/2, h/2, 50, 0, Math.PI*2);
+            ctx.stroke();
+            
+            // Left Side (攻撃側ゴール)
+            drawKey(ctx, m, h/2, 1);
+            
+            // Right Side (守備側/スタート側)
+            drawKey(ctx, w-m, h/2, -1);
+            
+            // バックコート・フロントコートのラベル
+            ctx.font = 'bold 16px Noto Sans JP';
+            ctx.textAlign = 'center';
+            
+            // フロントコート（左側）
+            ctx.fillStyle = 'rgba(234, 88, 12, 0.7)';
+            ctx.fillText('FRONT COURT', w/4, 55);
+            ctx.font = '11px Noto Sans JP';
+            ctx.fillStyle = 'rgba(234, 88, 12, 0.5)';
+            ctx.fillText('（攻撃側コート）', w/4, 72);
+            
+            // バックコート（右側）
+            ctx.font = 'bold 16px Noto Sans JP';
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.7)';
+            ctx.fillText('BACK COURT', w*3/4, 55);
+            ctx.font = '11px Noto Sans JP';
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
+            ctx.fillText('（守備側コート）', w*3/4, 72);
+            
+            // オフェンス方向の矢印（右から左へ）
+            drawOffenseArrow(ctx, w, h);
+        }
+        
+        function drawOffenseArrow(ctx, w, h) {
+            const arrowY = h - 45;
+            const arrowStartX = w - 80;
+            const arrowEndX = 80;
+            
+            // ラベル（矢印の上に表示）
+            ctx.font = 'bold 12px Noto Sans JP';
+            ctx.fillStyle = '#EA580C';
+            ctx.textAlign = 'center';
+            ctx.fillText('OFFENSE 攻撃方向', w/2, arrowY - 12);
+            
+            // 矢印の線
+            ctx.strokeStyle = '#EA580C';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([8, 4]);
+            ctx.beginPath();
+            ctx.moveTo(arrowStartX, arrowY);
+            ctx.lineTo(arrowEndX + 15, arrowY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 矢印の先端
+            ctx.fillStyle = '#EA580C';
+            ctx.beginPath();
+            ctx.moveTo(arrowEndX, arrowY);
+            ctx.lineTo(arrowEndX + 18, arrowY - 8);
+            ctx.lineTo(arrowEndX + 18, arrowY + 8);
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        function drawKey(ctx, x, y, dir) {
+            const m = 30;
+            const canvasW = ctx.canvas.width;
+            const canvasH = ctx.canvas.height;
+            
+            // ペイントエリア
+            ctx.fillStyle = '#EA580C';
+            const kw = 120;
+            const kh = 100;
+            const kx = dir === 1 ? x : x - kw;
+            
+            ctx.fillRect(kx, y - kh, kw, kh*2);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(kx, y - kh, kw, kh*2);
+            
+            // フリースローサークル（ペイントエリアの先端）
+            const ftCircleX = dir === 1 ? x + kw : x - kw;
+            ctx.beginPath();
+            ctx.arc(ftCircleX, y, 55, 0, Math.PI * 2);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // ノーチャージセミサークル
+            const hoopX = dir === 1 ? x + 20 : x - 20;
+            ctx.beginPath();
+            if(dir === 1) {
+                ctx.arc(hoopX, y, 40, -Math.PI/2, Math.PI/2);
+            } else {
+                ctx.arc(hoopX, y, 40, Math.PI/2, -Math.PI/2);
+            }
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // ノーチャージエリアの塗りつぶし（薄く）
+            ctx.beginPath();
+            if(dir === 1) {
+                ctx.arc(hoopX, y, 40, -Math.PI/2, Math.PI/2);
+                ctx.lineTo(hoopX, y - 40);
+            } else {
+                ctx.arc(hoopX, y, 40, Math.PI/2, -Math.PI/2);
+                ctx.lineTo(hoopX, y + 40);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+            ctx.fill();
+            
+            // 3ポイントライン
+            const threePointRadius = 175; // 円弧部分の半径（フリースローサークル55より大きく）
+            const cornerX = 55; // コーナー直線のサイドラインからの距離
+            
+            // コーナー直線がサイドラインから内側に入る位置
+            const cornerTopY = m + cornerX;
+            const cornerBottomY = canvasH - m - cornerX;
+            
+            // 円弧が始まる角度を計算（コーナー直線と接続する点）
+            const arcAngle = Math.asin((y - cornerTopY) / threePointRadius);
+            
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 4;
+            
+            if(dir === 1) {
+                // 左側ゴール
+                // 上のコーナー直線（エンドラインからサイドラインに沿って垂直に）
+                ctx.beginPath();
+                ctx.moveTo(x + threePointRadius * Math.cos(arcAngle), cornerTopY);
+                ctx.lineTo(x, cornerTopY);
+                ctx.lineTo(x, m); // エンドラインまで
+                ctx.stroke();
+                
+                // 円弧部分
+                ctx.beginPath();
+                ctx.arc(x, y, threePointRadius, -arcAngle, arcAngle);
+                ctx.stroke();
+                
+                // 下のコーナー直線
+                ctx.beginPath();
+                ctx.moveTo(x + threePointRadius * Math.cos(arcAngle), cornerBottomY);
+                ctx.lineTo(x, cornerBottomY);
+                ctx.lineTo(x, canvasH - m); // エンドラインまで
+                ctx.stroke();
+            } else {
+                // 右側ゴール
+                // 上のコーナー直線
+                ctx.beginPath();
+                ctx.moveTo(x - threePointRadius * Math.cos(arcAngle), cornerTopY);
+                ctx.lineTo(x, cornerTopY);
+                ctx.lineTo(x, m); // エンドラインまで
+                ctx.stroke();
+                
+                // 円弧部分
+                ctx.beginPath();
+                ctx.arc(x, y, threePointRadius, Math.PI - arcAngle, Math.PI + arcAngle);
+                ctx.stroke();
+                
+                // 下のコーナー直線
+                ctx.beginPath();
+                ctx.moveTo(x - threePointRadius * Math.cos(arcAngle), cornerBottomY);
+                ctx.lineTo(x, cornerBottomY);
+                ctx.lineTo(x, canvasH - m); // エンドラインまで
+                ctx.stroke();
+            }
+            
+            // バスケットボードとリング
+            const boardX = dir === 1 ? x + 8 : x - 8;
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(boardX - 2, y - 25, 4, 50);
+            
+            // リング
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(hoopX, y, 8, 0, Math.PI*2);
+            ctx.fill();
+            ctx.strokeStyle = '#dc2626';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function handleInteraction(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            const m = 30;
+            
+            let zone = null;
+            
+            // センターサークル
+            const dx = x - w/2;
+            const dy = y - h/2;
+            if(dx*dx + dy*dy < 50*50) {
+                zone = { 
+                    t: "センターサークル", 
+                    d: "試合開始のジャンプボールを行う場所です。各クォーターの開始や、ヘルドボール時にもここでジャンプボールが行われます。", 
+                    r: "ジャンプボール時、ジャンパー以外の選手はサークル外にいなければなりません。" 
+                };
+            }
+            // ノーチャージセミサークル（左側）
+            else if (x > m && x < m + 60 && Math.sqrt((x - (m + 20))**2 + (y - h/2)**2) < 40) {
+                zone = {
+                    t: "ノーチャージセミサークル",
+                    d: "ゴール下の半円エリア。このエリア内では、ディフェンスがポジションを取っていてもチャージングにはなりません。",
+                    r: "オフェンスがこのエリア内でディフェンスと接触しても、チャージングのファウルは取られません（ただし他のファウルは適用）。"
+                };
+            }
+            // ノーチャージセミサークル（右側）
+            else if (x > w - m - 60 && x < w - m && Math.sqrt((x - (w - m - 20))**2 + (y - h/2)**2) < 40) {
+                zone = {
+                    t: "ノーチャージセミサークル",
+                    d: "ゴール下の半円エリア。このエリア内では、ディフェンスがポジションを取っていてもチャージングにはなりません。",
+                    r: "オフェンスがこのエリア内でディフェンスと接触しても、チャージングのファウルは取られません（ただし他のファウルは適用）。"
+                };
+            }
+            // フリースローサークル（左側）
+            else if (Math.sqrt((x - (m + 120))**2 + (y - h/2)**2) < 55 && 
+                     Math.sqrt((x - (m + 120))**2 + (y - h/2)**2) > 40 &&
+                     x > m + 80) {
+                zone = {
+                    t: "フリースローサークル",
+                    d: "フリースロー時にシューターが立つ位置を示す円。フリースローラインはこの円の直径部分にあたります。",
+                    r: "フリースロー時、シューターはボールがリングに当たるまでこのラインを越えてはいけません。"
+                };
+            }
+            // フリースローサークル（右側）
+            else if (Math.sqrt((x - (w - m - 120))**2 + (y - h/2)**2) < 55 && 
+                     Math.sqrt((x - (w - m - 120))**2 + (y - h/2)**2) > 40 &&
+                     x < w - m - 80) {
+                zone = {
+                    t: "フリースローサークル",
+                    d: "フリースロー時にシューターが立つ位置を示す円。フリースローラインはこの円の直径部分にあたります。",
+                    r: "フリースロー時、シューターはボールがリングに当たるまでこのラインを越えてはいけません。"
+                };
+            }
+            // ペイントエリア（左側）
+            else if (x > m && x < m + 120 && y > h/2 - 100 && y < h/2 + 100) {
+                zone = {
+                    t: "ペイントエリア（制限区域）",
+                    d: "ゴール下の長方形エリア。「キー」や「レーン」とも呼ばれます。非常に激しい攻防が行われる重要なエリアです。",
+                    r: "攻撃側はここに3秒以上連続してとどまると反則（3秒ルール）になります。"
+                };
+            }
+            // ペイントエリア（右側）
+            else if (x > w - m - 120 && x < w - m && y > h/2 - 100 && y < h/2 + 100) {
+                zone = {
+                    t: "ペイントエリア（制限区域）",
+                    d: "ゴール下の長方形エリア。「キー」や「レーン」とも呼ばれます。非常に激しい攻防が行われる重要なエリアです。",
+                    r: "攻撃側はここに3秒以上連続してとどまると反則（3秒ルール）になります。"
+                };
+            }
+            // 3ポイントエリア・2ポイントエリア・バックコート
+            else {
+                const threePointRadius = 175;
+                const distL = Math.sqrt((x - m)**2 + (y - h/2)**2);
+                
+                // フロントコート側（左側）の3ポイントエリア
+                if(x < w/2 && distL > threePointRadius) {
+                    zone = {
+                        t: "3ポイントエリア",
+                        d: "3ポイントラインの外側からのシュートは3点になります。NBAとFIBA/Bリーグではラインの距離が異なります。",
+                        r: "シュート時に足がラインを踏んでいると2点になります。着地は関係ありません。"
+                    };
+                }
+                // バックコート側（右側）- 3ポイントラインの外も含めてすべてバックコート表示
+                else if(x > w/2) {
+                    zone = {
+                        t: "バックコート",
+                        d: "自チームが守るゴール側のコート。ボールを持ったチームはここから8秒以内にフロントコートへ運ぶ必要があります。",
+                        r: "一度フロントコートに入ったボールをバックコートに戻すと「バックパス（バックコートバイオレーション）」の反則になります。"
+                    };
+                }
+                // フロントコート側（左側）の2ポイントエリア
+                else if (x > m && x < w/2) {
+                    zone = {
+                        t: "フロントコート（2ポイントエリア）",
+                        d: "自チームが攻撃するゴール側のコート。3ポイントラインの内側からのシュートは2点です。",
+                        r: "24秒以内にシュートを打ち、リングに当てなければなりません。"
+                    };
+                }
+            }
+
+            if(zone && e.type === 'click') {
+                document.getElementById('zone-title').innerText = zone.t;
+                document.getElementById('zone-desc').innerText = zone.d;
+                document.getElementById('zone-rule-text').innerText = zone.r;
+                
+                const highlight = document.getElementById('zone-rule-highlight');
+                highlight.classList.remove('hidden');
+                highlight.classList.add('fade-in');
+                
+                setTimeout(() => highlight.classList.remove('fade-in'), 300);
+            }
+            
+            canvas.style.cursor = zone ? 'pointer' : 'default';
+        }
+
+        canvas.addEventListener('mousemove', handleInteraction);
+        canvas.addEventListener('click', handleInteraction);
+        
+        draw();
+    }
+
+    function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if(el) {
+            const navHeight = 100;
+            const pos = el.getBoundingClientRect().top + window.scrollY - navHeight;
+            window.scrollTo({ top: pos, behavior: 'smooth' });
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+    }
+
+    // --- INIT ---
+    window.onload = function() {
+        initChart();
+        renderRules('all');
+        initCanvas();
+        updatePosition('PG');
+    };
+</script>
