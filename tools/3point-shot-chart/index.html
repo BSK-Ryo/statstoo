@@ -5,10 +5,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
 ---
 
 <style>
-    /* Tailwindの基本設定は default.html 側で読み込まれているため
-       ここではこのツール独自のスタイルだけを記述します。
-    */
-
+    
     :root {
         --heat-cold: #3b82f6; --heat-cool: #60a5fa; --heat-neutral: #fbbf24; --heat-warm: #f97316; --heat-hot: #22c55e;
     }
@@ -139,6 +136,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .article-lead { font-size: 0.95rem; color: #0f172a; line-height: 1.8; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f1f1; }
     .article-block { margin-bottom: 2rem; }
     .article-block:last-child { margin-bottom: 0; }
+    .article-block h2 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
     .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
     .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
     .article-block p:last-child { margin-bottom: 0; }
@@ -210,7 +208,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         <div class="flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="text-xl">🎯</span>
-                <span class="font-display text-xl tracking-wide text-white">3P SHOT <span class="text-primary-light">CHART</span></span>
+                <h1 class="font-display text-xl tracking-wide text-white m-0">3P SHOT <span class="text-primary-light">CHART</span></h1>
             </div>
             <div class="flex gap-2">
                 <button onclick="app.saveToHistory()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
@@ -322,7 +320,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </p>
             
             <section class="article-block">
-                <h3>🎯 3Pシュートとは</h3>
+                <h2>🎯 3Pシュートとは</h2>
                 <p>
                     3ポイントシュート（3Pシュート）は、3ポイントラインの外側から放つシュートで、成功すると3点が入ります。NBAでは7.24m、FIBAルール（国際試合・Bリーグ等）では6.75mの距離に設定されています。
                 </p>
@@ -332,7 +330,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h3>📊 成功率の目安</h3>
+                <h2>📊 成功率の目安</h2>
                 <p>
                     一般的に3Pシュートの成功率は以下のように評価されます：
                 </p>
@@ -348,7 +346,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h3>🏀 5つのスポットについて</h3>
+                <h2>🏀 5つのスポットについて</h2>
                 <p>
                     このツールでは、3Pラインを5つのスポットに分けて記録します：
                 </p>
@@ -392,7 +390,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h3>💡 練習のポイント</h3>
+                <h2>💡 練習のポイント</h2>
                 <ul class="article-list-check">
                     <li>まずは得意なスポットを見つけ、そこから広げていく</li>
                     <li>苦手なスポットを重点的に練習する</li>
@@ -403,7 +401,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h3>📈 このツールの活用法</h3>
+                <h2>📈 このツールの活用法</h2>
                 <p>
                     毎回の練習で記録を残すことで、以下のことがわかるようになります：
                 </p>
