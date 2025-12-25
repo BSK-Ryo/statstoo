@@ -1,0 +1,41 @@
+<!-- Left Sidebar (Desktop Only) -->
+<aside class="sidebar sidebar-left">
+    <div class="sidebar-inner">
+        <!-- Ad Space -->
+        <div class="sidebar-ad">
+            <div class="sidebar-ad-label">広告</div>
+            <div class="sidebar-ad-placeholder">
+                <!-- AdSense Code Here -->
+                AdSense<br>300×250
+            </div>
+        </div>
+        
+        <!-- Tools Links -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header"><span>🛠️</span> ツール</div>
+            <div class="sidebar-links">
+                <a href="/" class="sidebar-link{% if page.url == '/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">📊</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">試合スタッツ記録</div>
+                        <div class="sidebar-link-desc">試合中のスタッツを記録</div>
+                    </div>
+                </a>
+                <a href="/tools/3point-shot-chart/" class="sidebar-link{% if page.url contains '3point-shot-chart' %} active{% endif %}">
+                    <span class="sidebar-link-icon">🎯</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">3Pシュートチャート</div>
+                        <div class="sidebar-link-desc">スポット別成功率を記録</div>
+                    </div>
+                </a>
+                <a href="/tools/2point-shot-chart/" class="sidebar-link{% if page.url contains '2point-shot-chart' %} active{% endif %}">
+                    <span class="sidebar-link-icon">🏀</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">2Pシュートチャート</div>
+                        <div class="sidebar-link-desc">エリア別成功率を記録</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</aside>

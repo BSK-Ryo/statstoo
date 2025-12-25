@@ -1,0 +1,69 @@
+<!-- Right Sidebar (Desktop Only) -->
+<aside class="sidebar sidebar-right">
+    <div class="sidebar-inner">
+        <!-- Ad Space -->
+        <div class="sidebar-ad">
+            <div class="sidebar-ad-label">広告</div>
+            <div class="sidebar-ad-placeholder">
+                <!-- AdSense Code Here -->
+                AdSense<br>300×250
+            </div>
+        </div>
+        
+        <!-- Guide Links -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header"><span>📖</span> ガイド</div>
+            <div class="sidebar-links">
+                <a href="/help/" class="sidebar-link{% if page.url == '/help/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">❓</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">ヘルプ</div>
+                        <div class="sidebar-link-desc">ツールの使い方を説明</div>
+                    </div>
+                </a>
+                <a href="/skill/" class="sidebar-link{% if page.url contains '/skill/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">💡</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">スキル用語解説</div>
+                        <div class="sidebar-link-desc">バスケ用語を詳しく解説</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Rules Links -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header"><span>📏</span> ルール</div>
+            <div class="sidebar-links">
+                <a href="/rule/" class="sidebar-link{% if page.url == '/rule/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">📋</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">基本ルール</div>
+                        <div class="sidebar-link-desc">初心者向けルール解説</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Support Links -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-header"><span>💬</span> サポート</div>
+            <div class="sidebar-links">
+                <a href="/contact/" class="sidebar-link{% if page.url == '/contact/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">📧</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">お問い合わせ</div>
+                        <div class="sidebar-link-desc">ご質問・ご要望はこちら</div>
+                    </div>
+                </a>
+                <a href="/about/" class="sidebar-link{% if page.url == '/about/' %} active{% endif %}">
+                    <span class="sidebar-link-icon">👤</span>
+                    <div class="sidebar-link-content">
+                        <div class="sidebar-link-title">運営者情報</div>
+                        <div class="sidebar-link-desc">StatsTooについて</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</aside>
