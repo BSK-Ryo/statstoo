@@ -239,8 +239,8 @@
                     <a href="/tools/2point-shot-chart/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
                         <span>🎯</span> 2Pショットチャート
                     </a>
-                    <a href="/column/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                        <span>📝</span> バスケコラム-執筆中
+                    <a href="/rule/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                        <span>📝</span> 基本ルール
                     </a>
                     <div class="flex-grow"></div>
                     <a href="/help/" class="nav-link text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
@@ -272,8 +272,8 @@
                 <a href="/tools/2point-shot-chart/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
                     <span>🎯</span> 2Pショットチャート
                 </a>
-                <a href="/column/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                    <span>📝</span> バスケコラム
+                <a href="/rule/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <span>📝</span> 基本ルール
                 </a>
                 <div class="border-t border-white/10 my-2 pt-2">
                     <a href="/help/" class="block text-white/50 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-xs font-medium transition">
@@ -700,9 +700,8 @@
                 <div>
                     <h4 class="font-bold text-white mb-4 text-sm">コンテンツ</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="/column/" class="text-white/60 hover:text-primary-light transition">📝 バスケコラム-執筆中</a></li>
-                        <li><a href="/column/rules/" class="text-white/60 hover:text-primary-light transition">📖 ルール解説-執筆中</a></li>
-                        <li><a href="/column/tips/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
+                        <li><a href="/rule/" class="text-white/60 hover:text-primary-light transition">📝 基本ルール</a></li>
+                        <li><a href="/skill/" class="text-white/60 hover:text-primary-light transition">💡 スキル用語解説-執筆中</a></li>
                     </ul>
                 </div>
 
@@ -1978,7 +1977,7 @@
                     { label: "OR", getter: p => p.stats.orb },
                     { label: "DR", getter: p => p.stats.drb },
                     { label: "Total Rebound", getter: p => p.stats.orb + p.stats.drb },
-                    { label: "アシスト", getter: p => p.stats.ast },
+                    { label: "AST", getter: p => p.stats.ast },
                     { label: "Steal", getter: p => p.stats.stl },
                     { label: "Block", getter: p => p.stats.blk },
                     { label: "Turnover", getter: p => p.stats.to },
