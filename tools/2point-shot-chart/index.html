@@ -260,7 +260,12 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     </div>
 </header>
 
-<div class="max-w-4xl mx-auto w-full pt-4 space-y-4">
+<div class="page-wrapper">
+    {% include sidebar-left.html %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="space-y-4">
     
     <div class="game-info open" id="game-info-section">
         <div class="game-info-header" onclick="app.toggleGameInfo()">
@@ -401,6 +406,10 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     </article>
     
     <div class="bottom-spacer"></div>
+        </div>
+    </main>
+    
+    {% include sidebar-right.html %}
 </div>
 
 <div class="fixed-controller" id="fixed-controller">
