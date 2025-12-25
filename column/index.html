@@ -1,0 +1,1203 @@
+---
+layout: default
+title: バスケットボール ルール・用語解説【完全版】
+description: バスケットボールの基本ルールから専門用語まで完全網羅。初心者にもわかりやすく解説。
+---
+
+<style>
+    /* 記事独自のスタイル定義 */
+    .article-container { max-width: 800px; margin: 0 auto; }
+    
+    /* 記事ヘッダー（このページ独自のデザイン） */
+    /* 共通レイアウトの余白を打ち消して全幅にする調整 */
+    .article-header-custom {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        color: white;
+        padding: 3rem 1.5rem;
+        margin-bottom: 2rem;
+        margin-left: -1rem; 
+        margin-right: -1rem;
+        width: calc(100% + 2rem);
+    }
+    @media (min-width: 768px) {
+        .article-header-custom {
+            margin-left: 0;
+            margin-right: 0;
+            width: 100%;
+            border-radius: 0 0 12px 12px;
+        }
+    }
+    
+    .article-body { padding: 0 0.5rem; }
+    
+    .article-body h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 3rem 0 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 3px solid #EA580C;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .article-body h3 {
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: #334155;
+        margin: 2rem 0 1rem;
+        padding-left: 0.75rem;
+        border-left: 4px solid #FB923C;
+    }
+    
+    .article-body h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #475569;
+        margin: 1.5rem 0 0.75rem;
+    }
+    
+    .article-body p {
+        line-height: 1.9;
+        margin-bottom: 1.5rem;
+        color: #374151;
+    }
+    
+    .article-body ul, .article-body ol {
+        margin: 1.5rem 0;
+        padding-left: 1.5rem;
+    }
+    
+    .article-body li {
+        line-height: 1.8;
+        margin-bottom: 0.5rem;
+        list-style-type: disc; /* リストマーカーを表示 */
+    }
+    .article-body ol li {
+        list-style-type: decimal;
+    }
+    
+    /* Info Box */
+    .info-box {
+        background: #f0f9ff;
+        border-left: 4px solid #0ea5e9;
+        padding: 1.25rem;
+        margin: 2rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    .info-box-title {
+        font-weight: 700;
+        color: #0369a1;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Warning Box */
+    .warning-box {
+        background: #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 1.25rem;
+        margin: 2rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    .warning-box-title {
+        font-weight: 700;
+        color: #b45309;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    /* Term Card */
+    .term-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin: 1rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #f1f1f1;
+    }
+    .term-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+    }
+    .term-card-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1e293b;
+    }
+    .term-card-en {
+        font-size: 0.75rem;
+        color: #64748b;
+        background: #f1f5f9;
+        padding: 0.125rem 0.5rem;
+        border-radius: 4px;
+        font-family: sans-serif;
+    }
+    .term-card-body {
+        font-size: 0.95rem;
+        color: #475569;
+        line-height: 1.7;
+    }
+    
+    /* Stats Table */
+    .stats-table-wrapper {
+        overflow-x: auto;
+        margin: 1.5rem 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        min-width: 500px;
+    }
+    .stats-table th {
+        background: #1e293b;
+        color: white;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .stats-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f1f1f1;
+        font-size: 0.9rem;
+    }
+    .stats-table tr:last-child td { border-bottom: none; }
+    .stats-table tr:hover { background: #faf8f5; }
+    .stats-table .abbr {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.1rem;
+        color: #EA580C;
+        font-weight: normal;
+    }
+    
+    /* Position Badge */
+    .position-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: #1e293b;
+        color: white;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1rem;
+        border-radius: 8px;
+        flex-shrink: 0;
+    }
+    
+    /* TOC (Table of Contents) */
+    .toc {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+    }
+    .toc-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f1f1f1;
+    }
+    .toc-list {
+        list-style: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .toc-list li {
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+    }
+    .toc-list a {
+        display: block;
+        padding: 0.75rem 0.5rem;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.95rem;
+        border-bottom: 1px solid #f8fafc;
+        transition: all 0.2s;
+    }
+    .toc-list li:last-child a { border-bottom: none; }
+    .toc-list a:hover { 
+        color: #EA580C; 
+        background-color: #fff7ed;
+        padding-left: 1rem;
+        border-radius: 6px;
+    }
+    .toc-list .toc-number {
+        color: #EA580C;
+        font-weight: 600;
+        margin-right: 0.75rem;
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.1rem;
+    }
+    
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.7);
+        margin-bottom: 1rem;
+    }
+    .breadcrumb a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+    }
+    .breadcrumb a:hover { color: white; text-decoration: underline; }
+    
+    /* Rule Number */
+    .rule-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        background: #EA580C;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+    
+    /* Grid Layout */
+    .term-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    @media (min-width: 640px) {
+        .term-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<div class="article-header-custom">
+    <div class="article-container">
+        <div class="breadcrumb">
+            <a href="/">ホーム</a> &gt; <a href="/column/">バスケコラム</a> &gt; ルール解説
+        </div>
+        <h1 class="text-2xl md:text-3xl font-bold mb-3 leading-tight">バスケットボール ルール・用語解説【完全版】</h1>
+        <p class="text-white/80 text-sm md:text-base">初心者から経験者まで役立つ、基本ルールから専門用語までを徹底解説</p>
+        <div class="flex items-center gap-4 mt-4 text-sm text-white/60">
+            <span>📅 2024年12月更新</span>
+            <span>⏱️ 読了時間: 約15分</span>
+        </div>
+    </div>
+</div>
+
+<div class="article-container article-body pb-12">
+    
+    <div class="toc">
+        <div class="toc-title">📋 目次</div>
+        <ol class="toc-list">
+            <li><a href="#basic"><span class="toc-number">1.</span>バスケットボールの基本ルール</a></li>
+            <li><a href="#violations"><span class="toc-number">2.</span>バイオレーション（違反）</a></li>
+            <li><a href="#fouls"><span class="toc-number">3.</span>ファウル</a></li>
+            <li><a href="#positions"><span class="toc-number">4.</span>ポジション</a></li>
+            <li><a href="#offense"><span class="toc-number">5.</span>オフェンス用語</a></li>
+            <li><a href="#defense"><span class="toc-number">6.</span>ディフェンス用語</a></li>
+            <li><a href="#stats"><span class="toc-number">7.</span>スタッツ（統計）用語</a></li>
+            <li><a href="#leagues"><span class="toc-number">8.</span>リーグ別ルールの違い</a></li>
+        </ol>
+    </div>
+    
+    <h2 id="basic">🏀 1. バスケットボールの基本ルール</h2>
+    
+    <p>バスケットボールは、5人対5人で行う球技です。ボールをドリブルやパスで運び、相手チームのゴール（バスケット）にシュートを決めて得点を競います。</p>
+    
+    <h3>コートの大きさ</h3>
+    <p>国際ルール（FIBA）では、コートのサイズは<strong>縦28m × 横15m</strong>と定められています。NBAでは縦28.65m × 横15.24m（94フィート × 50フィート）とやや大きくなります。</p>
+    
+    <div class="info-box">
+        <div class="info-box-title">💡 豆知識</div>
+        <p style="margin-bottom: 0;">日本の体育館では、国際規格より小さいコートも多く見られます。ミニバスケットボールでは縦22m〜28m × 横12m〜15mが使用されます。</p>
+    </div>
+    
+    <h3>試合時間</h3>
+    <div class="stats-table-wrapper">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>リーグ・カテゴリ</th>
+                <th>1クォーター</th>
+                <th>合計時間</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>NBA</td>
+                <td>12分</td>
+                <td>48分</td>
+            </tr>
+            <tr>
+                <td>FIBA（国際試合）/ Bリーグ</td>
+                <td>10分</td>
+                <td>40分</td>
+            </tr>
+            <tr>
+                <td>高校・大学（日本）</td>
+                <td>10分</td>
+                <td>40分</td>
+            </tr>
+            <tr>
+                <td>ミニバス（小学生）</td>
+                <td>6分</td>
+                <td>24分</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+    <h3>得点方法</h3>
+    <ul>
+        <li><strong>フリースロー</strong>：1点（ファウルを受けた際などに与えられる）</li>
+        <li><strong>2ポイントシュート</strong>：2点（3ポイントライン内からのシュート）</li>
+        <li><strong>3ポイントシュート</strong>：3点（3ポイントラインの外からのシュート）</li>
+    </ul>
+    
+    <div class="info-box">
+        <div class="info-box-title">📏 3ポイントラインの距離</div>
+        <p style="margin-bottom: 0;">
+            <strong>FIBA / Bリーグ</strong>：6.75m（コーナーは6.60m）<br>
+            <strong>NBA</strong>：7.24m（コーナーは6.70m）<br>
+            <strong>NCAA（アメリカ大学）</strong>：6.75m
+        </p>
+    </div>
+    
+    <h3>試合の流れ</h3>
+    <ol>
+        <li><span class="rule-number">1</span><strong>ジャンプボール</strong>：試合開始時、センターサークルで両チームの選手がジャンプしてボールを奪い合う</li>
+        <li><span class="rule-number">2</span><strong>オフェンス</strong>：ボールを持つチームがシュートを狙う</li>
+        <li><span class="rule-number">3</span><strong>ディフェンス</strong>：相手チームがボールを奪おうとする</li>
+        <li><span class="rule-number">4</span><strong>得点または攻守交替</strong>：シュート成功、バイオレーション、ターンオーバーなどで攻守が入れ替わる</li>
+    </ol>
+    
+    <h2 id="violations">⚠️ 2. バイオレーション（違反）</h2>
+    
+    <p>バイオレーションとは、ファウル以外のルール違反のことです。バイオレーションが発生すると、相手チームのスローインでプレーが再開されます。</p>
+    
+    <h3>ボールハンドリング系</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">トラベリング</span>
+            <span class="term-card-en">Traveling</span>
+        </div>
+        <div class="term-card-body">
+            ボールを持ったまま3歩以上歩くこと。ドリブルをせずに移動する場合、「軸足（ピボットフット）」を動かしてはいけません。ただし、ドライブ時の「ギャザーステップ（0ステップ）」は2018年からFIBAでも認められています。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ダブルドリブル</span>
+            <span class="term-card-en">Double Dribble / Illegal Dribble</span>
+        </div>
+        <div class="term-card-body">
+            一度ドリブルを止めた後に、再びドリブルを始めること。また、両手でボールに触れながらドリブルすることも違反です。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">キャリング（パーミング）</span>
+            <span class="term-card-en">Carrying / Palming</span>
+        </div>
+        <div class="term-card-body">
+            ドリブル中にボールの下に手を入れて持ち運ぶような動作をすること。ボールを「運んでいる」ように見える場合に取られます。
+        </div>
+    </div>
+    
+    <h3>時間制限系</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">3秒ルール</span>
+            <span class="term-card-en">3-Second Violation</span>
+        </div>
+        <div class="term-card-body">
+            オフェンス時、ペイントエリア（制限区域）に3秒以上留まってはいけません。NBAではディフェンス側にも3秒ルールが適用されます（ディフェンシブ3秒）。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">5秒ルール</span>
+            <span class="term-card-en">5-Second Violation</span>
+        </div>
+        <div class="term-card-body">
+            スローイン時やフリースロー時に5秒以内にボールを離さなければなりません。また、ボールを持ったままドリブルもパスもせず5秒間動けない場合も適用されます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">8秒ルール</span>
+            <span class="term-card-en">8-Second Violation</span>
+        </div>
+        <div class="term-card-body">
+            バックコートでボールを保持してから8秒以内にフロントコートへ運ばなければなりません。NBAでも同じく8秒です。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">24秒ルール（ショットクロック）</span>
+            <span class="term-card-en">Shot Clock Violation</span>
+        </div>
+        <div class="term-card-body">
+            ボールを保持してから24秒以内にシュートを打ち、リングに当てなければなりません。オフェンスリバウンドを取った場合は14秒にリセットされます（FIBA/Bリーグ）。NBAでは14秒リセットです。
+        </div>
+    </div>
+    
+    <h3>その他のバイオレーション</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">バックコートバイオレーション</span>
+            <span class="term-card-en">Backcourt Violation</span>
+        </div>
+        <div class="term-card-body">
+            一度フロントコートに運んだボールを、再びバックコート（自陣）に戻すこと。センターラインを越えた後は、ボールを自陣に戻すことはできません。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">アウトオブバウンズ</span>
+            <span class="term-card-en">Out of Bounds</span>
+        </div>
+        <div class="term-card-body">
+            ボールまたはボールを持った選手がコートの外に出ること。最後にボールに触れた選手のチームが不利となり、相手チームのスローインになります。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ゴールテンディング / バスケットインターフェア</span>
+            <span class="term-card-en">Goaltending / Basket Interference</span>
+        </div>
+        <div class="term-card-body">
+            シュートされたボールが落下中（下降軌道）にブロックしたり、リング上にあるボールに触れたりすること。オフェンス側の場合は得点が認められず、ディフェンス側の場合は得点が認められます。
+        </div>
+    </div>
+    
+    <h2 id="fouls">🚫 3. ファウル</h2>
+    
+    <p>ファウルは、相手選手への不正な接触やスポーツマンシップに反する行為です。ファウルの種類や状況によって、フリースローや相手ボールでのスローインなどのペナルティが与えられます。</p>
+    
+    <h3>パーソナルファウル</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">プッシング</span>
+            <span class="term-card-en">Pushing</span>
+        </div>
+        <div class="term-card-body">
+            相手を押す行為。ポジション争いやリバウンド時に多く発生します。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ホールディング</span>
+            <span class="term-card-en">Holding</span>
+        </div>
+        <div class="term-card-body">
+            相手をつかんで動きを妨げる行為。腕や衣服をつかむことも含まれます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ブロッキング</span>
+            <span class="term-card-en">Blocking</span>
+        </div>
+        <div class="term-card-body">
+            正当なポジションを確保せずに相手の進路を妨げること。ディフェンスが動いている状態で接触した場合に取られることが多いです。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">チャージング</span>
+            <span class="term-card-en">Charging</span>
+        </div>
+        <div class="term-card-body">
+            ボールを持った選手が、正当な位置を占めているディフェンスに突っ込むこと。オフェンスファウルとなります。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">イリーガルスクリーン（ムービングスクリーン）</span>
+            <span class="term-card-en">Illegal Screen / Moving Screen</span>
+        </div>
+        <div class="term-card-body">
+            スクリーン（壁役）をセットする際に、動きながら相手に接触すること。スクリーンは静止した状態でセットする必要があります。
+        </div>
+    </div>
+    
+    <h3>シューティングファウル</h3>
+    <p>シュート動作中の選手に対するファウル。ファウルを受けた選手にフリースローが与えられます。</p>
+    <ul>
+        <li>2Pシュート中のファウル → フリースロー2本</li>
+        <li>3Pシュート中のファウル → フリースロー3本</li>
+        <li>ファウルを受けながらシュートが入った場合 → 得点 + フリースロー1本（バスケットカウント / And One）</li>
+    </ul>
+    
+    <h3>その他のファウル</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">テクニカルファウル</span>
+            <span class="term-card-en">Technical Foul</span>
+        </div>
+        <div class="term-card-body">
+            スポーツマンシップに反する行為（審判への暴言、遅延行為、ベンチからの違反など）に対して与えられます。相手チームにフリースロー1〜2本とボール所有権が与えられます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">アンスポーツマンライクファウル</span>
+            <span class="term-card-en">Unsportsmanlike Foul</span>
+        </div>
+        <div class="term-card-body">
+            ボールではなく選手への不当な接触、ファストブレイク時の後ろからのファウルなど。フリースロー + 相手ボールのスローイン。2回で退場となります。NBAでは「フレグラントファウル」と呼ばれます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ディスクォリファイングファウル</span>
+            <span class="term-card-en">Disqualifying Foul</span>
+        </div>
+        <div class="term-card-body">
+            極めて悪質な行為（暴力行為など）に対して与えられ、即座に退場となります。
+        </div>
+    </div>
+    
+    <div class="warning-box">
+        <div class="warning-box-title">⚠️ ファウルアウト（退場）</div>
+        <p style="margin-bottom: 0;">
+            1試合でパーソナルファウルとテクニカルファウルの合計が規定数に達すると退場となります。<br>
+            <strong>FIBA / Bリーグ / 高校・大学</strong>：5回で退場<br>
+            <strong>NBA</strong>：6回で退場
+        </p>
+    </div>
+    
+    <h3>チームファウル</h3>
+    <p>1クォーターあたりのチーム全体のファウル数が規定に達すると、以降のファウルはすべてフリースローが与えられます（ボーナス / ペナルティシチュエーション）。</p>
+    <ul>
+        <li><strong>FIBA / Bリーグ</strong>：4回目以降</li>
+        <li><strong>NBA</strong>：4回目以降（最後の2分間は2回目以降）</li>
+    </ul>
+    
+    <h2 id="positions">👥 4. ポジション</h2>
+    
+    <p>バスケットボールには5つの基本ポジションがあります。それぞれの役割と特徴を解説します。</p>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="position-badge">PG</span>
+            <span class="term-card-name">ポイントガード</span>
+            <span class="term-card-en">Point Guard</span>
+        </div>
+        <div class="term-card-body">
+            チームの司令塔。ボール運びやゲームメイクを担当し、パス能力と判断力が求められます。「1番」とも呼ばれます。
+            <br><strong>代表的な選手</strong>：ステフィン・カリー、クリス・ポール、富樫勇樹
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="position-badge">SG</span>
+            <span class="term-card-name">シューティングガード</span>
+            <span class="term-card-en">Shooting Guard</span>
+        </div>
+        <div class="term-card-body">
+            チームの得点源。外からのシュート力が求められ、ボール運びのサポートも行います。「2番」とも呼ばれます。
+            <br><strong>代表的な選手</strong>：マイケル・ジョーダン、コービー・ブライアント、比江島慎
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="position-badge">SF</span>
+            <span class="term-card-name">スモールフォワード</span>
+            <span class="term-card-en">Small Forward</span>
+        </div>
+        <div class="term-card-body">
+            オールラウンドな能力が求められるポジション。外からも中からも得点でき、ディフェンスでも活躍します。「3番」とも呼ばれます。
+            <br><strong>代表的な選手</strong>：レブロン・ジェームズ、ケビン・デュラント、渡邊雄太
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="position-badge">PF</span>
+            <span class="term-card-name">パワーフォワード</span>
+            <span class="term-card-en">Power Forward</span>
+        </div>
+        <div class="term-card-body">
+            インサイドでの得点とリバウンドを担当。フィジカルの強さが求められます。現代では3Pシュートも打てる選手が増えています。「4番」とも呼ばれます。
+            <br><strong>代表的な選手</strong>：ヤニス・アデトクンボ、ティム・ダンカン、八村塁
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="position-badge">C</span>
+            <span class="term-card-name">センター</span>
+            <span class="term-card-en">Center</span>
+        </div>
+        <div class="term-card-body">
+            チームで最も身長が高い選手が務めることが多く、ゴール下での攻防やリム・プロテクト（リング周りの守備）を担当します。「5番」とも呼ばれます。
+            <br><strong>代表的な選手</strong>：シャキール・オニール、ニコラ・ヨキッチ、渡邉飛勇
+        </div>
+    </div>
+    
+    <div class="info-box">
+        <div class="info-box-title">💡 ポジションレスバスケ</div>
+        <p style="margin-bottom: 0;">現代バスケでは、複数のポジションをこなせる選手（ユーティリティープレイヤー）が重宝されます。「ポジションレス」の概念が広まり、従来の5ポジションの境界は曖昧になりつつあります。</p>
+    </div>
+    
+    <h2 id="offense">⚡ 5. オフェンス用語</h2>
+    
+    <h3>シュート関連</h3>
+    
+    <div class="term-grid">
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">レイアップ</span>
+                <span class="term-card-en">Layup</span>
+            </div>
+            <div class="term-card-body">
+                ゴールに向かって走り込みながら、片手でボードに当ててシュートする技術。最も基本的なシュート。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ダンク</span>
+                <span class="term-card-en">Dunk</span>
+            </div>
+            <div class="term-card-body">
+                ジャンプしてリングに直接ボールを叩き込むシュート。最も確実性が高く、迫力のあるプレー。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">フローター</span>
+                <span class="term-card-en">Floater</span>
+            </div>
+            <div class="term-card-body">
+                ペイントエリア内から高い弧を描いて放つシュート。ブロックを避けるために使用。ティアドロップとも呼ばれる。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">フェイダウェイ</span>
+                <span class="term-card-en">Fadeaway</span>
+            </div>
+            <div class="term-card-body">
+                後ろに跳びながら打つジャンプシュート。ディフェンスとの距離を作り、ブロックされにくい。
+            </div>
+        </div>
+    </div>
+    
+    <h3>戦術関連</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ピック&ロール（スクリーン&ロール）</span>
+            <span class="term-card-en">Pick and Roll</span>
+        </div>
+        <div class="term-card-body">
+            最も基本的で効果的なオフェンス戦術。スクリーナー（壁役）がボールハンドラーのディフェンスにスクリーンをセットし、その後ゴールに向かって「ロール」する。ディフェンスの対応によってパスやシュートの選択肢が生まれます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">アイソレーション</span>
+            <span class="term-card-en">Isolation</span>
+        </div>
+        <div class="term-card-body">
+            1対1の状況を作り出す戦術。エースプレイヤーに広いスペースを与え、個人技で得点を狙います。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ファストブレイク（速攻）</span>
+            <span class="term-card-en">Fast Break</span>
+        </div>
+        <div class="term-card-body">
+            ディフェンスが戻る前に素早く攻撃すること。数的優位を作り、高確率なシュートを狙えます。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">カッティング</span>
+            <span class="term-card-en">Cutting</span>
+        </div>
+        <div class="term-card-body">
+            ボールを持っていない選手がゴールに向かって走り込む動き。代表的なものに「バックドアカット」「フレアカット」などがあります。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">オフボールスクリーン</span>
+            <span class="term-card-en">Off-Ball Screen</span>
+        </div>
+        <div class="term-card-body">
+            ボールを持っていない選手のために行うスクリーン。シューターをフリーにするために使用されます。
+        </div>
+    </div>
+    
+    <h3>その他のオフェンス用語</h3>
+    
+    <div class="term-grid">
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">アシスト</span>
+                <span class="term-card-en">Assist</span>
+            </div>
+            <div class="term-card-body">
+                得点につながるパス。パスを受けた選手がすぐにシュートを決めた場合に記録されます。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ターンオーバー</span>
+                <span class="term-card-en">Turnover</span>
+            </div>
+            <div class="term-card-body">
+                ボールを相手に奪われること。パスミス、ドリブルミス、バイオレーションなどが原因。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">オフェンスリバウンド</span>
+                <span class="term-card-en">Offensive Rebound</span>
+            </div>
+            <div class="term-card-body">
+                シュートが外れた後、オフェンス側がボールを確保すること。セカンドチャンスにつながります。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">スペーシング</span>
+                <span class="term-card-en">Spacing</span>
+            </div>
+            <div class="term-card-body">
+                選手間の距離を適切に保つこと。良いスペーシングはドライブやパスコースを作り出します。
+            </div>
+        </div>
+    </div>
+    
+    <h2 id="defense">🛡️ 6. ディフェンス用語</h2>
+    
+    <h3>ディフェンスシステム</h3>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">マンツーマンディフェンス</span>
+            <span class="term-card-en">Man-to-Man Defense</span>
+        </div>
+        <div class="term-card-body">
+            各ディフェンダーが特定のオフェンス選手を1対1でマークするディフェンス。最も基本的なディフェンスシステムです。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">ゾーンディフェンス</span>
+            <span class="term-card-en">Zone Defense</span>
+        </div>
+        <div class="term-card-body">
+            コートを区域（ゾーン）に分け、各選手がその区域を守るディフェンス。「2-3ゾーン」「3-2ゾーン」「1-3-1ゾーン」などがあります。NBAでは長年禁止されていましたが、2001年から解禁されました。
+        </div>
+    </div>
+    
+    <div class="term-card">
+        <div class="term-card-header">
+            <span class="term-card-name">プレスディフェンス</span>
+            <span class="term-card-en">Press Defense</span>
+        </div>
+        <div class="term-card-body">
+            コート全体で積極的にプレッシャーをかけるディフェンス。「フルコートプレス」「ハーフコートプレス」などがあります。
+        </div>
+    </div>
+    
+    <h3>ディフェンス技術</h3>
+    
+    <div class="term-grid">
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ヘルプディフェンス</span>
+                <span class="term-card-en">Help Defense</span>
+            </div>
+            <div class="term-card-body">
+                味方が抜かれた時に助けに行くディフェンス。チームディフェンスの基本。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ローテーション</span>
+                <span class="term-card-en">Rotation</span>
+            </div>
+            <div class="term-card-body">
+                ヘルプに行った選手の代わりに別の選手がカバーに回る動き。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">スイッチ</span>
+                <span class="term-card-en">Switch</span>
+            </div>
+            <div class="term-card-body">
+                スクリーンを受けた際に、マークマンを入れ替えて守る方法。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ファイトオーバー</span>
+                <span class="term-card-en">Fight Over</span>
+            </div>
+            <div class="term-card-body">
+                スクリーンを乗り越えてマークマンについていく守り方。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ボックスアウト</span>
+                <span class="term-card-en">Box Out</span>
+            </div>
+            <div class="term-card-body">
+                リバウンド時に相手を背中でブロックしてポジションを確保すること。スクリーンアウトとも呼ばれる。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">スティール</span>
+                <span class="term-card-en">Steal</span>
+            </div>
+            <div class="term-card-body">
+                相手からボールを奪うこと。パスカット、ドリブルを叩くなどの方法があります。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ブロックショット</span>
+                <span class="term-card-en">Block Shot</span>
+            </div>
+            <div class="term-card-body">
+                相手のシュートを空中で叩き落とすこと。ゴールテンディングにならないよう注意が必要。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">リムプロテクト</span>
+                <span class="term-card-en">Rim Protection</span>
+            </div>
+            <div class="term-card-body">
+                リング（ゴール）周辺を守ること。センターの重要な役割の一つ。
+            </div>
+        </div>
+    </div>
+    
+    <h2 id="stats">📊 7. スタッツ（統計）用語</h2>
+    
+    <p>バスケットボールの試合では様々な統計（スタッツ）が記録されます。試合を深く理解するために重要な指標です。</p>
+    
+    <h3>基本スタッツ</h3>
+    <div class="stats-table-wrapper">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>略称</th>
+                <th>正式名称</th>
+                <th>意味</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="abbr">PTS</td>
+                <td>Points</td>
+                <td>得点</td>
+            </tr>
+            <tr>
+                <td class="abbr">REB</td>
+                <td>Rebounds</td>
+                <td>リバウンド（OREB：オフェンス、DREB：ディフェンス）</td>
+            </tr>
+            <tr>
+                <td class="abbr">AST</td>
+                <td>Assists</td>
+                <td>アシスト</td>
+            </tr>
+            <tr>
+                <td class="abbr">STL</td>
+                <td>Steals</td>
+                <td>スティール</td>
+            </tr>
+            <tr>
+                <td class="abbr">BLK</td>
+                <td>Blocks</td>
+                <td>ブロックショット</td>
+            </tr>
+            <tr>
+                <td class="abbr">TO</td>
+                <td>Turnovers</td>
+                <td>ターンオーバー</td>
+            </tr>
+            <tr>
+                <td class="abbr">PF</td>
+                <td>Personal Fouls</td>
+                <td>パーソナルファウル</td>
+            </tr>
+            <tr>
+                <td class="abbr">MIN</td>
+                <td>Minutes</td>
+                <td>出場時間</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+    <h3>シュート関連スタッツ</h3>
+    <div class="stats-table-wrapper">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>略称</th>
+                <th>正式名称</th>
+                <th>意味・計算方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="abbr">FG</td>
+                <td>Field Goals</td>
+                <td>フィールドゴール（2P・3Pシュート）。FGM：成功数、FGA：試投数</td>
+            </tr>
+            <tr>
+                <td class="abbr">FG%</td>
+                <td>Field Goal %</td>
+                <td>フィールドゴール成功率（FGM ÷ FGA × 100）</td>
+            </tr>
+            <tr>
+                <td class="abbr">3P</td>
+                <td>3-Point</td>
+                <td>3ポイントシュート。3PM：成功数、3PA：試投数</td>
+            </tr>
+            <tr>
+                <td class="abbr">3P%</td>
+                <td>3-Point %</td>
+                <td>3ポイント成功率（3PM ÷ 3PA × 100）</td>
+            </tr>
+            <tr>
+                <td class="abbr">2P</td>
+                <td>2-Point</td>
+                <td>2ポイントシュート。2PM：成功数、2PA：試投数</td>
+            </tr>
+            <tr>
+                <td class="abbr">FT</td>
+                <td>Free Throws</td>
+                <td>フリースロー。FTM：成功数、FTA：試投数</td>
+            </tr>
+            <tr>
+                <td class="abbr">FT%</td>
+                <td>Free Throw %</td>
+                <td>フリースロー成功率（FTM ÷ FTA × 100）</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+    <h3>アドバンスドスタッツ</h3>
+    <div class="stats-table-wrapper">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>略称</th>
+                <th>正式名称</th>
+                <th>意味・計算方法</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="abbr">eFG%</td>
+                <td>Effective FG%</td>
+                <td>実効フィールドゴール率。3Pの価値を反映（FGM + 0.5×3PM）÷ FGA</td>
+            </tr>
+            <tr>
+                <td class="abbr">TS%</td>
+                <td>True Shooting %</td>
+                <td>真のシュート効率。FTも含めた総合的な得点効率</td>
+            </tr>
+            <tr>
+                <td class="abbr">PER</td>
+                <td>Player Efficiency Rating</td>
+                <td>選手効率指数。様々なスタッツを総合した指標</td>
+            </tr>
+            <tr>
+                <td class="abbr">+/-</td>
+                <td>Plus/Minus</td>
+                <td>その選手が出場中のチームの得失点差</td>
+            </tr>
+            <tr>
+                <td class="abbr">USG%</td>
+                <td>Usage Rate</td>
+                <td>使用率。チームのプレーをどれだけ消費したか</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+    <h3>特別な記録</h3>
+    
+    <div class="term-grid">
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">ダブルダブル</span>
+                <span class="term-card-en">Double-Double</span>
+            </div>
+            <div class="term-card-body">
+                5つの主要スタッツ（PTS, REB, AST, STL, BLK）のうち2つで10以上を記録すること。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">トリプルダブル</span>
+                <span class="term-card-en">Triple-Double</span>
+            </div>
+            <div class="term-card-body">
+                5つの主要スタッツのうち3つで10以上を記録すること。非常に価値のある記録。
+            </div>
+        </div>
+        
+        <div class="term-card">
+            <div class="term-card-header">
+                <span class="term-card-name">クアドラプルダブル</span>
+                <span class="term-card-en">Quadruple-Double</span>
+            </div>
+            <div class="term-card-body">
+                4つのスタッツで10以上を記録すること。NBA史上でも数えるほどしか達成されていない偉業。
+            </div>
+        </div>
+    </div>
+    
+    <h2 id="leagues">🌍 8. リーグ別ルールの違い</h2>
+    
+    <p>バスケットボールのルールは、リーグによって細かな違いがあります。主な違いを比較します。</p>
+    
+    <div class="stats-table-wrapper">
+    <table class="stats-table">
+        <thead>
+            <tr>
+                <th>項目</th>
+                <th>NBA</th>
+                <th>FIBA / Bリーグ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>試合時間</strong></td>
+                <td>12分 × 4Q = 48分</td>
+                <td>10分 × 4Q = 40分</td>
+            </tr>
+            <tr>
+                <td><strong>3Pライン距離</strong></td>
+                <td>7.24m（コーナー6.70m）</td>
+                <td>6.75m（コーナー6.60m）</td>
+            </tr>
+            <tr>
+                <td><strong>ファウルアウト</strong></td>
+                <td>6回</td>
+                <td>5回</td>
+            </tr>
+            <tr>
+                <td><strong>タイムアウト</strong></td>
+                <td>7回（前半4回まで）</td>
+                <td>5回（前半2回、後半3回）</td>
+            </tr>
+            <tr>
+                <td><strong>ディフェンシブ3秒</strong></td>
+                <td>あり</td>
+                <td>なし</td>
+            </tr>
+            <tr>
+                <td><strong>ショットクロックリセット</strong></td>
+                <td>14秒（オフェンスリバウンド後）</td>
+                <td>14秒（オフェンスリバウンド後）</td>
+            </tr>
+            <tr>
+                <td><strong>延長戦</strong></td>
+                <td>5分</td>
+                <td>5分</td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+    
+    <div class="info-box">
+        <div class="info-box-title">📌 まとめ</div>
+        <p>バスケットボールのルールと用語は数多くありますが、基本を理解すれば試合をより深く楽しめます。このページをブックマークして、分からない用語があった時に参照してください。</p>
+        <p style="margin-bottom: 0;"><strong>StatsToo</strong>では、これらのスタッツを簡単に記録できるツールを提供しています。ぜひ<a href="/" style="color: #0369a1;">試合スタッツ記録ツール</a>もご活用ください！</p>
+    </div>
+    
+</div>
+
+{% assign extra_js %}
+<script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+</script>
+{% endassign %}
