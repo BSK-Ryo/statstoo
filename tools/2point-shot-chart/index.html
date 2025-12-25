@@ -1217,9 +1217,6 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             const time = document.getElementById('game-time').value || '-';
             const displayDate = date ? (() => { const [y,m,d] = date.split('-'); return `${y}/${parseInt(m)}/${parseInt(d)}`; })() : '-';
             
-            const zoneLabels = { rim: 'ゴール下', paint: 'ペイント', mid: 'ミッドレンジ' };
-            const zoneColors = { rim: '#22c55e', paint: '#f59e0b', mid: '#6366f1' };
-            
             const container = document.getElementById('export-container');
             let html = `
                 <div style="font-family: 'Noto Sans JP', sans-serif; background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); padding: 24px; width: 420px;">
@@ -1244,7 +1241,6 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
                             <thead>
                                 <tr style="background: #1e293b; color: white;">
                                     <th style="padding: 10px 12px; font-size: 11px; text-align: left;">エリア</th>
-                                    <th style="padding: 10px 12px; font-size: 11px; text-align: center;">ゾーン</th>
                                     <th style="padding: 10px 12px; font-size: 11px; text-align: center;">成功/試投</th>
                                     <th style="padding: 10px 12px; font-size: 11px; text-align: center;">成功率</th>
                                 </tr>
@@ -1257,15 +1253,9 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
                 const pct = attempts > 0 ? (d.made / attempts * 100).toFixed(1) : '-';
                 const pctColor = attempts > 0 ? (d.made / attempts >= 0.5 ? '#16a34a' : d.made / attempts >= 0.35 ? '#EA580C' : '#dc2626') : '#64748b';
                 const bg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
-                const zoneBg = zoneColors[spot.zone] || '#64748b';
                 html += `
                     <tr style="background: ${bg};">
                         <td style="padding: 8px 12px; font-size: 11px; font-weight: 600;">${spot.name}</td>
-                        <td style="padding: 8px 12px; text-align: center; vertical-align: middle;">
-  <span style="display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; color: white; background: ${zoneBg}; line-height: 1; vertical-align: middle;">
-    ${zoneLabels[spot.zone]}
-  </span>
-</td>
                         <td style="padding: 8px 12px; font-size: 11px; text-align: center; color: #64748b;">${d.made}/${attempts}</td>
                         <td style="padding: 8px 12px; font-size: 11px; text-align: center; font-weight: 700; color: ${pctColor};">${pct}${attempts > 0 ? '%' : ''}</td>
                     </tr>`;
@@ -1276,7 +1266,7 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
                             </tbody>
                             <tfoot>
                                 <tr style="background: #6366f1; color: white;">
-                                    <td colspan="2" style="padding: 10px 12px; font-size: 12px; font-weight: 700;">総合</td>
+                                    <td style="padding: 10px 12px; font-size: 12px; font-weight: 700;">総合</td>
                                     <td style="padding: 10px 12px; font-size: 12px; text-align: center; font-weight: 600;">${totalMade}/${totalAttempts}</td>
                                     <td style="padding: 10px 12px; font-size: 14px; text-align: center; font-weight: 700;">${totalPct}%</td>
                                 </tr>
