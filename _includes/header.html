@@ -14,28 +14,66 @@
                     <span class="text-xl logo-bounce">🏀</span>
                     <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
                 </a>
-                <a href="/" class="nav-link {% if page.url == '/tools/game-stats/' %}text-white bg-primary/80{% else %}text-white/70 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                
+                <!-- 試合スタッツ記録ツール -->
+                <a href="/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url == '/' or page.url == '/index.html' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     <span>📊</span> 試合スタッツ記録ツール
                 </a>
-                <a href="/tools/3point-shot-chart/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                
+                <!-- 3Pショットチャート -->
+                <a href="/tools/3point-shot-chart/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url contains '/tools/3point-shot-chart/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     <span>🎯</span> 3Pショットチャート
                 </a>
-                <a href="/tools/2point-shot-chart/"class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 
-                   {% if page.url contains '/tools/2p-shot-chart/' %}
-                       bg-indigo-500 text-white
+                
+                <!-- 2Pシュートチャート -->
+                <a href="/tools/2point-shot-chart/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url contains '/tools/2point-shot-chart/' %}
+                       bg-primary text-white
                    {% else %}
                        text-white/70 hover:text-white hover:bg-white/10
                    {% endif %}">
                     <span>🎯</span> 2Pシュートチャート
                 </a>
-                <a href="/rule/" class="nav-link text-white/70 hover:text-white hover:bg-white/10 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
-                    <span>📝</span> ルール・ポジション解説
+                
+                <!-- ルール・ポジション解説 -->
+                <a href="/rule/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url contains '/rule/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span>📋</span> ルール・ポジション解説
                 </a>
+                
                 <div class="flex-grow"></div>
-                <a href="/help/" class="nav-link {% if page.url == '/help/' %}text-white bg-primary/80{% else %}text-white/50 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-xs font-medium transition">
+                
+                <!-- 使い方ヘルプ -->
+                <a href="/help/" class="nav-link px-3 py-2 rounded-lg text-xs font-medium transition
+                   {% if page.url contains '/help/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/50 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     使い方ヘルプ
                 </a>
-                <a href="/contact/" class="nav-link {% if page.url == '/contact/' %}text-white bg-primary/80{% else %}text-white/50 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-xs font-medium transition">
+                
+                <!-- お問い合わせ -->
+                <a href="/contact/" class="nav-link px-3 py-2 rounded-lg text-xs font-medium transition
+                   {% if page.url contains '/contact/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/50 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     お問い合わせ
                 </a>
             </div>
@@ -55,28 +93,64 @@
     <!-- Mobile Navigation Menu -->
     <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
         <div class="px-4 py-3 space-y-1">
-            <a href="/" class="block {% if page.url == '/tools/game-stats/' %}text-white bg-primary/80{% else %}text-white/70 hover:text-white hover:bg-white/10{% endif %} px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+            <!-- 試合スタッツ記録 -->
+            <a href="/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url == '/' or page.url == '/index.html' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
                 <span>📊</span> 試合スタッツ記録
             </a>
-            <a href="/tools/3point-shot-chart/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
+            
+            <!-- 3Pショットチャート -->
+            <a href="/tools/3point-shot-chart/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url contains '/tools/3point-shot-chart/' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
                 <span>🎯</span> 3Pショットチャート
             </a>
-             <a href="/tools/2point-shot-chart/"class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 
-                   {% if page.url contains '/tools/2p-shot-chart/' %}
-                       bg-indigo-500 text-white
-                   {% else %}
-                       text-white/70 hover:text-white hover:bg-white/10
-                   {% endif %}">
-                    <span>🎯</span> 2Pシュートチャート
-                </a>
-            <a href="/rule/" class="block text-white/70 hover:text-white hover:bg-white/10 px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2">
-                <span>📝</span> ルール・ポジション解説
+            
+            <!-- 2Pシュートチャート -->
+            <a href="/tools/2point-shot-chart/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url contains '/tools/2point-shot-chart/' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
+                <span>🎯</span> 2Pシュートチャート
             </a>
+            
+            <!-- ルール・ポジション解説 -->
+            <a href="/rule/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url contains '/rule/' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
+                <span>📋</span> ルール・ポジション解説
+            </a>
+            
             <div class="border-t border-white/10 my-2 pt-2">
-                <a href="/help/" class="block {% if page.url == '/help/' %}text-white bg-primary/80{% else %}text-white/50 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-xs font-medium transition">
+                <!-- 使い方ヘルプ -->
+                <a href="/help/" class="block px-3 py-2 rounded-lg text-xs font-medium transition
+                   {% if page.url contains '/help/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/50 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     使い方ヘルプ
                 </a>
-                <a href="/contact/" class="block {% if page.url == '/contact/' %}text-white bg-primary/80{% else %}text-white/50 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-xs font-medium transition">
+                
+                <!-- お問い合わせ -->
+                <a href="/contact/" class="block px-3 py-2 rounded-lg text-xs font-medium transition
+                   {% if page.url contains '/contact/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/50 hover:text-white hover:bg-white/10
+                   {% endif %}">
                     お問い合わせ
                 </a>
             </div>
