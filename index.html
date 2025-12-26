@@ -1864,14 +1864,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             }
         }
 
-        // DOMが完全に読み込まれてからAppを初期化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                window.app = new App();
-            });
-        } else {
+        // すべてのリソース（Chart.js等）が読み込まれてからAppを初期化
+        window.addEventListener('load', () => {
             window.app = new App();
-        }
+        });
 
         // Glossary Copy Function
         function copyGlossary(button) {
