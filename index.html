@@ -942,7 +942,84 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.generatedImageBlob = null;
                 this.generatedImageDataUrl = null;
 
+                // LocalStorageから復元
+                this.loadFromLocalStorage();
+                
                 this.init();
+            }
+
+            // =============================
+            // 💾 LocalStorage保存・復元
+            // =============================
+            saveToLocalStorage() {
+                try {
+                    const data = {
+                        teams: this.state.teams,
+                        history: this.state.history,
+                        gameInfo: {
+                            event: document.getElementById('game-event')?.value || '',
+                            date: document.getElementById('game-date')?.value || '',
+                            time: document.getElementById('game-time')?.value || ''
+                        },
+                        savedAt: new Date().toISOString()
+                    };
+                    localStorage.setItem('statstoo_game_data', JSON.stringify(data));
+                } catch (e) {
+                    console.warn('LocalStorage保存に失敗:', e);
+                }
+            }
+
+            loadFromLocalStorage() {
+                try {
+                    const saved = localStorage.getItem('statstoo_game_data');
+                    if (!saved) return;
+
+                    const data = JSON.parse(saved);
+                    
+                    // チームデータを復元
+                    if (data.teams) {
+                        this.state.teams = data.teams;
+                    }
+                    
+                    // 履歴を復元
+                    if (data.history) {
+                        this.state.history = data.history;
+                    }
+
+                    // ゲーム情報を復元（init後にDOMが存在するので遅延実行）
+                    setTimeout(() => {
+                        if (data.gameInfo) {
+                            if (data.gameInfo.event) {
+                                document.getElementById('game-event').value = data.gameInfo.event;
+                            }
+                            if (data.gameInfo.date) {
+                                document.getElementById('game-date').value = data.gameInfo.date;
+                            }
+                            if (data.gameInfo.time) {
+                                document.getElementById('game-time').value = data.gameInfo.time;
+                            }
+                        }
+                        // チーム名をUIに反映
+                        document.getElementById('name-teamA').value = this.state.teams.A.name;
+                        document.getElementById('name-teamB').value = this.state.teams.B.name;
+                        document.getElementById('header-teamA').textContent = this.state.teams.A.name;
+                        document.getElementById('header-teamB').textContent = this.state.teams.B.name;
+                        
+                        this.updateScoreboard();
+                    }, 0);
+
+                    console.log('スタッツを復元しました');
+                } catch (e) {
+                    console.warn('LocalStorage読み込みに失敗:', e);
+                }
+            }
+
+            clearLocalStorage() {
+                try {
+                    localStorage.removeItem('statstoo_game_data');
+                } catch (e) {
+                    console.warn('LocalStorageクリアに失敗:', e);
+                }
             }
 
             createDefaultPlayers(team) {
@@ -963,11 +1040,19 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     this.state.teams.A.name = e.target.value || '味方チーム';
                     document.getElementById('header-teamA').textContent = this.state.teams.A.name;
                     this.updateCharts();
+                    this.saveToLocalStorage();
                 });
                 document.getElementById('name-teamB').addEventListener('input', e => {
                     this.state.teams.B.name = e.target.value || '相手チーム';
                     document.getElementById('header-teamB').textContent = this.state.teams.B.name;
                     this.updateCharts();
+                    this.saveToLocalStorage();
+                });
+
+                // ゲーム情報の変更時も保存
+                ['game-event', 'game-date', 'game-time'].forEach(id => {
+                    document.getElementById(id).addEventListener('change', () => this.saveToLocalStorage());
+                    document.getElementById(id).addEventListener('input', () => this.saveToLocalStorage());
                 });
 
                 document.addEventListener('click', e => {
@@ -984,8 +1069,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     document.getElementById('share-btn').style.display = 'none';
                 }
 
-                // Set default date to today
-                document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
+                // Set default date to today (only if not restored from LocalStorage)
+                if (!document.getElementById('game-date').value) {
+                    document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
+                }
 
                 this.render();
                 this.initCharts();
@@ -1621,6 +1708,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
                 this.render();
                 this.updateCharts();
+                this.saveToLocalStorage();
             }
 
             undoLastAction() {
@@ -1636,6 +1724,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
                 this.render();
                 this.updateCharts();
+                this.saveToLocalStorage();
             }
 
             calculatePTS(stats) {
@@ -1680,18 +1769,21 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 }
                 });
                 this.render();
+                this.saveToLocalStorage();
             }
 
             updatePlayerName(team, playerId, newName) {
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (player) player.name = newName;
                 this.renderStatsTable();
+                this.saveToLocalStorage();
             }
 
             toggleOnCourt(team, playerId) {
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (player) player.isOnCourt = !player.isOnCourt;
                 this.render();
+                this.saveToLocalStorage();
             }
 
             resetGame() {
@@ -1718,6 +1810,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.render();
                 this.updateScoreboard();
                 this.updateCharts();
+                this.clearLocalStorage();
                 console.log('Reset complete');
             }
 
