@@ -1580,6 +1580,22 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.renderStatsTable();
                 this.updateScoreboard();
                 this.updateUndoButton();
+                this.updateSelectedInfo(); // 選択中の選手情報を更新
+            }
+
+            updateSelectedInfo() {
+                const infoEl = document.getElementById('selected-info');
+                if (this.state.selectedPlayer) {
+                    const { team, playerId } = this.state.selectedPlayer;
+                    const player = this.state.teams[team].players.find(p => p.id === playerId);
+                    if (player) {
+                        const teamLabel = team === 'A' ? '味方' : '相手';
+                        const teamColor = team === 'A' ? 'text-indigo-600' : 'text-rose-600';
+                        infoEl.innerHTML = `<span class="${teamColor}">📍 ${player.name}</span> を選択中`;
+                    }
+                } else {
+                    infoEl.textContent = '';
+                }
             }
 
             updateScoreboard() {
