@@ -158,6 +158,51 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 opacity: 0.7 !important;
             }
         }
+
+        /* Article Section Styles */
+        .article-section { background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; margin-top: 2.5rem; }
+        .article-header { background: #1e293b; color: #FFFFFF; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+        .article-icon { font-size: 1.25rem; }
+        .article-title { font-size: 1rem; font-weight: 700; margin: 0; }
+        .article-content { padding: 1.25rem; }
+        .article-lead { font-size: 0.95rem; color: #0f172a; line-height: 1.8; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f1f1; }
+        .article-block { margin-bottom: 2rem; }
+        .article-block:last-child { margin-bottom: 0; }
+        .article-block h2 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
+        .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
+        .article-block p:last-child { margin-bottom: 0; }
+        .article-list-check { list-style: none; padding: 0; margin: 1rem 0; }
+        .article-list-check li { position: relative; padding: 0.5rem 0 0.5rem 1.75rem; font-size: 0.875rem; line-height: 1.6; }
+        .article-list-check li::before { content: "✓"; position: absolute; left: 0; top: 0.5rem; color: #EA580C; font-weight: 700; }
+        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1rem 0; }
+        @media (min-width: 768px) { .feature-grid { grid-template-columns: repeat(4, 1fr); } }
+        .feature-card { background: #faf8f5; border-radius: 10px; padding: 1rem 0.75rem; text-align: center; }
+        .feature-card-icon { font-size: 1.75rem; margin-bottom: 0.25rem; }
+        .feature-card-text { font-size: 0.75rem; font-weight: 700; color: #1e293b; }
+        .step-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
+        .step-item { display: flex; align-items: center; gap: 0.75rem; background: linear-gradient(90deg, #fff7ed 0%, #ffffff 100%); border-radius: 10px; padding: 0.875rem 1rem; }
+        .step-number { width: 2rem; height: 2rem; background: #EA580C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; flex-shrink: 0; }
+        .step-text { font-size: 0.875rem; color: #1e293b; }
+        .step-text strong { color: #EA580C; }
+        .output-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1rem 0; }
+        @media (min-width: 768px) { .output-grid { grid-template-columns: repeat(2, 1fr); } }
+        .output-card { border: 1px solid #e5e5e5; border-radius: 10px; padding: 1rem; display: flex; align-items: flex-start; gap: 0.75rem; }
+        .output-card-icon { font-size: 1.5rem; }
+        .output-card-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.25rem; }
+        .output-card-desc { font-size: 0.75rem; color: #64748b; line-height: 1.5; }
+        .tool-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1rem 0; }
+        @media (min-width: 768px) { .tool-grid { grid-template-columns: repeat(2, 1fr); } }
+        .tool-card { border-radius: 10px; padding: 1rem; }
+        .tool-card-game { background: #eef2ff; border: 1px solid #c7d2fe; }
+        .tool-card-shot { background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .tool-card-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+        .tool-card-icon { font-size: 1.25rem; }
+        .tool-card-title { font-size: 0.875rem; font-weight: 700; }
+        .tool-card-game .tool-card-title { color: #3730a3; }
+        .tool-card-shot .tool-card-title { color: #047857; }
+        .tool-card-desc { font-size: 0.75rem; line-height: 1.5; }
+        .tool-card-game .tool-card-desc { color: #4338ca; }
+        .tool-card-shot .tool-card-desc { color: #059669; }
     </style>
 
     <!-- Tool Header -->
@@ -257,10 +302,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Charts Section -->
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📊</span> 
                     <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
-                </h2>
+                </h3>
                 <button onclick="app.generateComparisonImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                     <span>📸</span> 画像生成
                 </button>
@@ -284,10 +329,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Stats Table Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-3">
-                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📋</span>
                     <span class="font-display text-lg tracking-wide">BOX SCORE</span>
-                </h2>
+                </h3>
                 <div class="flex gap-2">
                     <button onclick="app.generateImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                         <span>📸</span> 画像生成
@@ -347,11 +392,11 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
-            <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
+            <h3 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
                 <span class="text-lg">📖</span>
                 <span class="font-display text-lg tracking-wide">STATS GLOSSARY</span>
                 <span class="text-xs font-normal text-gray-400 ml-2">- 用語説明 -</span>
-            </h2>
+            </h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
@@ -537,9 +582,9 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
             <!-- Additional Tips -->
             <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h3 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
+                <h4 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
                     <span>💡</span> スタッツを見るときのポイント
-                </h3>
+                </h4>
                 <ul class="text-sm text-blue-700 space-y-1">
                     <li>• <strong>得点だけで判断しない：</strong>リバウンドやアシストも重要な貢献です</li>
                     <li>• <strong>成功率に注目：</strong>シュート本数が多くても成功率が低いと効率が悪い場合も</li>
@@ -554,148 +599,108 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             </p>
 
             <!-- statstooとは セクション -->
-            <div class="mt-10 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                <!-- ヘッダー -->
-                <div class="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-4">
-                    <h2 class="text-white font-bold text-2xl flex items-center gap-2 m-0">
-                        <span>🏀</span> statstoo(スタッツー)とは
-                    </h2>
+            <article class="article-section">
+                <div class="article-header">
+                    <span class="article-icon">🏀</span>
+                    <h2 class="article-title">statstooとは</h2>
                 </div>
                 
-                <div class="p-6 space-y-6">
-                    <!-- 概要・目的 -->
-                    <div>
-                        <p class="text-gray-700 leading-relaxed">
-                            <strong class="text-secondary">statstoo(スタッツー)</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。<br>試合中のリアルタイム記録から練習での3P・2Pシュートの記録・分析まで、プレイヤーの成長をデータでサポートします。
-                        </p>
-                    </div>
-
-                    <!-- 特徴 -->
-                    <div>
-                        <h3 class="font-bold text-secondary text-lg mb-3 flex items-center gap-2">
-                            <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs">✨</span>
-                            特徴
-                        </h3>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div class="bg-gray-50 rounded-lg p-3 text-center">
-                                <div class="text-2xl mb-1">💰</div>
-                                <div class="text-xs font-bold text-gray-700">完全無料</div>
+                <div class="article-content">
+                    <p class="article-lead">
+                        <strong>statstoo</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。試合中のリアルタイム記録から練習でのシュート分析まで、プレイヤーの成長をデータでサポートします。
+                    </p>
+                    
+                    <section class="article-block">
+                        <h2>✨ 特徴</h2>
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <div class="feature-card-icon">💰</div>
+                                <div class="feature-card-text">完全無料</div>
                             </div>
-                            <div class="bg-gray-50 rounded-lg p-3 text-center">
-                                <div class="text-2xl mb-1">📝</div>
-                                <div class="text-xs font-bold text-gray-700">登録不要</div>
+                            <div class="feature-card">
+                                <div class="feature-card-icon">📝</div>
+                                <div class="feature-card-text">登録不要</div>
                             </div>
-                            <div class="bg-gray-50 rounded-lg p-3 text-center">
-                                <div class="text-2xl mb-1">📱</div>
-                                <div class="text-xs font-bold text-gray-700">スマホ対応</div>
+                            <div class="feature-card">
+                                <div class="feature-card-icon">📱</div>
+                                <div class="feature-card-text">スマホ対応</div>
                             </div>
-                            <div class="bg-gray-50 rounded-lg p-3 text-center">
-                                <div class="text-2xl mb-1">🔒</div>
-                                <div class="text-xs font-bold text-gray-700">データ安全</div>
+                            <div class="feature-card">
+                                <div class="feature-card-icon">🔒</div>
+                                <div class="feature-card-text">データ安全</div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-2">※データはお使いのブラウザにのみ保存され、外部サーバーには送信されません</p>
-                    </div>
-
-                    <!-- 対象ユーザー -->
-                    <div>
-                        <h3 class="font-bold text-secondary text-lg mb-3 flex items-center gap-2">
-                            <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs">👥</span>
-                            こんな方におすすめ
-                        </h3>
-                        <ul class="space-y-2">
-                            <li class="flex items-start gap-2 text-sm text-gray-700">
-                                <span class="text-orange-500 mt-0.5">▶</span>
-                                <span><strong>ミニバス〜社会人</strong>まで、試合や練習のスタッツを記録したい選手・保護者</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-sm text-gray-700">
-                                <span class="text-orange-500 mt-0.5">▶</span>
-                                <span>チームの<strong>指導者・コーチ</strong>で、選手のパフォーマンスを数値で把握したい方</span>
-                            </li>
-                            <li class="flex items-start gap-2 text-sm text-gray-700">
-                                <span class="text-orange-500 mt-0.5">▶</span>
-                                <span>シュート成功率を<strong>可視化</strong>して、練習の質を高めたいプレイヤー</span>
-                            </li>
+                        <p>※データはお使いのブラウザにのみ保存され、外部サーバーには送信されません</p>
+                    </section>
+                    
+                    <section class="article-block">
+                        <h2>👥 こんな方におすすめ</h2>
+                        <ul class="article-list-check">
+                            <li><strong>ミニバス〜社会人</strong>まで、試合や練習のスタッツを記録したい選手・保護者</li>
+                            <li>チームの<strong>指導者・コーチ</strong>で、選手のパフォーマンスを数値で把握したい方</li>
+                            <li>シュート成功率を<strong>可視化</strong>して、練習の質を高めたいプレイヤー</li>
                         </ul>
-                    </div>
-
-                    <!-- 使い方 -->
-                    <div>
-                        <h3 class="font-bold text-secondary text-lg mb-3 flex items-center gap-2">
-                            <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs">📖</span>
-                            使い方（3ステップ）
-                        </h3>
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-orange-50 to-transparent rounded-lg p-3">
-                                <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</span>
-                                <div class="text-sm text-gray-700">
-                                    <strong>メンバー登録</strong> — 「メンバー編集」から選手名と背番号を入力
-                                </div>
+                    </section>
+                    
+                    <section class="article-block">
+                        <h2>📖 使い方（3ステップ）</h2>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>メンバー登録</strong> — 「メンバー編集」から選手名と背番号を入力</div>
                             </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-orange-50 to-transparent rounded-lg p-3">
-                                <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</span>
-                                <div class="text-sm text-gray-700">
-                                    <strong>リアルタイム記録</strong> — 選手をタップしてシュート・リバウンド等を記録
-                                </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>リアルタイム記録</strong> — 選手をタップしてシュート・リバウンド等を記録</div>
                             </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-orange-50 to-transparent rounded-lg p-3">
-                                <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">3</span>
-                                <div class="text-sm text-gray-700">
-                                    <strong>結果を出力</strong> — Box Score画像やCSVでデータを保存・共有
-                                </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>結果を出力</strong> — Box Score画像やCSVでデータを保存・共有</div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- データ出力機能 -->
-                    <div>
-                        <h3 class="font-bold text-secondary text-lg mb-3 flex items-center gap-2">
-                            <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs">📤</span>
-                            データ出力機能
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-3">
-                            <div class="border border-gray-200 rounded-lg p-4 flex items-start gap-3">
-                                <span class="text-2xl">📸</span>
+                    </section>
+                    
+                    <section class="article-block">
+                        <h2>📤 データ出力機能</h2>
+                        <div class="output-grid">
+                            <div class="output-card">
+                                <span class="output-card-icon">📸</span>
                                 <div>
-                                    <div class="font-bold text-sm text-gray-800">Box Score画像</div>
-                                    <p class="text-xs text-gray-600 mt-1">SNS映えするスタッツ画像を生成。LINE・X・Instagramに直接シェア可能</p>
+                                    <div class="output-card-title">Box Score画像</div>
+                                    <p class="output-card-desc">SNS映えするスタッツ画像を生成。LINE・X・Instagramに直接シェア可能</p>
                                 </div>
                             </div>
-                            <div class="border border-gray-200 rounded-lg p-4 flex items-start gap-3">
-                                <span class="text-2xl">📊</span>
+                            <div class="output-card">
+                                <span class="output-card-icon">📊</span>
                                 <div>
-                                    <div class="font-bold text-sm text-gray-800">CSVエクスポート</div>
-                                    <p class="text-xs text-gray-600 mt-1">Excel・スプレッドシートで開けるCSV形式。シーズン通しての分析に便利</p>
+                                    <div class="output-card-title">CSVエクスポート</div>
+                                    <p class="output-card-desc">Excel・スプレッドシートで開けるCSV形式。シーズン通しての分析に便利</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- 公開中のツール -->
-                    <div class="border-t border-gray-100 pt-6">
-                        <h3 class="font-bold text-secondary text-lg mb-3 flex items-center gap-2">
-                            <span class="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center text-xs">🛠</span>
-                            公開中のツール
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-3">
-                            <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">📊</span>
-                                    <span class="font-bold text-indigo-800 text-sm">試合スタッツ記録ツール</span>
+                    </section>
+                    
+                    <section class="article-block">
+                        <h2>🛠 公開中のツール</h2>
+                        <div class="tool-grid">
+                            <div class="tool-card tool-card-game">
+                                <div class="tool-card-header">
+                                    <span class="tool-card-icon">📊</span>
+                                    <span class="tool-card-title">試合スタッツ記録ツール</span>
                                 </div>
-                                <p class="text-xs text-indigo-700">試合中のシュート・リバウンド・アシスト等をリアルタイムで記録。チーム比較グラフ付き。</p>
+                                <p class="tool-card-desc">試合中のシュート・リバウンド・アシスト等をリアルタイムで記録。チーム比較グラフ付き。</p>
                             </div>
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xl">🎯</span>
-                                    <span class="font-bold text-emerald-800 text-sm">シュートチャート（練習用）</span>
+                            <div class="tool-card tool-card-shot">
+                                <div class="tool-card-header">
+                                    <span class="tool-card-icon">🎯</span>
+                                    <span class="tool-card-title">シュートチャート（練習用）</span>
                                 </div>
-                                <p class="text-xs text-emerald-700">3P・2Pのシュート位置を記録。練習ごとの成功率推移を可視化できます。</p>
+                                <p class="tool-card-desc">3P・2Pのシュート位置を記録。練習ごとの成功率推移を可視化できます。</p>
                             </div>
                         </div>
-                    </div>
+                    </section>
                 </div>
-            </div>
+            </article>
 
         </section>
 
@@ -709,9 +714,9 @@ description: バスケットボールのスタッツを簡単に記録・分析�
     <div id="image-modal" class="modal-overlay">
         <div class="modal-content p-4 w-full max-w-lg">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-lg text-secondary flex items-center gap-2">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
                     <span>📸</span> Box Score 画像
-                </h2>
+                </h3>
                 <button onclick="app.closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             
@@ -763,9 +768,9 @@ description: バスケットボールのスタッツを簡単に記録・分析�
     <div id="comparison-image-modal" class="modal-overlay">
         <div class="modal-content p-4 w-full max-w-lg">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-lg text-secondary flex items-center gap-2">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
                     <span>📸</span> Team Comparison 画像
-                </h2>
+                </h3>
                 <button onclick="app.closeComparisonImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
             </div>
             
