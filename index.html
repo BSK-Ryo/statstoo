@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 試合スタッツ記録ツール(テスト)
-description: バスケットボールのスタッツを簡単に記録・分析できる完全無料ツール。
+description: statstoo(スタッツー)は、バスケットボールのスタッツを簡単に記録・分析できる完全無料ツールです。ミニバスから社会人まで試合や練習のシュート率や数値を記録したい方はぜひご活用ください。
 ---
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1864,14 +1864,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             }
         }
 
-        // DOMが完全に読み込まれてからAppを初期化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                window.app = new App();
-            });
-        } else {
+        // すべてのリソース（Chart.js等）が読み込まれてからAppを初期化
+        window.addEventListener('load', () => {
             window.app = new App();
-        }
+        });
 
         // Glossary Copy Function
         function copyGlossary(button) {
