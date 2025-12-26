@@ -1,11 +1,11 @@
 ---
 layout: default
-title: 試合スタッツ記録ツール
+title: 試合スタッツ記録ツール(テスト)
 description: バスケットボールのスタッツを簡単に記録・分析できる完全無料ツール。
 ---
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
     body {
@@ -419,7 +419,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                        <b>シュートを打つ時にファウルを受けた際に与えられるフリーで打てるシュート</b><br><br>
                         2Pシュート時のファウル→FT2本<br>
                         3Pシュート時のファウル→FT3本<br>
-                        ファウルを受けながらシュートを決める→FT1本<br>><br>
+                        ファウルを受けながらシュートを決める→FT1本<br><br>
                         成功すると1点が加算され、接戦の終盤では特に重要です。70%以上の成功率が目標とされます。<br>
                         ※1Q毎にチームファールを4回以上している場合、シュート時に関係なくどんなファウルでもFTになってしまうので注意しよう！<br>
                     </p>
@@ -839,6 +839,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
                 this.render();
                 this.initCharts();
+                this.updateCharts(); // 初期チャートデータを描画
             }
 
             // =============================
@@ -1579,6 +1580,22 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.renderStatsTable();
                 this.updateScoreboard();
                 this.updateUndoButton();
+                this.updateSelectedInfo(); // 選択中の選手情報を更新
+            }
+
+            updateSelectedInfo() {
+                const infoEl = document.getElementById('selected-info');
+                if (this.state.selectedPlayer) {
+                    const { team, playerId } = this.state.selectedPlayer;
+                    const player = this.state.teams[team].players.find(p => p.id === playerId);
+                    if (player) {
+                        const teamLabel = team === 'A' ? '味方' : '相手';
+                        const teamColor = team === 'A' ? 'text-indigo-600' : 'text-rose-600';
+                        infoEl.innerHTML = `<span class="${teamColor}">📍 ${player.name}</span> を選択中`;
+                    }
+                } else {
+                    infoEl.textContent = '';
+                }
             }
 
             updateScoreboard() {
@@ -1847,7 +1864,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             }
         }
 
-        window.app = new App();
+        // すべてのリソース（Chart.js等）が読み込まれてからAppを初期化
+        window.addEventListener('load', () => {
+            window.app = new App();
+        });
 
         // Glossary Copy Function
         function copyGlossary(button) {
