@@ -1136,7 +1136,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     left: -9999px;
                     top: 0;
                     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-                    padding: 20px;
+                    padding: 16px;
                     font-family: 'Noto Sans JP', sans-serif;
                     min-width: 600px;
                     max-width: 800px;
@@ -1163,26 +1163,27 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 
                 const header = document.createElement('div');
                 header.innerHTML = `
-                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
-                        <span style="font-size: 24px; margin-right: 8px;">🏀</span>
-                        <span style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 2px;">StatsToo</span>
-                        <span style="color: rgba(255,255,255,0.7); font-size: 14px; margin-left: 8px;">｜スタッツー</span>
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                        <span style="font-size: 20px; margin-right: 6px;">🏀</span>
+                        <span style="font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: white; letter-spacing: 2px;">StatsToo</span>
+                        <span style="color: white; font-size: 16px; margin-left: 5px; margin-right: 5px;">｜</span>
+                        <span style="font-size: 16px; color: white; font-weight: bold; letter-spacing: 1px;">スタッツー</span>
                     </div>
                     ${gameEvent || dateTimeStr ? `
-                    <div style="text-align: center; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                        ${gameEvent ? `<div style="color: rgba(255,255,255,0.9); font-size: 13px; font-weight: bold;">${gameEvent}</div>` : ''}
-                        ${dateTimeStr ? `<div style="color: rgba(255,255,255,0.6); font-size: 11px; margin-top: 2px;">📅 ${dateTimeStr}</div>` : ''}
+                    <div style="text-align: center; margin-bottom: 8px; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">
+                        ${gameEvent ? `<div style="color: rgba(255,255,255,0.9); font-size: 11px; font-weight: bold;">${gameEvent}</div>` : ''}
+                        ${dateTimeStr ? `<div style="color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 2px;">📅 ${dateTimeStr}</div>` : ''}
                     </div>
                     ` : ''}
-                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; margin-bottom: 12px;">
                         <div style="flex: 1; text-align: center;">
-                            <div style="color: #818cf8; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${this.state.teams.A.name}</div>
-                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: white;">${scoreA}</div>
+                            <div style="color: #818cf8; font-weight: bold; font-size: 12px; margin-bottom: 2px;">${this.state.teams.A.name}</div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: white; line-height: 1;">${scoreA}</div>
                         </div>
-                        <div style="color: rgba(255,255,255,0.3); font-family: 'Bebas Neue', sans-serif; font-size: 24px; padding: 0 16px;">VS</div>
+                        <div style="color: rgba(255,255,255,0.3); font-family: 'Bebas Neue', sans-serif; font-size: 18px; padding: 0 12px;">VS</div>
                         <div style="flex: 1; text-align: center;">
-                            <div style="color: #fb7185; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${this.state.teams.B.name}</div>
-                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: white;">${scoreB}</div>
+                            <div style="color: #fb7185; font-weight: bold; font-size: 12px; margin-bottom: 2px;">${this.state.teams.B.name}</div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: white; line-height: 1;">${scoreB}</div>
                         </div>
                     </div>
                 `;
@@ -1270,7 +1271,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     
                 const footer = document.createElement('div');
                 footer.innerHTML = `
-                    <div style="text-align: center; margin-top: 12px; color: rgba(255,255,255,0.5); font-size: 10px;">
+                    <div style="text-align: center; margin-top: 10px; color: rgba(255,255,255,0.5); font-size: 10px;">
                         ${footerDate} | statstoo.com
                     </div>
                 `;
@@ -1446,7 +1447,8 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                         <span style="font-size: 24px; margin-right: 8px;">🏀</span>
                         <span style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 2px;">StatsToo</span>
-                        <span style="color: rgba(255,255,255,0.7); font-size: 14px; margin-left: 8px;">｜スタッツー</span>
+                        <span style="color: white; font-size: 20px; margin-left: 6px; margin-right: 6px;">｜</span>
+                        <span style="font-size: 20px; color: white; font-weight: bold; letter-spacing: 1px;">スタッツー</span>
                     </div>
                     ${gameEvent || dateTimeStr ? `
                     <div style="text-align: center; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
