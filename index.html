@@ -1166,6 +1166,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                         <span style="font-size: 24px; margin-right: 8px;">🏀</span>
                         <span style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 2px;">StatsToo</span>
+                        <span style="color: rgba(255,255,255,0.7); font-size: 14px; margin-left: 8px;">｜スタッツー</span>
                     </div>
                     ${gameEvent || dateTimeStr ? `
                     <div style="text-align: center; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
@@ -1201,20 +1202,22 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 ];
                 
                 let tableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
                         <thead>
                             <tr style="background: #1e293b; color: white;">
-                                <th style="padding: 10px 8px; text-align: left; font-weight: bold;">Player</th>
-                                <th style="padding: 10px 6px; text-align: center; font-weight: bold;">PTS</th>
-                                <th style="padding: 10px 6px; text-align: center;">2P</th>
-                                <th style="padding: 10px 6px; text-align: center;">3P</th>
-                                <th style="padding: 10px 6px; text-align: center;">FT</th>
-                                <th style="padding: 10px 6px; text-align: center;">REB</th>
-                                <th style="padding: 10px 6px; text-align: center;">AST</th>
-                                <th style="padding: 10px 6px; text-align: center;">STL</th>
-                                <th style="padding: 10px 6px; text-align: center;">BLK</th>
-                                <th style="padding: 10px 6px; text-align: center;">TO</th>
-                                <th style="padding: 10px 6px; text-align: center; font-weight: bold;">EFF</th>
+                                <th style="padding: 8px 6px; text-align: left; font-weight: bold;">Player</th>
+                                <th style="padding: 8px 4px; text-align: center; font-weight: bold;">PTS</th>
+                                <th style="padding: 8px 4px; text-align: center;">2P</th>
+                                <th style="padding: 8px 4px; text-align: center;">2P%</th>
+                                <th style="padding: 8px 4px; text-align: center;">3P</th>
+                                <th style="padding: 8px 4px; text-align: center;">3P%</th>
+                                <th style="padding: 8px 4px; text-align: center;">FT</th>
+                                <th style="padding: 8px 4px; text-align: center;">OR-DR</th>
+                                <th style="padding: 8px 4px; text-align: center;">AST</th>
+                                <th style="padding: 8px 4px; text-align: center;">STL</th>
+                                <th style="padding: 8px 4px; text-align: center;">BLK</th>
+                                <th style="padding: 8px 4px; text-align: center;">TO</th>
+                                <th style="padding: 8px 4px; text-align: center; font-weight: bold;">EFF</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1223,11 +1226,15 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 allPlayers.forEach((p, idx) => {
                     const s = p.stats;
                     const pts = this.calculatePTS(s);
-                    const reb = s.orb + s.drb;
                     const teamColor = p.team === 'A' ? '#4f46e5' : '#e11d48';
                     const bgColor = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
                     
+                    // Calculate percentages
+                    const p2Pct = s.p2a > 0 ? (s.p2m / s.p2a * 100).toFixed(0) : '-';
+                    const p3Pct = s.p3a > 0 ? (s.p3m / s.p3a * 100).toFixed(0) : '-';
+                    
                     // Calculate EFF
+                    const reb = s.orb + s.drb;
                     const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
                     const ftMiss = s.fta - s.ftm;
                     const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
@@ -1235,17 +1242,19 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     
                     tableHTML += `
                         <tr style="background: ${bgColor};">
-                            <td style="padding: 8px; font-weight: bold; color: ${teamColor}; white-space: nowrap;">${p.name}</td>
-                            <td style="padding: 8px; text-align: center; font-weight: bold;">${pts}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.p2m}-${s.p2a}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.p3m}-${s.p3a}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.ftm}-${s.fta}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${reb}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.ast}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.stl}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.blk}</td>
-                            <td style="padding: 8px; text-align: center; color: #6b7280;">${s.to}</td>
-                            <td style="padding: 8px; text-align: center; font-weight: bold; color: ${effColor};">${eff >= 0 ? '+' : ''}${eff}</td>
+                            <td style="padding: 6px; font-weight: bold; color: ${teamColor}; white-space: nowrap; font-size: 10px;">${p.name}</td>
+                            <td style="padding: 6px; text-align: center; font-weight: bold;">${pts}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.p2m}-${s.p2a}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${p2Pct}${p2Pct !== '-' ? '%' : ''}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.p3m}-${s.p3a}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${p3Pct}${p3Pct !== '-' ? '%' : ''}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.ftm}-${s.fta}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.orb}-${s.drb}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.ast}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.stl}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.blk}</td>
+                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.to}</td>
+                            <td style="padding: 6px; text-align: center; font-weight: bold; color: ${effColor};">${eff >= 0 ? '+' : ''}${eff}</td>
                         </tr>
                     `;
                 });
@@ -1437,6 +1446,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                         <span style="font-size: 24px; margin-right: 8px;">🏀</span>
                         <span style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white; letter-spacing: 2px;">StatsToo</span>
+                        <span style="color: rgba(255,255,255,0.7); font-size: 14px; margin-left: 8px;">｜スタッツー</span>
                     </div>
                     ${gameEvent || dateTimeStr ? `
                     <div style="text-align: center; margin-bottom: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
