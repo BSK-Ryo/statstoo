@@ -87,12 +87,28 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     .btn-undo { background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.75rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-undo:not(:disabled):hover { color: var(--text-dark); }
     .btn-undo:disabled { opacity: 0.4; cursor: not-allowed; }
-    .direct-input-section { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e5e5e5; }
-    .direct-input-label { font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-bottom: 0.5rem; }
+    /* 入力モード切替コンテナ */
+    .input-mode-container { position: relative; }
+    .input-mode-buttons, .input-mode-direct { transition: opacity 0.2s ease, transform 0.2s ease; }
+    .input-mode-direct { display: none; }
+    .input-mode-container.direct-mode .input-mode-buttons { display: none; }
+    .input-mode-container.direct-mode .input-mode-direct { display: block; }
+    
+    /* 直接入力切替ボタン */
+    .btn-toggle-direct { display: block; width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: transparent; border: 1px dashed #cbd5e1; border-radius: 8px; color: var(--text-muted); font-size: 0.75rem; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .btn-toggle-direct:hover { background: var(--bg-light); border-color: #94a3b8; color: #475569; }
+    .btn-toggle-direct:disabled { opacity: 0.4; cursor: not-allowed; }
+    
+    /* 直接入力フィールド（リニューアル） */
+    .direct-input-panel { background: var(--bg-light); border-radius: 12px; padding: 0.75rem; }
+    .direct-input-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.625rem; }
+    .direct-input-title { font-size: 0.75rem; font-weight: 600; color: var(--secondary); }
+    .btn-back-to-buttons { background: transparent; border: none; color: var(--text-muted); font-size: 0.7rem; font-weight: 500; cursor: pointer; font-family: inherit; padding: 0.25rem 0.5rem; border-radius: 4px; transition: all 0.2s; display: flex; align-items: center; gap: 0.25rem; }
+    .btn-back-to-buttons:hover { background: #e5e7eb; color: #374151; }
     .direct-input-row { display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
     .direct-input-field { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
     .direct-input-field label { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
-    .direct-input-field input { width: 60px; padding: 0.5rem; font-size: 1rem; font-weight: 600; text-align: center; border: 2px solid #e5e5e5; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; transition: border-color 0.2s; }
+    .direct-input-field input { width: 60px; padding: 0.5rem; font-size: 1rem; font-weight: 600; text-align: center; border: 2px solid #e5e5e5; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; transition: border-color 0.2s; background: white; }
     .direct-input-field input:focus { outline: none; border-color: var(--primary); }
     .direct-input-divider { font-size: 1.25rem; color: var(--text-muted); font-weight: 600; margin-top: 1rem; }
     .btn-apply { margin-top: 1rem; padding: 0.5rem 1rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3); }
@@ -431,26 +447,41 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     <div class="fixed-controller-inner">
         <button class="btn-close-controller" onclick="app.hideController()" title="閉じる">✕</button>
         <div class="selected-spot-info" id="selected-spot-info"><div class="no-spot-selected">エリアを選択してください</div></div>
-        <div class="shot-buttons">
-            <button class="btn-shot btn-made" id="btn-made" onclick="app.recordShot(true)" disabled><span class="btn-shot-icon">⭕</span><span>成功</span></button>
-            <button class="btn-shot btn-missed" id="btn-missed" onclick="app.recordShot(false)" disabled><span class="btn-shot-icon">✕</span><span>失敗</span></button>
-        </div>
-        <div class="undo-container"><button class="btn-undo" id="btn-undo" onclick="app.undo()" disabled>↩ 取り消す</button></div>
-        <div class="direct-input-section" id="direct-input-section">
-            <div class="direct-input-label">または直接入力</div>
-            <div class="direct-input-row">
-                <div class="direct-input-field">
-                    <label for="input-made">成功</label>
-                    <input type="number" id="input-made" min="0" max="999" value="0" inputmode="numeric">
+        
+        <div class="input-mode-container" id="input-mode-container">
+            <!-- 通常モード：成功・失敗ボタン -->
+            <div class="input-mode-buttons">
+                <div class="shot-buttons">
+                    <button class="btn-shot btn-made" id="btn-made" onclick="app.recordShot(true)" disabled><span class="btn-shot-icon">⭕</span><span>成功</span></button>
+                    <button class="btn-shot btn-missed" id="btn-missed" onclick="app.recordShot(false)" disabled><span class="btn-shot-icon">✕</span><span>失敗</span></button>
                 </div>
-                <div class="direct-input-divider">/</div>
-                <div class="direct-input-field">
-                    <label for="input-total">試投</label>
-                    <input type="number" id="input-total" min="0" max="999" value="0" inputmode="numeric">
+                <button class="btn-toggle-direct" id="btn-toggle-direct" onclick="app.toggleDirectInput()" disabled>📝 数値を直接入力</button>
+            </div>
+            
+            <!-- 直接入力モード -->
+            <div class="input-mode-direct">
+                <div class="direct-input-panel">
+                    <div class="direct-input-header">
+                        <span class="direct-input-title">📝 数値を直接入力</span>
+                        <button class="btn-back-to-buttons" onclick="app.toggleDirectInput()">← 戻る</button>
+                    </div>
+                    <div class="direct-input-row">
+                        <div class="direct-input-field">
+                            <label for="input-made">成功</label>
+                            <input type="number" id="input-made" min="0" max="999" value="0" inputmode="numeric">
+                        </div>
+                        <div class="direct-input-divider">/</div>
+                        <div class="direct-input-field">
+                            <label for="input-total">試投</label>
+                            <input type="number" id="input-total" min="0" max="999" value="0" inputmode="numeric">
+                        </div>
+                        <button class="btn-apply" id="btn-apply" onclick="app.applyDirectInput()" disabled>反映</button>
+                    </div>
                 </div>
-                <button class="btn-apply" id="btn-apply" onclick="app.applyDirectInput()" disabled>反映</button>
             </div>
         </div>
+        
+        <div class="undo-container"><button class="btn-undo" id="btn-undo" onclick="app.undo()" disabled>↩ 取り消す</button></div>
     </div>
 </div>
 
@@ -836,6 +867,12 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             document.getElementById('btn-made').disabled = false;
             document.getElementById('btn-missed').disabled = false;
             document.getElementById('btn-apply').disabled = false;
+            document.getElementById('btn-toggle-direct').disabled = false;
+        }
+        
+        toggleDirectInput() {
+            const container = document.getElementById('input-mode-container');
+            container.classList.toggle('direct-mode');
         }
         
         showController() { document.getElementById('fixed-controller').classList.add('visible'); }
@@ -846,9 +883,12 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             document.getElementById('btn-made').disabled = true;
             document.getElementById('btn-missed').disabled = true;
             document.getElementById('btn-apply').disabled = true;
+            document.getElementById('btn-toggle-direct').disabled = true;
             document.getElementById('input-made').value = 0;
             document.getElementById('input-total').value = 0;
             document.getElementById('selected-spot-info').innerHTML = '<div class="no-spot-selected">エリアを選択してください</div>';
+            // 直接入力モードをリセット
+            document.getElementById('input-mode-container').classList.remove('direct-mode');
         }
         
         updateSelectedSpotInfo() {
@@ -892,6 +932,9 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
             
             const spot = SPOTS.find(s => s.id === this.selectedSpot);
             this.showToast(`${spot.name}: ${madeInput}/${totalInput} を設定しました`);
+            
+            // 直接入力モードを通常モードに戻す
+            document.getElementById('input-mode-container').classList.remove('direct-mode');
         }
         
         recordShot(made) {
