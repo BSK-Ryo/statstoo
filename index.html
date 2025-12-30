@@ -169,6 +169,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         .article-block { margin-bottom: 2rem; }
         .article-block:last-child { margin-bottom: 0; }
         .article-block h2 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
+        .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.25rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #e8f4f8 0%, #f5fafb 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #0891b2; border-radius: 0 6px 6px 0; }
         .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
         .article-block p:last-child { margin-bottom: 0; }
         .article-list-check { list-style: none; padding: 0; margin: 1rem 0; }
@@ -302,10 +303,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Charts Section -->
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📊</span> 
                     <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
-                </h3>
+                </h2>
                 <button onclick="app.generateComparisonImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                     <span>📸</span> 画像生成
                 </button>
@@ -329,10 +330,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Stats Table Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📋</span>
                     <span class="font-display text-lg tracking-wide">BOX SCORE</span>
-                </h3>
+                </h2>
                 <div class="flex gap-2">
                     <button onclick="app.generateImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                         <span>📸</span> 画像生成
@@ -392,11 +393,11 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
-            <h3 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
+            <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
                 <span class="text-lg">📖</span>
                 <span class="font-display text-lg tracking-wide">STATS GLOSSARY</span>
                 <span class="text-xs font-normal text-gray-400 ml-2">- 用語説明 -</span>
-            </h3>
+            </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
@@ -582,9 +583,9 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
             <!-- Additional Tips -->
             <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h4 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
+                <h3 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
                     <span>💡</span> スタッツを見るときのポイント
-                </h4>
+                </h3>
                 <ul class="text-sm text-blue-700 space-y-1">
                     <li>• <strong>得点だけで判断しない：</strong>リバウンドやアシストも重要な貢献です</li>
                     <li>• <strong>成功率に注目：</strong>シュート本数が多くても成功率が低いと効率が悪い場合も</li>
