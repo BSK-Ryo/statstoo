@@ -185,6 +185,50 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         padding: 16px;
         border-radius: 12px;
     }
+
+    /* Article Section Styles - StatsToo Style */
+    .article-section { background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; margin-top: 1.5rem; }
+    .article-header { background: #1e293b; color: #FFFFFF; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+    .article-icon { font-size: 1.25rem; }
+    .article-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .article-content { padding: 1.25rem; }
+    .article-lead { font-size: 0.95rem; color: #0f172a; line-height: 1.8; margin-bottom: 1rem; }
+    .article-block { margin-bottom: 1.5rem; }
+    .article-block:last-child { margin-bottom: 0; }
+    .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fff7ed 0%, #fffaf5 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #EA580C; border-radius: 0 6px 6px 0; }
+    .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.5rem; }
+    .article-block p:last-child { margin-bottom: 0; }
+
+    /* Step List */
+    .step-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
+    .step-item { display: flex; align-items: flex-start; gap: 0.75rem; background: linear-gradient(90deg, #fff7ed 0%, #ffffff 100%); border-radius: 10px; padding: 0.875rem 1rem; }
+    .step-number { width: 2rem; height: 2rem; background: #EA580C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; flex-shrink: 0; }
+    .step-text { font-size: 0.875rem; color: #1e293b; line-height: 1.6; }
+    .step-text strong { color: #EA580C; }
+
+    /* Feature Grid */
+    .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1rem 0; }
+    @media (min-width: 768px) { .feature-grid { grid-template-columns: repeat(4, 1fr); } }
+    .feature-card { background: #faf8f5; border-radius: 10px; padding: 1rem 0.75rem; text-align: center; }
+    .feature-card-icon { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    .feature-card-text { font-size: 0.75rem; font-weight: 700; color: #1e293b; }
+
+    /* Glossary Card */
+    .glossary-card { background: #f8fafc; border-radius: 10px; padding: 1rem; border-left: 3px solid #EA580C; }
+    .glossary-card-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .glossary-card-title span { background: #EA580C; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+    .glossary-card-text { font-size: 0.8rem; color: #64748b; line-height: 1.6; }
+
+    /* Ad Placeholder */
+    .ad-placeholder {
+        background: #f1f5f9;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.875rem;
+    }
 </style>
 
 <!-- Tool Header - StatsToo Style -->
@@ -222,6 +266,10 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
     </div>
 </header>
 
+<div class="page-wrapper">
+{% include sidebar-left.html %}
+
+<div class="main-content">
 <div class="max-w-4xl mx-auto px-4 py-4">
     <!-- Setup Screen -->
     <div id="setup-screen" class="space-y-4">
@@ -232,7 +280,7 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                     <span class="text-lg">⚙️</span>
                     <span class="font-bold text-sm text-secondary">チーム数を選択</span>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
                     <button onclick="app.setTeamCount(2)" class="count-tab px-4 py-2 text-sm font-bold rounded-lg transition" data-count="2">2チーム</button>
                     <button onclick="app.setTeamCount(3)" class="count-tab px-4 py-2 text-sm font-bold rounded-lg transition" data-count="3">3チーム</button>
                     <button onclick="app.setTeamCount(4)" class="count-tab px-4 py-2 text-sm font-bold rounded-lg transition" data-count="4">4チーム</button>
@@ -262,6 +310,73 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                 データを復元する
             </button>
         </div>
+
+        <!-- How to Use Section -->
+        <section class="article-section">
+            <div class="article-header">
+                <span class="article-icon">📖</span>
+                <h2 class="article-title">マルチチーム対戦スタッツの使い方</h2>
+            </div>
+            <div class="article-content">
+                <p class="article-lead">
+                    レクリエーションや練習試合で3〜5チームが参加する場合に便利なスタッツ記録ツールです。<br>
+                    総当たり戦の結果をまとめて管理し、MVP自動算出まで行えます。
+                </p>
+
+                <div class="article-block">
+                    <h3>🎯 このツールでできること</h3>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-card-icon">👥</div>
+                            <div class="feature-card-text">2〜5チーム対応</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">📊</div>
+                            <div class="feature-card-text">全スタッツ記録</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">📋</div>
+                            <div class="feature-card-text">勝敗表自動生成</div>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-card-icon">🏆</div>
+                            <div class="feature-card-text">MVP自動算出</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h3>📝 基本的な使い方</h3>
+                    <div class="step-list">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <div class="step-text"><strong>チーム数を選択</strong>して、各チームの名前と選手を登録します。</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <div class="step-text"><strong>「試合開始」をタップ</strong>すると、対戦カード一覧が表示されます。</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <div class="step-text"><strong>対戦カードを選んで</strong>、選手をタップしてスタッツを記録します。</div>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <div class="step-text"><strong>全試合終了後</strong>、勝敗表・個人累計・MVPを確認できます。</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="article-block">
+                    <h3>💡 便利な機能</h3>
+                    <p>
+                        • <strong>自動保存</strong>：データはブラウザに自動保存され、次回アクセス時に復元できます。<br>
+                        • <strong>画像生成</strong>：勝敗表やMVP結果を画像で保存してSNSでシェアできます。<br>
+                        • <strong>CSV出力</strong>：全データをCSVファイルでダウンロードできます。
+                    </p>
+                </div>
+            </div>
+        </section>
     </div>
 
     <!-- Main Screen (hidden by default) -->
@@ -303,6 +418,47 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                         <!-- Players will be rendered here -->
                     </div>
                 </div>
+
+                <!-- Ad Space -->
+                <div class="ad-placeholder">
+                    広告<br>AdSense
+                </div>
+
+                <!-- Stats Glossary for Match Tab -->
+                <section class="article-section">
+                    <div class="article-header">
+                        <span class="article-icon">📖</span>
+                        <h2 class="article-title">スタッツ用語クイックガイド</h2>
+                    </div>
+                    <div class="article-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>2P</span> 2ポイントシュート</div>
+                                <div class="glossary-card-text">3Pラインの内側から打つシュート。成功で2点。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>3P</span> 3ポイントシュート</div>
+                                <div class="glossary-card-text">3Pラインの外側から打つシュート。成功で3点。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>FT</span> フリースロー</div>
+                                <div class="glossary-card-text">ファウルを受けた際に与えられるシュート。成功で1点。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>REB</span> リバウンド</div>
+                                <div class="glossary-card-text">シュートが外れたボールを確保するプレー。OR=攻撃側、DR=守備側。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>AST</span> アシスト</div>
+                                <div class="glossary-card-text">パスが直接得点に繋がった際に記録されるスタッツ。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>TO</span> ターンオーバー</div>
+                                <div class="glossary-card-text">攻撃中にボールを失うこと。パスミス、ドリブルミスなど。</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- Standings Tab -->
@@ -346,10 +502,40 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                         </button>
                     </div>
                 </div>
+
+                <!-- Ad Space -->
+                <div class="ad-placeholder">
+                    広告<br>AdSense
+                </div>
+
+                <!-- Standings Guide Section -->
+                <section class="article-section">
+                    <div class="article-header">
+                        <span class="article-icon">📊</span>
+                        <h2 class="article-title">勝敗表の見方</h2>
+                    </div>
+                    <div class="article-content">
+                        <div class="article-block">
+                            <h3>📋 順位の決め方</h3>
+                            <p>
+                                順位は以下の優先順位で決定されます：<br><br>
+                                <strong>1. 勝利数</strong>：勝ち数が多いチームが上位<br>
+                                <strong>2. 得失点差</strong>：勝ち数が同じ場合、得点から失点を引いた値が大きいチームが上位
+                            </p>
+                        </div>
+                        <div class="article-block">
+                            <h3>💡 活用のヒント</h3>
+                            <p>
+                                • 画像生成でSNSにシェアして、チームメンバーと結果を共有しましょう<br>
+                                • CSVでダウンロードすれば、Excelやスプレッドシートで詳細分析できます
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- Stats Tab -->
-            <div id="tab-stats" class="tab-content hidden">
+            <div id="tab-stats" class="tab-content hidden space-y-4">
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
                         <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
@@ -376,10 +562,47 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                         </table>
                     </div>
                 </section>
+
+                <!-- Ad Space -->
+                <div class="ad-placeholder">
+                    広告<br>AdSense
+                </div>
+
+                <!-- EFF Explanation Section -->
+                <section class="article-section">
+                    <div class="article-header">
+                        <span class="article-icon">📈</span>
+                        <h2 class="article-title">EFF（効率）とは？</h2>
+                    </div>
+                    <div class="article-content">
+                        <p class="article-lead">
+                            EFF（Efficiency）は選手の総合的な貢献度を数値化した指標です。<br>
+                            得点だけでなく、リバウンドやアシストなども含めた「チームへの貢献」を評価します。
+                        </p>
+                        <div class="article-block">
+                            <h3>🔢 計算式</h3>
+                            <p>
+                                <strong>EFF = (PTS + REB + AST + STL + BLK) − (FGミス + FTミス + TO)</strong><br><br>
+                                プラス要素：得点、リバウンド、アシスト、スティール、ブロック<br>
+                                マイナス要素：シュートミス、フリースローミス、ターンオーバー
+                            </p>
+                        </div>
+                        <div class="article-block">
+                            <h3>💡 EFFの目安</h3>
+                            <p>
+                                • <strong>20以上</strong>：エース級の大活躍<br>
+                                • <strong>10〜19</strong>：チームに大きく貢献<br>
+                                • <strong>5〜9</strong>：堅実な働き<br>
+                                • <strong>0〜4</strong>：控えめな出場<br>
+                                • <strong>マイナス</strong>：ミスが多い試合
+                            </p>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- MVP Tab -->
-            <div id="tab-mvp" class="tab-content hidden">
+            <div id="tab-mvp" class="tab-content hidden space-y-4">
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
                     <div class="flex justify-between items-center mb-3">
                         <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
@@ -434,9 +657,50 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                         </div>
                     </div>
                 </section>
+
+                <!-- Ad Space -->
+                <div class="ad-placeholder">
+                    広告<br>AdSense
+                </div>
+
+                <!-- Awards Explanation Section -->
+                <section class="article-section">
+                    <div class="article-header">
+                        <span class="article-icon">🎖️</span>
+                        <h2 class="article-title">各賞について</h2>
+                    </div>
+                    <div class="article-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>🏆</span> MVP</div>
+                                <div class="glossary-card-text">全試合を通じてEFF（効率）が最も高かった選手に贈られます。得点だけでなく総合的な貢献度を評価。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>👑</span> 得点王</div>
+                                <div class="glossary-card-text">全試合での合計得点が最も多かった選手。チームの攻撃を牽引したエースの証。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>🎯</span> 3Pキング</div>
+                                <div class="glossary-card-text">3ポイントシュート成功数が最も多かった選手。長距離砲の名手。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>💪</span> リバウンド王</div>
+                                <div class="glossary-card-text">リバウンド（OR+DR）の合計が最も多かった選手。ペイントエリアを支配した証。</div>
+                            </div>
+                            <div class="glossary-card">
+                                <div class="glossary-card-title"><span>🤝</span> アシスト王</div>
+                                <div class="glossary-card-text">アシスト数が最も多かった選手。味方を活かすプレーメイカーの証。</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
+</div>
+</div>
+
+{% include sidebar-right.html %}
 </div>
 
 <!-- Controller -->
@@ -528,13 +792,11 @@ class MultiTeamApp {
     setTeamCount(count) {
         this.state.teamCount = count;
 
-        // Update button states
         document.querySelectorAll('.count-tab').forEach(btn => {
             const btnCount = parseInt(btn.dataset.count);
             btn.classList.toggle('active', btnCount === count);
         });
 
-        // Initialize teams
         const teamKeys = ['A', 'B', 'C', 'D', 'E'].slice(0, count);
         this.state.teams = {};
         teamKeys.forEach(key => {
@@ -793,7 +1055,7 @@ class MultiTeamApp {
                     <div class="player-row ${tc.name} ${isSelected ? 'selected' : ''} px-4 py-3 flex items-center cursor-pointer hover:bg-gray-50 transition"
                         style="--team-color: ${tc.color}; --team-bg: ${tc.bg};"
                         onclick="app.selectPlayer('${teamKey}', '${player.id}')">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3 text-white" style="background-color: ${tc.color}40; color: ${tc.color};">${player.number}</div>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3" style="background-color: ${tc.color}40; color: ${tc.color};">${player.number}</div>
                         <div class="flex-1 min-w-0">
                             <div class="font-medium text-secondary truncate">${player.name}</div>
                             <div class="text-[11px] text-gray-500">
