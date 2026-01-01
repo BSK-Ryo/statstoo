@@ -59,6 +59,14 @@
                            {% endif %}">
                             <span>🎯</span> 2Pシュートチャート
                         </a>
+                        <a href="/tools/mulch-team-stats/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/mulch-team-stats/' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>🏆</span> マルチチームスタッツ
+                        </a>
                     </div>
                 </div>
                 
@@ -165,6 +173,14 @@
                            text-white/70 hover:text-white hover:bg-white/10
                        {% endif %}">
                         <span>🎯</span> 2Pシュートチャート
+                    </a>
+                    <a href="/tools/mulch-team-stats/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url contains '/tools/mulch-team-stats/' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🏆</span> マルチチームスタッツ
                     </a>
                 </div>
             </div>
