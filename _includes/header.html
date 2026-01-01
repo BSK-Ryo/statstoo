@@ -15,44 +15,79 @@
                     <span class="font-display text-xl tracking-wide text-white">Stats<span class="text-primary-light">Too</span></span>
                 </a>
                 
-                <!-- 試合スタッツ記録ツール -->
-                <a href="/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
-                   {% if page.url == '/' or page.url == '/index.html' %}
-                       bg-primary text-white
-                   {% else %}
-                       text-white/70 hover:text-white hover:bg-white/10
-                   {% endif %}">
-                    <span>📊</span> 試合スタッツ記録ツール
+                <!-- StatsTooとは -->
+                <a href="/#about-statstoo" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5 text-white/70 hover:text-white hover:bg-white/10">
+                    <span>🏀</span> StatsTooとは
                 </a>
                 
-                <!-- 3Pショットチャート -->
-                <a href="/tools/3point-shot-chart/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
-                   {% if page.url contains '/tools/3point-shot-chart/' %}
-                       bg-primary text-white
-                   {% else %}
-                       text-white/70 hover:text-white hover:bg-white/10
-                   {% endif %}">
-                    <span>🎯</span> 3Pショットチャート
-                </a>
+                <!-- ツール一覧（ドロップダウン） -->
+                <div class="relative" id="tools-dropdown-desktop">
+                    <button onclick="toggleToolsDropdown('desktop')" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                       {% if page.url == '/' or page.url == '/index.html' or page.url contains '/tools/' %}
+                           bg-primary text-white
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🛠️</span> ツール一覧
+                        <svg class="w-4 h-4 ml-1 transition-transform" id="dropdown-arrow-desktop" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    <!-- ドロップダウンメニュー -->
+                    <div id="tools-menu-desktop" class="absolute left-0 mt-1 w-56 bg-secondary rounded-lg shadow-xl border border-white/10 py-2 hidden z-50 opacity-0 transform -translate-y-2 transition-all duration-200">
+                        <a href="/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url == '/' or page.url == '/index.html' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>📊</span> 試合スタッツ記録ツール
+                        </a>
+                        <a href="/tools/3point-shot-chart/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/3point-shot-chart/' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>🎯</span> 3Pショットチャート
+                        </a>
+                        <a href="/tools/2point-shot-chart/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/2point-shot-chart/' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>🎯</span> 2Pシュートチャート
+                        </a>
+                        <a href="/tools/mulch-team-stats/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/mulch-team-stats/' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>🏆</span> マルチチームスタッツ
+                        </a>
+                    </div>
+                </div>
                 
-                <!-- 2Pシュートチャート -->
-                <a href="/tools/2point-shot-chart/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
-                   {% if page.url contains '/tools/2point-shot-chart/' %}
-                       bg-primary text-white
-                   {% else %}
-                       text-white/70 hover:text-white hover:bg-white/10
-                   {% endif %}">
-                    <span>🎯</span> 2Pシュートチャート
-                </a>
-                
-                <!-- ルール・ポジション解説 -->
+                <!-- 基本ルール/ポジション解説 -->
                 <a href="/rule/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
                    {% if page.url contains '/rule/' %}
                        bg-primary text-white
                    {% else %}
                        text-white/70 hover:text-white hover:bg-white/10
                    {% endif %}">
-                    <span>📋</span> ルール・ポジション解説
+                    <span>📋</span> 基本ルール/ポジション解説
+                </a>
+                
+                <!-- お知らせ -->
+                <a href="/news/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url contains '/news/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span>📢</span> お知らせ
                 </a>
                 
                 <div class="flex-grow"></div>
@@ -93,44 +128,81 @@
     <!-- Mobile Navigation Menu -->
     <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-secondary">
         <div class="px-4 py-3 space-y-1">
-            <!-- 試合スタッツ記録 -->
-            <a href="/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
-               {% if page.url == '/' or page.url == '/index.html' %}
-                   bg-primary text-white
-               {% else %}
-                   text-white/70 hover:text-white hover:bg-white/10
-               {% endif %}">
-                <span>📊</span> 試合スタッツ記録
+            <!-- StatsTooとは -->
+            <a href="/#about-statstoo" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2 text-white/70 hover:text-white hover:bg-white/10">
+                <span>🏀</span> StatsTooとは
             </a>
             
-            <!-- 3Pショットチャート -->
-            <a href="/tools/3point-shot-chart/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
-               {% if page.url contains '/tools/3point-shot-chart/' %}
-                   bg-primary text-white
-               {% else %}
-                   text-white/70 hover:text-white hover:bg-white/10
-               {% endif %}">
-                <span>🎯</span> 3Pショットチャート
-            </a>
+            <!-- ツール一覧（モバイル版ドロップダウン） -->
+            <div class="relative" id="tools-dropdown-mobile">
+                <button onclick="toggleToolsDropdown('mobile')" class="w-full px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2 justify-between
+                   {% if page.url == '/' or page.url == '/index.html' or page.url contains '/tools/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span class="flex items-center gap-2">
+                        <span>🛠️</span> ツール一覧
+                    </span>
+                    <svg class="w-4 h-4 transition-transform" id="dropdown-arrow-mobile" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+                <!-- モバイル版ドロップダウンメニュー -->
+                <div id="tools-menu-mobile" class="hidden mt-1 ml-4 space-y-1 border-l-2 border-white/20 pl-3">
+                    <a href="/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url == '/' or page.url == '/index.html' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>📊</span> 試合スタッツ記録ツール
+                    </a>
+                    <a href="/tools/3point-shot-chart/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url contains '/tools/3point-shot-chart/' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🎯</span> 3Pショットチャート
+                    </a>
+                    <a href="/tools/2point-shot-chart/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url contains '/tools/2point-shot-chart/' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🎯</span> 2Pシュートチャート
+                    </a>
+                    <a href="/tools/mulch-team-stats/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url contains '/tools/mulch-team-stats/' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🏆</span> マルチチームスタッツ
+                    </a>
+                </div>
+            </div>
             
-            <!-- 2Pシュートチャート -->
-            <a href="/tools/2point-shot-chart/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
-               {% if page.url contains '/tools/2point-shot-chart/' %}
-                   bg-primary text-white
-               {% else %}
-                   text-white/70 hover:text-white hover:bg-white/10
-               {% endif %}">
-                <span>🎯</span> 2Pシュートチャート
-            </a>
-            
-            <!-- ルール・ポジション解説 -->
+            <!-- 基本ルール/ポジション解説 -->
             <a href="/rule/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
                {% if page.url contains '/rule/' %}
                    bg-primary text-white
                {% else %}
                    text-white/70 hover:text-white hover:bg-white/10
                {% endif %}">
-                <span>📋</span> ルール・ポジション解説
+                <span>📋</span> 基本ルール/ポジション解説
+            </a>
+            
+            <!-- お知らせ -->
+            <a href="/news/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url contains '/news/' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
+                <span>📢</span> お知らせ
             </a>
             
             <div class="border-t border-white/10 my-2 pt-2">
@@ -157,3 +229,60 @@
         </div>
     </div>
 </nav>
+
+<style>
+    /* ドロップダウンメニューのアニメーション */
+    #tools-menu-desktop.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* デスクトップ版：ホバーでも開く */
+    @media (min-width: 768px) {
+        #tools-dropdown-desktop:hover #tools-menu-desktop {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    // ツール一覧ドロップダウンの開閉
+    function toggleToolsDropdown(type) {
+        const menu = document.getElementById('tools-menu-' + type);
+        const arrow = document.getElementById('dropdown-arrow-' + type);
+        
+        if (type === 'desktop') {
+            menu.classList.toggle('show');
+            arrow.classList.toggle('rotate-180');
+        } else {
+            // モバイル版
+            menu.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        }
+    }
+    
+    // デスクトップ版：外側クリックで閉じる
+    document.addEventListener('click', function(event) {
+        const desktopDropdown = document.getElementById('tools-dropdown-desktop');
+        const desktopMenu = document.getElementById('tools-menu-desktop');
+        
+        if (desktopDropdown && desktopMenu && !desktopDropdown.contains(event.target)) {
+            desktopMenu.classList.remove('show');
+            document.getElementById('dropdown-arrow-desktop').classList.remove('rotate-180');
+        }
+    });
+    
+    // モバイルメニューの開閉
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobile-menu');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose = document.getElementById('menu-icon-close');
+        
+        menu.classList.toggle('hidden');
+        iconOpen.classList.toggle('hidden');
+        iconClose.classList.toggle('hidden');
+    }
+</script>

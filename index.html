@@ -1,6 +1,6 @@
 ---
 layout: default
-title: 試合スタッツ記録ツール
+title: バスケットボールのスタッツ記録ツール
 description: バスケットボールのスタッツを簡単に記録・分析できる完全無料ツールです。ミニバスから社会人まで試合や練習のシュート成功率を記録して、日々の成長に繋げたい方はぜひご活用ください。
 ---
 
@@ -101,6 +101,22 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             animation: bounce 2s ease-in-out infinite;
         }
 
+        /* Quarter Tab Styles */
+        .quarter-tab {
+            background: #f3f4f6;
+            color: #6b7280;
+            border: 2px solid transparent;
+        }
+        .quarter-tab:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+        .quarter-tab.active {
+            background: #EA580C;
+            color: white;
+            border-color: #EA580C;
+        }
+
         /* Image Export Modal Styles */
         .modal-overlay {
             position: fixed;
@@ -163,12 +179,13 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         .article-section { background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; margin-top: 2.5rem; }
         .article-header { background: #1e293b; color: #FFFFFF; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
         .article-icon { font-size: 1.25rem; }
-        .article-title { font-size: 1rem; font-weight: 700; margin: 0; }
+        .article-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
         .article-content { padding: 1.25rem; }
         .article-lead { font-size: 0.95rem; color: #0f172a; line-height: 1.8; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f1f1; }
         .article-block { margin-bottom: 2rem; }
         .article-block:last-child { margin-bottom: 0; }
-        .article-block h2 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
+        .article-block h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
+        .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.25rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #e8f4f8 0%, #f5fafb 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #0891b2; border-radius: 0 6px 6px 0; }
         .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
         .article-block p:last-child { margin-bottom: 0; }
         .article-list-check { list-style: none; padding: 0; margin: 1rem 0; }
@@ -244,6 +261,11 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     <div id="score-teamB" class="font-display text-5xl md:text-6xl tracking-tight leading-none">0</div>
                 </div>
             </div>
+            
+            <!-- Quarter Scores (クォーターモード時のみ表示) -->
+            <div id="quarter-scores" class="hidden mt-2 text-center text-xs text-white/60">
+                <div id="quarter-scores-detail" class="flex justify-center gap-2 flex-wrap"></div>
+            </div>
         </div>
     </header>
 
@@ -252,6 +274,48 @@ description: バスケットボールのスタッツを簡単に記録・分析�
     
     <div class="main-content">
         <div class="space-y-4">
+
+        <!-- Record Mode Selector -->
+        <div class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">📊</span>
+                    <span class="font-bold text-sm text-secondary">記録モード</span>
+                </div>
+                <div class="flex gap-2">
+                    <button id="mode-simple" onclick="app.setRecordMode('simple')" class="flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition border-2 border-primary bg-primary text-white">
+                        シンプル
+                    </button>
+                    <button id="mode-quarter" onclick="app.setRecordMode('quarter')" class="flex-1 md:flex-none px-4 py-2 text-sm font-bold rounded-lg transition border-2 border-gray-200 bg-white text-gray-600 hover:border-primary hover:text-primary">
+                        クォーター別
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quarter Selector (クォーターモード時のみ表示) -->
+            <div id="quarter-selector" class="hidden mt-4 pt-4 border-t border-gray-100">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-gray-600">現在のクォーター:</span>
+                        <span id="current-quarter-label" class="text-sm font-bold text-primary">Q1</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div id="quarter-tabs" class="flex gap-1 flex-wrap">
+                            <button onclick="app.setCurrentQuarter('Q1')" class="quarter-tab active px-3 py-1.5 text-xs font-bold rounded-lg transition">Q1</button>
+                            <button onclick="app.setCurrentQuarter('Q2')" class="quarter-tab px-3 py-1.5 text-xs font-bold rounded-lg transition">Q2</button>
+                            <button onclick="app.setCurrentQuarter('Q3')" class="quarter-tab px-3 py-1.5 text-xs font-bold rounded-lg transition">Q3</button>
+                            <button onclick="app.setCurrentQuarter('Q4')" class="quarter-tab px-3 py-1.5 text-xs font-bold rounded-lg transition">Q4</button>
+                        </div>
+                        <button id="add-ot-btn" onclick="app.addOvertime()" class="px-3 py-1.5 text-xs font-bold rounded-lg transition border border-dashed border-gray-300 text-gray-500 hover:border-primary hover:text-primary">
+                            +OT
+                        </button>
+                        <button id="next-quarter-btn" onclick="app.nextQuarter()" class="px-4 py-1.5 text-xs font-bold rounded-lg transition bg-green-500 hover:bg-green-600 text-white shadow-sm">
+                            次のQへ →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Edit Mode Status Bar -->
         <div id="status-bar" class="bg-primary/10 text-primary-dark text-xs px-4 py-3 rounded-lg border border-primary/20 hidden">
@@ -302,10 +366,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Charts Section -->
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📊</span> 
                     <span class="font-display text-lg tracking-wide">TEAM COMPARISON</span>
-                </h3>
+                </h2>
                 <button onclick="app.generateComparisonImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                     <span>📸</span> 画像生成
                 </button>
@@ -329,10 +393,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
         <!-- Stats Table Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📋</span>
                     <span class="font-display text-lg tracking-wide">BOX SCORE</span>
-                </h3>
+                </h2>
                 <div class="flex gap-2">
                     <button onclick="app.generateImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                         <span>📸</span> 画像生成
@@ -340,6 +404,21 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     <button onclick="app.exportCSV()" class="text-xs bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
                         <span>📥</span> CSV
                     </button>
+                </div>
+            </div>
+
+            <!-- Box Score View Selector (クォーターモード時のみ表示) -->
+            <div id="boxscore-view-selector" class="hidden mb-3">
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-bold text-gray-500">表示:</label>
+                    <select id="boxscore-view" onchange="app.setBoxScoreView(this.value)" class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                        <option value="total">総合（全て合算）</option>
+                        <option value="simple">シンプル記録分のみ</option>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
+                    </select>
                 </div>
             </div>
 
@@ -392,11 +471,11 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
-            <h3 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
+            <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-4">
                 <span class="text-lg">📖</span>
                 <span class="font-display text-lg tracking-wide">STATS GLOSSARY</span>
                 <span class="text-xs font-normal text-gray-400 ml-2">- 用語説明 -</span>
-            </h3>
+            </h2>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
@@ -582,9 +661,9 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
             <!-- Additional Tips -->
             <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <h4 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
+                <h3 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
                     <span>💡</span> スタッツを見るときのポイント
-                </h4>
+                </h3>
                 <ul class="text-sm text-blue-700 space-y-1">
                     <li>• <strong>得点だけで判断しない：</strong>リバウンドやアシストも重要な貢献です</li>
                     <li>• <strong>成功率に注目：</strong>シュート本数が多くても成功率が低いと効率が悪い場合も</li>
@@ -599,15 +678,16 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             </p>
 
             <!-- statstooとは セクション -->
-            <article class="article-section">
+            <article class="article-section" id="about-statstoo">
                 <div class="article-header">
                     <span class="article-icon">🏀</span>
-                    <h2 class="article-title">statstooとは</h2>
+                    <h2 class="article-title">StatsToo(スタッツー)とは？バスケットボールのスタッツを記録するためのツール</h2>
                 </div>
                 
                 <div class="article-content">
                     <p class="article-lead">
-                        <strong>statstoo</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。試合中のリアルタイム記録から練習でのシュート分析まで、プレイヤーの成長をデータでサポートします。
+                        <strong>statstoo</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。試合中のリアルタイム・後日録画した動画からの記録なら「試合スタッツ記録ツール」、シュート練習を記録したいなら「3Pショットチャート」「2Pショットチャート」と2つのツールをご用意しました。
+                        プレイヤーの皆様の成長をデータでサポートします。ぜひご活用くださいませ。
                     </p>
                     
                     <section class="article-block">
@@ -630,11 +710,11 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                                 <div class="feature-card-text">データ安全</div>
                             </div>
                         </div>
-                        <p>※データはお使いのブラウザにのみ保存され、外部サーバーには送信されません</p>
+                        <p>※データはお使いのブラウザにのみに保存されるので、外部サーバーには送信されません。</p>
                     </section>
                     
                     <section class="article-block">
-                        <h2>👥 こんな方におすすめ</h2>
+                        <h2>👥 こんな方におすすめ！！</h2>
                         <ul class="article-list-check">
                             <li><strong>ミニバス〜社会人</strong>まで、試合や練習のスタッツを記録したい選手・保護者</li>
                             <li>チームの<strong>指導者・コーチ</strong>で、選手のパフォーマンスを数値で把握したい方</li>
@@ -643,11 +723,12 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     </section>
                     
                     <section class="article-block">
-                        <h2>📖 使い方（3ステップ）</h2>
+                        <h2>📖 StatsTooの各ツールの使い方</h2>
+                        <h3>試合スタッツ記録ツール</h3>
                         <div class="step-list">
                             <div class="step-item">
                                 <span class="step-number">1</span>
-                                <div class="step-text"><strong>メンバー登録</strong> — 「メンバー編集」から選手名と背番号を入力</div>
+                                <div class="step-text"><strong>メンバー登録</strong> — 「メンバー編集」から選手名と背番号を入力できます</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
@@ -656,6 +737,21 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                             <div class="step-item">
                                 <span class="step-number">3</span>
                                 <div class="step-text"><strong>結果を出力</strong> — Box Score画像やCSVでデータを保存・共有</div>
+                            </div>
+                        </div>
+                        <h3>3P・2Pショットチャート</h3>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>練習場所を登録</strong> — 「会場・日付・時間」を記録できるので記載する※しなくても大丈夫です。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>各スポットをタップして記録</strong> — 各箇所をタップしてシュートの成功・失敗数を記録</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>結果を保存・出力</strong> — 画面右上の「保存」ボタンでデータを保存。月次でデータを集計しよう</div>
                             </div>
                         </div>
                     </section>
@@ -686,16 +782,23 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                             <div class="tool-card tool-card-game">
                                 <div class="tool-card-header">
                                     <span class="tool-card-icon">📊</span>
-                                    <span class="tool-card-title">試合スタッツ記録ツール</span>
+                                    <h3 class="tool-card-title">試合スタッツ記録ツール</h3>
                                 </div>
                                 <p class="tool-card-desc">試合中のシュート・リバウンド・アシスト等をリアルタイムで記録。チーム比較グラフ付き。</p>
                             </div>
                             <div class="tool-card tool-card-shot">
                                 <div class="tool-card-header">
                                     <span class="tool-card-icon">🎯</span>
-                                    <span class="tool-card-title">シュートチャート（練習用）</span>
+                                    <h3 class="tool-card-title">3Pショットチャート（練習用）</h3>
                                 </div>
-                                <p class="tool-card-desc">3P・2Pのシュート位置を記録。練習ごとの成功率推移を可視化できます。</p>
+                                <p class="tool-card-desc">5箇所の3Pシュートの成功率を記録。保存機能があるので練習ごとの成功率推移を可視化できます。</p>
+                            </div>
+                             <div class="tool-card tool-card-shot">
+                                <div class="tool-card-header">
+                                    <span class="tool-card-icon">🎯</span>
+                                    <h3 class="tool-card-title">2Pショットチャート（練習用）</h3>
+                                </div>
+                                <p class="tool-card-desc">11箇所の2Pのシュート成功率を記録。保存機能により練習ごとの成功率推移を可視化できます。</p>
                             </div>
                         </div>
                     </section>
@@ -818,6 +921,17 @@ description: バスケットボールのスタッツを簡単に記録・分析�
     <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
         <div class="max-w-4xl mx-auto px-3 py-3">
             
+            <!-- Quarter Indicator (クォーターモード時のみ表示) -->
+            <div id="controller-quarter-indicator" class="hidden mb-2 pb-2 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-gray-500">記録中:</span>
+                        <span id="controller-quarter-label" class="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">Q1</span>
+                    </div>
+                    <div id="controller-quarter-scores" class="text-xs text-gray-500"></div>
+                </div>
+            </div>
+            
             <div class="flex justify-between items-center mb-2">
                 <div id="selected-info" class="text-sm font-bold text-secondary"></div>
                 <div class="flex gap-2">
@@ -935,7 +1049,12 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     },
                     selectedPlayer: null,
                     editMode: false,
-                    history: []
+                    history: [],
+                    // クォーター機能用
+                    recordMode: 'simple', // 'simple' or 'quarter'
+                    currentQuarter: 'Q1',
+                    quarters: ['Q1', 'Q2', 'Q3', 'Q4'], // OTは動的に追加
+                    boxScoreView: 'total' // 'total', 'simple', 'Q1', 'Q2', etc.
                 };
                 this.chartComparison = null;
                 this.chartPercentage = null;
@@ -956,6 +1075,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     const data = {
                         teams: this.state.teams,
                         history: this.state.history,
+                        recordMode: this.state.recordMode,
+                        currentQuarter: this.state.currentQuarter,
+                        quarters: this.state.quarters,
+                        boxScoreView: this.state.boxScoreView,
                         gameInfo: {
                             event: document.getElementById('game-event')?.value || '',
                             date: document.getElementById('game-date')?.value || '',
@@ -979,11 +1102,33 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     // チームデータを復元
                     if (data.teams) {
                         this.state.teams = data.teams;
+                        // 古いデータの場合、quarterStatsを初期化
+                        ['A', 'B'].forEach(team => {
+                            this.state.teams[team].players.forEach(p => {
+                                if (!p.quarterStats) {
+                                    p.quarterStats = {};
+                                }
+                            });
+                        });
                     }
                     
                     // 履歴を復元
                     if (data.history) {
                         this.state.history = data.history;
+                    }
+
+                    // クォーター関連を復元
+                    if (data.recordMode) {
+                        this.state.recordMode = data.recordMode;
+                    }
+                    if (data.currentQuarter) {
+                        this.state.currentQuarter = data.currentQuarter;
+                    }
+                    if (data.quarters) {
+                        this.state.quarters = data.quarters;
+                    }
+                    if (data.boxScoreView) {
+                        this.state.boxScoreView = data.boxScoreView;
                     }
 
                     // ゲーム情報を復元（init後にDOMが存在するので遅延実行）
@@ -1006,6 +1151,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                         document.getElementById('header-teamB').textContent = this.state.teams.B.name;
                         
                         this.updateScoreboard();
+                        this.updateQuarterUI();
                     }, 0);
 
                     console.log('スタッツを復元しました');
@@ -1031,8 +1177,13 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     name,
                     team,
                     isOnCourt: true,
-                    stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 }
+                    stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
+                    quarterStats: {} // クォーター別スタッツ（動的に追加）
                 }));
+            }
+            
+            createEmptyStats() {
+                return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
             }
 
             init() {
@@ -1077,6 +1228,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.render();
                 this.initCharts();
                 this.updateCharts(); // 初期チャートデータを描画
+                this.updateQuarterUI(); // クォーターUI初期化
             }
 
             // =============================
@@ -1225,7 +1377,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 `;
                 
                 allPlayers.forEach((p, idx) => {
-                    const s = p.stats;
+                    const s = this.getTotalStats(p);
                     const pts = this.calculatePTS(s);
                     const teamColor = p.team === 'A' ? '#4f46e5' : '#e11d48';
                     const bgColor = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
@@ -1709,14 +1861,34 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (!player) return;
 
-                // Save history
-                this.state.history.push({ team, playerId, statKey, value: 1 });
+                // Save history (クォーター情報も保存)
+                this.state.history.push({ 
+                    team, 
+                    playerId, 
+                    statKey, 
+                    value: 1,
+                    recordMode: this.state.recordMode,
+                    quarter: this.state.currentQuarter
+                });
 
-                // Update stat
-                player.stats[statKey] += 1;
-                if (statKey === 'p2m') player.stats.p2a += 1;
-                if (statKey === 'p3m') player.stats.p3a += 1;
-                if (statKey === 'ftm') player.stats.fta += 1;
+                // Update stat based on record mode
+                if (this.state.recordMode === 'simple') {
+                    // シンプルモード: 従来通りstatsに記録
+                    player.stats[statKey] += 1;
+                    if (statKey === 'p2m') player.stats.p2a += 1;
+                    if (statKey === 'p3m') player.stats.p3a += 1;
+                    if (statKey === 'ftm') player.stats.fta += 1;
+                } else {
+                    // クォーターモード: quarterStatsに記録
+                    const q = this.state.currentQuarter;
+                    if (!player.quarterStats[q]) {
+                        player.quarterStats[q] = this.createEmptyStats();
+                    }
+                    player.quarterStats[q][statKey] += 1;
+                    if (statKey === 'p2m') player.quarterStats[q].p2a += 1;
+                    if (statKey === 'p3m') player.quarterStats[q].p3a += 1;
+                    if (statKey === 'ftm') player.quarterStats[q].fta += 1;
+                }
 
                 this.render();
                 this.updateCharts();
@@ -1729,10 +1901,23 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 const player = this.state.teams[last.team].players.find(p => p.id === last.playerId);
                 if (!player) return;
 
-                player.stats[last.statKey] -= last.value;
-                if (last.statKey === 'p2m') player.stats.p2a -= 1;
-                if (last.statKey === 'p3m') player.stats.p3a -= 1;
-                if (last.statKey === 'ftm') player.stats.fta -= 1;
+                // Undo based on the record mode when the action was taken
+                if (last.recordMode === 'simple' || !last.recordMode) {
+                    // シンプルモードで記録されたもの
+                    player.stats[last.statKey] -= last.value;
+                    if (last.statKey === 'p2m') player.stats.p2a -= 1;
+                    if (last.statKey === 'p3m') player.stats.p3a -= 1;
+                    if (last.statKey === 'ftm') player.stats.fta -= 1;
+                } else {
+                    // クォーターモードで記録されたもの
+                    const q = last.quarter;
+                    if (player.quarterStats[q]) {
+                        player.quarterStats[q][last.statKey] -= last.value;
+                        if (last.statKey === 'p2m') player.quarterStats[q].p2a -= 1;
+                        if (last.statKey === 'p3m') player.quarterStats[q].p3a -= 1;
+                        if (last.statKey === 'ftm') player.quarterStats[q].fta -= 1;
+                    }
+                }
 
                 this.render();
                 this.updateCharts();
@@ -1743,17 +1928,235 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 return stats.p2m * 2 + stats.p3m * 3 + stats.ftm;
             }
 
+            // プレイヤーの総合スタッツを計算（stats + quarterStats全て）
+            getTotalStats(player) {
+                const total = { ...player.stats };
+                Object.keys(player.quarterStats || {}).forEach(q => {
+                    const qs = player.quarterStats[q];
+                    Object.keys(qs).forEach(key => {
+                        total[key] = (total[key] || 0) + qs[key];
+                    });
+                });
+                return total;
+            }
+
+            // 特定のクォーターのスタッツを取得
+            getQuarterStats(player, quarter) {
+                if (quarter === 'total') {
+                    return this.getTotalStats(player);
+                } else if (quarter === 'simple') {
+                    return player.stats;
+                } else {
+                    return player.quarterStats[quarter] || this.createEmptyStats();
+                }
+            }
+
+            // 現在のboxScoreViewに基づいてスタッツを取得
+            getDisplayStats(player) {
+                return this.getQuarterStats(player, this.state.boxScoreView);
+            }
+
             calculateTeamScore(team) {
-                return this.state.teams[team].players.reduce((sum, p) => sum + this.calculatePTS(p.stats), 0);
+                return this.state.teams[team].players.reduce((sum, p) => {
+                    const stats = this.getTotalStats(p);
+                    return sum + this.calculatePTS(stats);
+                }, 0);
+            }
+
+            // 特定のクォーターのチームスコアを計算
+            calculateTeamQuarterScore(team, quarter) {
+                return this.state.teams[team].players.reduce((sum, p) => {
+                    const stats = this.getQuarterStats(p, quarter);
+                    return sum + this.calculatePTS(stats);
+                }, 0);
             }
 
             calculateTeamStats(team) {
                 const players = this.state.teams[team].players;
                 const totals = { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
                 players.forEach(p => {
-                    Object.keys(totals).forEach(k => totals[k] += p.stats[k]);
+                    const stats = this.getTotalStats(p);
+                    Object.keys(totals).forEach(k => totals[k] += stats[k]);
                 });
                 return totals;
+            }
+
+            // =============================
+            // 🏀 クォーター機能
+            // =============================
+            setRecordMode(mode) {
+                this.state.recordMode = mode;
+                this.updateQuarterUI();
+                this.saveToLocalStorage();
+            }
+
+            setCurrentQuarter(quarter) {
+                this.state.currentQuarter = quarter;
+                this.updateQuarterUI();
+                this.saveToLocalStorage();
+            }
+
+            nextQuarter() {
+                const currentIndex = this.state.quarters.indexOf(this.state.currentQuarter);
+                if (currentIndex < this.state.quarters.length - 1) {
+                    this.state.currentQuarter = this.state.quarters[currentIndex + 1];
+                } else {
+                    // 最後のクォーターの場合は何もしない（OT追加を促す）
+                    alert('最後のクォーターです。延長戦が必要な場合は「+OT」ボタンで追加してください。');
+                    return;
+                }
+                this.updateQuarterUI();
+                this.saveToLocalStorage();
+            }
+
+            addOvertime() {
+                const otCount = this.state.quarters.filter(q => q.startsWith('OT')).length;
+                const newOT = `OT${otCount + 1}`;
+                this.state.quarters.push(newOT);
+                this.state.currentQuarter = newOT;
+                this.updateQuarterUI();
+                this.updateBoxScoreViewOptions();
+                this.saveToLocalStorage();
+            }
+
+            setBoxScoreView(view) {
+                this.state.boxScoreView = view;
+                this.renderStatsTable();
+                this.saveToLocalStorage();
+            }
+
+            updateQuarterUI() {
+                // モードボタンの状態更新
+                const simpleBtn = document.getElementById('mode-simple');
+                const quarterBtn = document.getElementById('mode-quarter');
+                
+                if (!simpleBtn || !quarterBtn) return; // DOM未準備の場合は終了
+                
+                if (this.state.recordMode === 'simple') {
+                    simpleBtn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    simpleBtn.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                    quarterBtn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    quarterBtn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                } else {
+                    quarterBtn.classList.add('bg-primary', 'text-white', 'border-primary');
+                    quarterBtn.classList.remove('bg-white', 'text-gray-600', 'border-gray-200');
+                    simpleBtn.classList.remove('bg-primary', 'text-white', 'border-primary');
+                    simpleBtn.classList.add('bg-white', 'text-gray-600', 'border-gray-200');
+                }
+
+                // クォーターセレクターの表示/非表示
+                const quarterSelector = document.getElementById('quarter-selector');
+                const quarterScores = document.getElementById('quarter-scores');
+                const boxScoreViewSelector = document.getElementById('boxscore-view-selector');
+                const controllerQuarterIndicator = document.getElementById('controller-quarter-indicator');
+                
+                if (this.state.recordMode === 'quarter') {
+                    if (quarterSelector) quarterSelector.classList.remove('hidden');
+                    if (quarterScores) quarterScores.classList.remove('hidden');
+                    if (boxScoreViewSelector) boxScoreViewSelector.classList.remove('hidden');
+                    if (controllerQuarterIndicator) controllerQuarterIndicator.classList.remove('hidden');
+                } else {
+                    if (quarterSelector) quarterSelector.classList.add('hidden');
+                    if (quarterScores) quarterScores.classList.add('hidden');
+                    if (boxScoreViewSelector) boxScoreViewSelector.classList.add('hidden');
+                    if (controllerQuarterIndicator) controllerQuarterIndicator.classList.add('hidden');
+                }
+
+                // 現在のクォーターラベル更新
+                const currentQuarterLabel = document.getElementById('current-quarter-label');
+                const controllerQuarterLabel = document.getElementById('controller-quarter-label');
+                if (currentQuarterLabel) currentQuarterLabel.textContent = this.state.currentQuarter;
+                if (controllerQuarterLabel) controllerQuarterLabel.textContent = this.state.currentQuarter;
+
+                // コントローラーのクォーター別スコア更新
+                this.updateControllerQuarterScores();
+
+                // クォータータブの更新
+                this.renderQuarterTabs();
+
+                // クォーター別スコアの更新
+                this.renderQuarterScores();
+
+                // Box Scoreのセレクトオプション更新
+                this.updateBoxScoreViewOptions();
+            }
+
+            updateControllerQuarterScores() {
+                const container = document.getElementById('controller-quarter-scores');
+                if (!container) return;
+                
+                const q = this.state.currentQuarter;
+                const scoreA = this.calculateTeamQuarterScore('A', q);
+                const scoreB = this.calculateTeamQuarterScore('B', q);
+                container.textContent = `${q}: ${scoreA} - ${scoreB}`;
+            }
+
+            renderQuarterTabs() {
+                const tabsContainer = document.getElementById('quarter-tabs');
+                if (!tabsContainer) return;
+                
+                tabsContainer.innerHTML = '';
+
+                this.state.quarters.forEach(q => {
+                    const btn = document.createElement('button');
+                    btn.className = `quarter-tab px-3 py-1.5 text-xs font-bold rounded-lg transition ${q === this.state.currentQuarter ? 'active' : ''}`;
+                    btn.textContent = q;
+                    btn.onclick = () => this.setCurrentQuarter(q);
+                    tabsContainer.appendChild(btn);
+                });
+            }
+
+            renderQuarterScores() {
+                const container = document.getElementById('quarter-scores-detail');
+                if (!container) return;
+                
+                container.innerHTML = '';
+
+                this.state.quarters.forEach(q => {
+                    const scoreA = this.calculateTeamQuarterScore('A', q);
+                    const scoreB = this.calculateTeamQuarterScore('B', q);
+                    
+                    // スコアがある場合のみ表示
+                    if (scoreA > 0 || scoreB > 0 || q === this.state.currentQuarter) {
+                        const span = document.createElement('span');
+                        span.className = `px-2 py-0.5 rounded ${q === this.state.currentQuarter ? 'bg-primary/20 text-primary-light font-bold' : ''}`;
+                        span.textContent = `${q}: ${scoreA}-${scoreB}`;
+                        container.appendChild(span);
+                    }
+                });
+            }
+
+            updateBoxScoreViewOptions() {
+                const select = document.getElementById('boxscore-view');
+                if (!select) return;
+
+                // 現在の値を保持
+                const currentValue = select.value;
+
+                // オプションをクリア
+                select.innerHTML = '';
+
+                // 基本オプション
+                const baseOptions = [
+                    { value: 'total', label: '総合（全て合算）' },
+                    { value: 'simple', label: 'シンプル記録分のみ' }
+                ];
+
+                // クォーターオプション
+                const quarterOptions = this.state.quarters.map(q => ({
+                    value: q,
+                    label: q
+                }));
+
+                [...baseOptions, ...quarterOptions].forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    if (opt.value === currentValue || (opt.value === 'total' && !currentValue)) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
             }
 
             // =============================
@@ -1778,7 +2181,8 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     name,
                     team,
                     isOnCourt: false,
-                    stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 }
+                    stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
+                    quarterStats: {}
                 });
                 this.render();
                 this.saveToLocalStorage();
@@ -1818,10 +2222,16 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
                 document.getElementById('game-time').value = '';
                 this.state.history = [];
+                // Reset quarter settings
+                this.state.recordMode = 'simple';
+                this.state.currentQuarter = 'Q1';
+                this.state.quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+                this.state.boxScoreView = 'total';
                 this.deselectPlayer();
                 this.render();
                 this.updateScoreboard();
                 this.updateCharts();
+                this.updateQuarterUI();
                 this.clearLocalStorage();
                 console.log('Reset complete');
             }
@@ -1836,6 +2246,8 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 this.updateScoreboard();
                 this.updateUndoButton();
                 this.updateSelectedInfo(); // 選択中の選手情報を更新
+                this.renderQuarterScores(); // クォーター別スコア更新
+                this.updateControllerQuarterScores(); // コントローラーのクォータースコア更新
             }
 
             updateSelectedInfo() {
@@ -1879,7 +2291,8 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
                 players.forEach(p => {
                     const isSelected = this.state.selectedPlayer && this.state.selectedPlayer.playerId === p.id;
-                    const pts = this.calculatePTS(p.stats);
+                    const totalStats = this.getTotalStats(p);
+                    const pts = this.calculatePTS(totalStats);
                     const div = document.createElement('div');
                     div.className = `player-row flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition ${isSelected ? selectedClass : ''} ${!p.isOnCourt ? 'opacity-50' : ''}`;
                     div.onclick = () => this.selectPlayer(team, p.id);
@@ -1894,7 +2307,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     } else {
                         div.innerHTML = `
                             <span class="font-bold text-sm text-secondary">${p.name} ${!p.isOnCourt ? '<span class="text-[10px] text-gray-400">(Bench)</span>' : ''}</span>
-                            <span class="text-xs text-gray-500 font-mono">${pts} / ${p.stats.pf} / ${p.stats.ast}</span>
+                            <span class="text-xs text-gray-500 font-mono">${pts} / ${totalStats.pf} / ${totalStats.ast}</span>
                         `;
                     }
                     listEl.appendChild(div);
@@ -1907,7 +2320,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 const allPlayers = [...this.state.teams.A.players, ...this.state.teams.B.players];
 
                 allPlayers.forEach((p, idx) => {
-                    const s = p.stats;
+                    // boxScoreViewに応じてスタッツを取得
+                    const s = this.state.recordMode === 'quarter' 
+                        ? this.getDisplayStats(p) 
+                        : this.getTotalStats(p);
                     const pts = this.calculatePTS(s);
                     const p2pct = s.p2a > 0 ? (s.p2m/s.p2a*100).toFixed(0)+'%' : '-';
                     const p3pct = s.p3a > 0 ? (s.p3m/s.p3a*100).toFixed(0)+'%' : '-';
@@ -2046,6 +2462,52 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     return str;
                 };
 
+                // スタッツ行を生成するヘルパー関数
+                const createStatRows = (getStats) => [
+                    { label: "合計得点", getter: p => this.calculatePTS(getStats(p)) },
+                    { label: "2P 成功数", getter: p => getStats(p).p2m },
+                    { label: "2P 試投数", getter: p => getStats(p).p2a },
+                    { label: "2P %", getter: p => getStats(p).p2a ? (getStats(p).p2m/getStats(p).p2a*100).toFixed(1)+"%" : "-" },
+                    { label: "3P 成功数", getter: p => getStats(p).p3m },
+                    { label: "3P 試投数", getter: p => getStats(p).p3a },
+                    { label: "3P %", getter: p => getStats(p).p3a ? (getStats(p).p3m/getStats(p).p3a*100).toFixed(1)+"%" : "-" },
+                    { label: "FT 成功数", getter: p => getStats(p).ftm },
+                    { label: "FT 試投数", getter: p => getStats(p).fta },
+                    { label: "FT %", getter: p => getStats(p).fta ? (getStats(p).ftm/getStats(p).fta*100).toFixed(1)+"%" : "-" },
+                    { label: "OR", getter: p => getStats(p).orb },
+                    { label: "DR", getter: p => getStats(p).drb },
+                    { label: "Total Rebound", getter: p => getStats(p).orb + getStats(p).drb },
+                    { label: "AST", getter: p => getStats(p).ast },
+                    { label: "Steal", getter: p => getStats(p).stl },
+                    { label: "Block", getter: p => getStats(p).blk },
+                    { label: "Turnover", getter: p => getStats(p).to },
+                    { label: "EFF", getter: p => {
+                        const s = getStats(p);
+                        const pts = this.calculatePTS(s);
+                        const reb = s.orb + s.drb;
+                        const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
+                        const ftMiss = s.fta - s.ftm;
+                        return pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
+                    }}
+                ];
+
+                // スタッツセクションをCSVに追加するヘルパー関数
+                const addStatsSection = (title, statRows) => {
+                    let section = `=== ${title} ===\n`;
+                    const headerRow = ["Stat Category", ...allPlayers.map(p => escapeCsv(p.name))];
+                    section += headerRow.join(",") + "\n";
+                    
+                    statRows.forEach(rowDef => {
+                        const rowData = [escapeCsv(rowDef.label)];
+                        allPlayers.forEach(p => {
+                            rowData.push(escapeCsv(rowDef.getter(p)));
+                        });
+                        section += rowData.join(",") + "\n";
+                    });
+                    
+                    return section + "\n";
+                };
+
                 let csvContent = "";
                 
                 // Game Info Section
@@ -2060,47 +2522,51 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 csvContent += `${this.state.teams.B.name},${this.calculateTeamScore('B')}\n`;
                 csvContent += "\n";
                 
-                // Stats Section
-                csvContent += "=== 個人スタッツ ===\n";
-
-                const statRows = [           
-                    { label: "合計得点", getter: p => this.calculatePTS(p.stats) },
-                    { label: "2P 成功数", getter: p => p.stats.p2m },
-                    { label: "2P 試投数", getter: p => p.stats.p2a },
-                    { label: "2P %", getter: p => p.stats.p2a ? (p.stats.p2m/p.stats.p2a*100).toFixed(1)+"%" : "-" },
-                    { label: "3P 成功数", getter: p => p.stats.p3m },
-                    { label: "3P 試投数", getter: p => p.stats.p3a },
-                    { label: "3P %", getter: p => p.stats.p3a ? (p.stats.p3m/p.stats.p3a*100).toFixed(1)+"%" : "-" },
-                    { label: "FT 成功数", getter: p => p.stats.ftm },
-                    { label: "FT 試投数", getter: p => p.stats.fta },
-                    { label: "FT %", getter: p => p.stats.fta ? (p.stats.ftm/p.stats.fta*100).toFixed(1)+"%" : "-" },
-                    { label: "OR", getter: p => p.stats.orb },
-                    { label: "DR", getter: p => p.stats.drb },
-                    { label: "Total Rebound", getter: p => p.stats.orb + p.stats.drb },
-                    { label: "AST", getter: p => p.stats.ast },
-                    { label: "Steal", getter: p => p.stats.stl },
-                    { label: "Block", getter: p => p.stats.blk },
-                    { label: "Turnover", getter: p => p.stats.to },
-                    { label: "EFF", getter: p => {
-                        const s = p.stats;
-                        const pts = this.calculatePTS(s);
-                        const reb = s.orb + s.drb;
-                        const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
-                        const ftMiss = s.fta - s.ftm;
-                        return pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
-                    }}
-                ];
-
-                const headerRow = ["Stat Category", ...allPlayers.map(p => escapeCsv(p.name))];
-                csvContent += headerRow.join(",") + "\n";
-
-                statRows.forEach(rowDef => {
-                    const rowData = [escapeCsv(rowDef.label)];
-                    allPlayers.forEach(p => {
-                        rowData.push(escapeCsv(rowDef.getter(p)));
+                // クォーター別スコア（クォーターモードで記録がある場合）
+                const hasQuarterData = allPlayers.some(p => Object.keys(p.quarterStats || {}).length > 0);
+                if (hasQuarterData) {
+                    csvContent += "=== クォーター別スコア ===\n";
+                    this.state.quarters.forEach(q => {
+                        const scoreA = this.calculateTeamQuarterScore('A', q);
+                        const scoreB = this.calculateTeamQuarterScore('B', q);
+                        if (scoreA > 0 || scoreB > 0) {
+                            csvContent += `${q},${this.state.teams.A.name}: ${scoreA},${this.state.teams.B.name}: ${scoreB}\n`;
+                        }
                     });
-                    csvContent += rowData.join(",") + "\n";
-                });
+                    csvContent += "\n";
+                }
+
+                // 総合スタッツ
+                csvContent += addStatsSection(
+                    "総合スタッツ",
+                    createStatRows(p => this.getTotalStats(p))
+                );
+
+                // シンプル記録分（データがある場合）
+                const hasSimpleData = allPlayers.some(p => 
+                    Object.values(p.stats).some(v => v > 0)
+                );
+                if (hasSimpleData && hasQuarterData) {
+                    csvContent += addStatsSection(
+                        "シンプル記録分",
+                        createStatRows(p => p.stats)
+                    );
+                }
+
+                // クォーター別スタッツ（データがある場合）
+                if (hasQuarterData) {
+                    this.state.quarters.forEach(q => {
+                        const hasData = allPlayers.some(p => 
+                            p.quarterStats[q] && Object.values(p.quarterStats[q]).some(v => v > 0)
+                        );
+                        if (hasData) {
+                            csvContent += addStatsSection(
+                                `${q} スタッツ`,
+                                createStatRows(p => this.getQuarterStats(p, q))
+                            );
+                        }
+                    });
+                }
 
                 const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
                 const blob = new Blob([bom, csvContent], { type: "text/csv;charset=utf-8" });

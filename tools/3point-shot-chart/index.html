@@ -106,7 +106,15 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .legend-bar { flex: 1; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--heat-cold) 0%, var(--heat-cool) 25%, var(--heat-neutral) 50%, var(--heat-warm) 75%, var(--heat-hot) 100%); }
     
     .spot-details { background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; }
-    .spot-details-header { background: #1e293b; color: #FFFFFF; padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+    .spot-details-header { background: #1e293b; color: #FFFFFF; padding: 0.75rem 1rem; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+    .spot-details-header-left { display: flex; align-items: center; gap: 0.5rem; }
+    .spot-details-header-actions { display: flex; gap: 0.5rem; }
+    .spot-details-info { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0.75rem 1rem; background: #faf8f5; border-bottom: 1px solid #f1f1f1; }
+    .spot-info-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; }
+    .spot-info-icon { font-size: 0.7rem; }
+    .spot-info-value { color: #1e293b; font-weight: 500; }
+    .spot-info-venue { flex: 1; min-width: 150px; }
+    .spot-info-venue .spot-info-value { color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
     .spot-table { width: 100%; border-collapse: collapse; }
     .spot-table th, .spot-table td { padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
     .spot-table th { background: #faf8f5; font-weight: 700; color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -330,7 +338,26 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     </div>
     
     <div class="spot-details">
-        <div class="spot-details-header"><span>📋</span> スポット別成績</div>
+        <div class="spot-details-header">
+            <div class="spot-details-header-left"><span>📋</span> スポット別成績</div>
+            <div class="spot-details-header-actions">
+                <button class="btn-history-action" onclick="app.generateSpotImage()"><span>📸</span> 画像</button>
+            </div>
+        </div>
+        <div class="spot-details-info" id="spot-details-info">
+            <div class="spot-info-item">
+                <span class="spot-info-icon">📅</span>
+                <span class="spot-info-value" id="spot-info-date">-</span>
+            </div>
+            <div class="spot-info-item">
+                <span class="spot-info-icon">🕐</span>
+                <span class="spot-info-value" id="spot-info-time">-</span>
+            </div>
+            <div class="spot-info-item spot-info-venue">
+                <span class="spot-info-icon">🏟️</span>
+                <span class="spot-info-value" id="spot-info-venue">-</span>
+            </div>
+        </div>
         <table class="spot-table">
             <thead><tr><th>スポット</th><th>成功/試投</th><th>成功率</th></tr></thead>
             <tbody id="spot-table-body"></tbody>
@@ -583,6 +610,51 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     </div>
 </div>
 
+<div class="modal-overlay" id="spot-image-modal">
+    <div class="modal modal-lg">
+        <div class="modal-header">
+            <div class="modal-title"><span>📸</span> 今日の練習記録</div>
+            <button class="modal-close" onclick="app.hideSpotImageModal()">&times;</button>
+        </div>
+        
+        <!-- Loading State -->
+        <div class="modal-loading" id="spot-image-loading">
+            <div class="spinner"></div>
+            <p style="color: #6b7280; font-size: 0.875rem;">画像を生成中...</p>
+        </div>
+        
+        <!-- Image Preview -->
+        <div id="spot-image-preview-wrapper" style="display: none;">
+            <div class="image-preview-container">
+                <img id="spot-generated-image" class="image-preview" alt="今日の練習記録">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="modal-action-btn btn-share" onclick="app.shareSpotImage()">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:20px;height:20px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    SNSでシェア
+                </button>
+                <button class="modal-action-btn btn-download" onclick="app.downloadSpotImage()">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    画像をダウンロード
+                </button>
+                <button class="modal-action-btn btn-copy" id="spot-copy-btn" onclick="app.copySpotImageToClipboard()">
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    </svg>
+                    クリップボードにコピー
+                </button>
+            </div>
+            
+            <p class="modal-hint">💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます</p>
+        </div>
+    </div>
+</div>
+
 <div class="loading-overlay" id="loading"><div class="loading-spinner"></div></div>
 <div class="toast" id="toast"></div>
 <div id="export-container" class="export-container"></div>
@@ -605,6 +677,8 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             this.deleteTargetId = null;
             this.generatedImageData = null;
             this.generatedImageBlob = null;
+            this.spotGeneratedImageData = null;
+            this.spotGeneratedImageBlob = null;
             this.sortOrder = 'desc'; // 'desc' = 新しい順, 'asc' = 古い順
             this.init();
         }
@@ -615,6 +689,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             this.updateUI();
             this.renderHistory();
             this.updateGameInfoPreview();
+            this.updateSpotDetailsInfo();
         }
         
         toggleGameInfo() {
@@ -630,6 +705,27 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             if (time) preview += (preview ? ' ' : '') + time;
             if (venue) preview += (preview ? ' ' : '') + venue;
             document.getElementById('game-info-preview').textContent = preview || '未設定';
+            this.updateSpotDetailsInfo();
+        }
+        
+        updateSpotDetailsInfo() {
+            const venue = document.getElementById('game-venue').value.trim();
+            const date = document.getElementById('game-date').value;
+            const time = document.getElementById('game-time').value;
+            
+            // 日付の表示
+            if (date) {
+                const [y, m, d] = date.split('-');
+                document.getElementById('spot-info-date').textContent = `${y}/${parseInt(m)}/${parseInt(d)}`;
+            } else {
+                document.getElementById('spot-info-date').textContent = '-';
+            }
+            
+            // 時間の表示
+            document.getElementById('spot-info-time').textContent = time || '-';
+            
+            // 会場の表示
+            document.getElementById('spot-info-venue').textContent = venue || '-';
         }
         
         loadData() {
@@ -1210,6 +1306,221 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         }
         
         hideImageModal() { document.getElementById('image-modal').classList.remove('active'); }
+        
+        // Spot Image Generation Functions
+        async generateSpotImage() {
+            // 現在のデータを取得
+            let totalMade = 0, totalMissed = 0;
+            SPOTS.forEach(spot => { totalMade += this.data[spot.id].made; totalMissed += this.data[spot.id].missed; });
+            const totalShots = totalMade + totalMissed;
+            
+            if (totalShots === 0) { 
+                this.showToast('記録データがありません'); 
+                return; 
+            }
+            
+            // Show modal with loading state
+            const modal = document.getElementById('spot-image-modal');
+            const loading = document.getElementById('spot-image-loading');
+            const previewWrapper = document.getElementById('spot-image-preview-wrapper');
+            
+            modal.classList.add('active');
+            loading.style.display = 'flex';
+            previewWrapper.style.display = 'none';
+            
+            // Get game info
+            const venue = document.getElementById('game-venue').value.trim() || '-';
+            const date = document.getElementById('game-date').value;
+            const time = document.getElementById('game-time').value || '-';
+            
+            let displayDate = '-';
+            if (date) {
+                const [y, m, d] = date.split('-');
+                displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+            }
+            
+            // Build HTML for export
+            const container = document.getElementById('export-container');
+            
+            // Calculate totals
+            const totalPct = totalShots > 0 ? Math.round((totalMade / totalShots) * 100) : 0;
+            
+            let html = `
+                <div style="font-family: 'Noto Sans JP', sans-serif; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 24px; width: 400px; border-radius: 16px;">
+                    <!-- Header -->
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                        <span style="font-size: 32px;">🎯</span>
+                        <div>
+                            <div style="font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: white;">TODAY'S <span style="color: #EA580C;">PRACTICE</span></div>
+                            <div style="font-size: 11px; color: #94a3b8;">今日の練習記録</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Game Info -->
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; margin-bottom: 16px;">
+                        <div style="display: flex; gap: 16px; font-size: 12px; color: #cbd5e1;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span>📅</span>
+                                <span>${displayDate}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span>🕐</span>
+                                <span>${time}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12px; color: #cbd5e1;">
+                            <span>🏟️</span>
+                            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${venue}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Stats -->
+                    <div style="background: linear-gradient(135deg, #EA580C 0%, #c2410c 100%); border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center;">
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">総合成功率</div>
+                        <div style="font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: white; line-height: 1;">${totalPct}%</div>
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.9); margin-top: 4px;">${totalMade} / ${totalShots}</div>
+                    </div>
+                    
+                    <!-- Spot Details -->
+                    <div style="background: white; border-radius: 12px; overflow: hidden;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: #faf8f5;">
+                                    <th style="padding: 10px 12px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: left;">スポット</th>
+                                    <th style="padding: 10px 12px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: center;">成功/試投</th>
+                                    <th style="padding: 10px 12px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; text-align: center;">成功率</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+            
+            SPOTS.forEach((spot, idx) => {
+                const stats = this.data[spot.id];
+                const total = stats.made + stats.missed;
+                const pct = total > 0 ? Math.round((stats.made / total) * 100) : null;
+                const color = this.getHeatColor(pct);
+                const bgColor = idx % 2 === 0 ? '#fff' : '#faf8f5';
+                const pctColor = pct === null ? '#6b7280' : pct >= 60 ? '#16a34a' : pct >= 40 ? '#d97706' : '#3b82f6';
+                
+                html += `<tr style="background: ${bgColor};">
+                    <td style="padding: 10px 12px; font-size: 13px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="width: 12px; height: 12px; border-radius: 50%; background: ${color};"></span>
+                            <span style="font-weight: 600; color: #1e293b;">${spot.name}</span>
+                        </div>
+                    </td>
+                    <td style="padding: 10px 12px; font-size: 13px; text-align: center; color: #64748b;">${total > 0 ? `${stats.made}/${total}` : '-'}</td>
+                    <td style="padding: 10px 12px; text-align: center;">
+                        <span style="font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: ${pctColor};">${pct !== null ? pct + '%' : '-'}</span>
+                    </td>
+                </tr>`;
+            });
+            
+            html += `</tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="text-align: right; margin-top: 12px; font-size: 10px; color: #64748b;">
+                        statstoo.com | #StatsToo #3P練習
+                    </div>
+                </div>`;
+            
+            container.innerHTML = html;
+            
+            try {
+                const canvas = await html2canvas(container.firstElementChild, { scale: 2, backgroundColor: null });
+                this.spotGeneratedImageData = canvas.toDataURL('image/png');
+                
+                // Create blob for sharing
+                canvas.toBlob((blob) => {
+                    this.spotGeneratedImageBlob = blob;
+                }, 'image/png');
+                
+                document.getElementById('spot-generated-image').src = this.spotGeneratedImageData;
+                loading.style.display = 'none';
+                previewWrapper.style.display = 'block';
+            } catch (err) {
+                console.error(err);
+                modal.classList.remove('active');
+                this.showToast('画像生成に失敗しました');
+            }
+            
+            container.innerHTML = '';
+        }
+        
+        downloadSpotImage() {
+            if (!this.spotGeneratedImageData) return;
+            const link = document.createElement('a');
+            link.href = this.spotGeneratedImageData;
+            link.download = `3p-practice-record_${new Date().toISOString().slice(0,10)}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            this.showToast('画像を保存しました');
+        }
+        
+        async shareSpotImage() {
+            if (!this.spotGeneratedImageBlob) return;
+            
+            let totalMade = 0, totalShots = 0;
+            SPOTS.forEach(spot => { totalMade += this.data[spot.id].made; totalShots += this.data[spot.id].made + this.data[spot.id].missed; });
+            const pct = totalShots > 0 ? (totalMade / totalShots * 100).toFixed(1) : 0;
+            const shareText = `🎯 今日の3P練習記録\n成功率: ${pct}% (${totalMade}/${totalShots})\n\n#StatsToo #バスケ #3P練習`;
+            
+            try {
+                if (navigator.canShare && navigator.canShare({ files: [new File([this.spotGeneratedImageBlob], '3p-practice-record.png', { type: 'image/png' })] })) {
+                    const file = new File([this.spotGeneratedImageBlob], '3p-practice-record.png', { type: 'image/png' });
+                    await navigator.share({
+                        title: '今日の練習記録 - StatsToo',
+                        text: shareText,
+                        files: [file]
+                    });
+                } else if (navigator.share) {
+                    await navigator.share({
+                        title: '今日の練習記録 - StatsToo',
+                        text: shareText,
+                        url: window.location.href
+                    });
+                }
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    console.error('Share failed:', error);
+                    this.downloadSpotImage();
+                }
+            }
+        }
+        
+        async copySpotImageToClipboard() {
+            if (!this.spotGeneratedImageBlob) return;
+            
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': this.spotGeneratedImageBlob })
+                ]);
+                
+                const btn = document.getElementById('spot-copy-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg style="width:20px;height:20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    コピーしました！
+                `;
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Copy failed:', error);
+                this.showToast('コピーに失敗しました');
+            }
+        }
+        
+        hideSpotImageModal() { document.getElementById('spot-image-modal').classList.remove('active'); }
+        
         showLoading() { document.getElementById('loading').classList.add('active'); }
         hideLoading() { document.getElementById('loading').classList.remove('active'); }
         
