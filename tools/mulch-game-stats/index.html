@@ -782,7 +782,64 @@ class MultiTeamApp {
             editMode: false
         };
 
+        // Audio Context for button sounds
+        this.audioContext = null;
+        this.initAudio();
+
         this.init();
+    }
+
+    initAudio() {
+        // Initialize AudioContext on first user interaction
+        const initOnInteraction = () => {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            document.removeEventListener('touchstart', initOnInteraction);
+            document.removeEventListener('click', initOnInteraction);
+        };
+        document.addEventListener('touchstart', initOnInteraction, { once: true });
+        document.addEventListener('click', initOnInteraction, { once: true });
+    }
+
+    playSound(type) {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const ctx = this.audioContext;
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        // Different sounds based on stat type
+        if (type === 'success') {
+            // Success sound: Higher pitch, pleasant tone
+            oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.15);
+        } else if (type === 'miss') {
+            // Miss sound: Lower pitch, short
+            oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        } else {
+            // Neutral sound: Middle pitch for other stats
+            oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        }
     }
 
     init() {
@@ -1111,6 +1168,15 @@ class MultiTeamApp {
 
         if (!player.matchStats[matchId]) {
             player.matchStats[matchId] = this.createEmptyStats();
+        }
+
+        // Play sound based on stat type
+        if (['p2m', 'p3m', 'ftm'].includes(statType)) {
+            this.playSound('success');
+        } else if (['p2a', 'p3a', 'fta', 'to'].includes(statType)) {
+            this.playSound('miss');
+        } else {
+            this.playSound('neutral');
         }
 
         if (statType === 'p2a') {
