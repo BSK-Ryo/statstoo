@@ -88,6 +88,23 @@ description: バスケットボールの基本ルールを分かりやすく解�
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    
+    /* AdSense広告枠 */
+    .adsense-container {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 2rem 0;
+    }
+    .adsense-container:empty::before {
+        content: "広告枠";
+        color: #9ca3af;
+        font-size: 12px;
+    }
 </style>
 
 <header class="bg-secondary sticky top-0 z-30 border-b-[3px] border-primary">
@@ -236,6 +253,16 @@ description: バスケットボールの基本ルールを分かりやすく解�
         </div>
     </section>
 
+    <!-- AdSense広告枠①: コートマップ下 -->
+    <div class="adsense-container">
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
     <section id="positions-section" class="scroll-mt-24">
         <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3 mb-6">
             <span class="w-2 h-8 bg-primary rounded-full"></span>
@@ -282,6 +309,16 @@ description: バスケットボールの基本ルールを分かりやすく解�
         </div>
     </section>
 
+    <!-- AdSense広告枠②: ポジションセクション下 -->
+    <div class="adsense-container">
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
     <section id="rules-section" class="scroll-mt-24">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3">
@@ -303,6 +340,16 @@ description: バスケットボールの基本ルールを分かりやすく解�
         <div id="rules-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             </div>
     </section>
+
+    <!-- AdSense広告枠③: 反則と罰則セクション下 -->
+    <div class="adsense-container">
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
 
     <section class="bg-secondary rounded-xl p-8 text-white text-center relative overflow-hidden shadow-lg">
         <div class="relative z-10 max-w-4xl mx-auto">
@@ -326,6 +373,16 @@ description: バスケットボールの基本ルールを分かりやすく解�
             </div>
         </div>
     </section>
+
+    <!-- AdSense広告枠④: 秒数ルールセクション下 -->
+    <div class="adsense-container">
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
 
         </div>
     </main>
