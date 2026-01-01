@@ -1204,9 +1204,9 @@ class MultiTeamApp {
             const isExtraMatch = matchNumber > 1;
 
             return `
-                <button onclick="app.selectMatch('${match.id}')" 
-                    class="match-card ${isCurrent ? 'current' : ''} ${isCompleted ? 'opacity-70' : ''} text-left transition-all hover:shadow-md relative group">
-                    ${isExtraMatch ? `<button onclick="app.deleteMatch('${match.id}', event)" class="delete-match-btn absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center shadow">×</button>` : ''}
+                <div onclick="app.selectMatch('${match.id}')" 
+                    class="match-card ${isCurrent ? 'current' : ''} ${isCompleted ? 'opacity-70' : ''} text-left transition-all hover:shadow-md relative group cursor-pointer">
+                    ${isExtraMatch ? `<button onclick="event.stopPropagation(); app.deleteMatch('${match.id}', event)" class="delete-match-btn absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center shadow">×</button>` : ''}
                     <div class="flex items-center justify-between mb-1">
                         <div class="flex items-center gap-1">
                             <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
@@ -1217,7 +1217,7 @@ class MultiTeamApp {
                         ${isCompleted ? `<span class="text-xs font-bold">${match.scoreA}-${match.scoreB}</span>` : '<span class="text-[10px] text-gray-400">未実施</span>'}
                     </div>
                     <div class="text-xs truncate text-gray-600">${teamA.name} vs ${teamB.name}</div>
-                </button>
+                </div>
             `;
         }).join('');
     }
