@@ -277,11 +277,13 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
         border-radius: 12px;
         overflow: hidden;
         margin-bottom: 1rem;
+        border: 2px dashed #e5e7eb;
     }
-    .adsense-container:empty::before {
-        content: "広告枠";
+    .adsense-placeholder {
         color: #9ca3af;
         font-size: 12px;
+        text-align: center;
+        line-height: 1.5;
     }
 </style>
 
@@ -400,8 +402,10 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     
     <!-- AdSense広告枠①: エリア別成績下 -->
     <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
         <ins class="adsbygoogle"
-            style="display:block"
+            style="display:none"
             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
             data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
@@ -428,8 +432,10 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     
     <!-- AdSense広告枠②: 練習履歴下 -->
     <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
         <ins class="adsbygoogle"
-            style="display:block"
+            style="display:none"
             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
             data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
@@ -476,8 +482,10 @@ description: 2Pシュートのエリア別成功率を記録・分析。ゴー�
     
     <!-- AdSense広告枠③: 記事セクション下 -->
     <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
         <ins class="adsbygoogle"
-            style="display:block"
+            style="display:none"
             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
             data-ad-slot="XXXXXXXXXX"
             data-ad-format="auto"
