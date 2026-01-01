@@ -885,21 +885,16 @@ class MultiTeamApp {
 
     updateMatches(teamKeys, oldMatches) {
         const newMatches = [];
-        const oldMatchMap = {};
-        
-        // 既存のマッチをマップ化（キーの順序を正規化）
-        oldMatches.forEach(match => {
-            oldMatchMap[match.id] = match;
-        });
         
         // 総当たりの基本マッチを生成/維持
         for (let i = 0; i < teamKeys.length; i++) {
             for (let j = i + 1; j < teamKeys.length; j++) {
                 const baseId = `${teamKeys[i]}_vs_${teamKeys[j]}`;
                 
-                // このカードの既存マッチを探す（複数回戦含む）
+                // このカードの既存マッチを探す（teamA/teamBベースでフィルタリング）
                 const existingMatches = oldMatches.filter(m => 
-                    m.id === baseId || m.id.startsWith(baseId + '_')
+                    (m.teamA === teamKeys[i] && m.teamB === teamKeys[j]) ||
+                    (m.teamA === teamKeys[j] && m.teamB === teamKeys[i])
                 );
                 
                 if (existingMatches.length > 0) {
@@ -974,13 +969,17 @@ class MultiTeamApp {
                 const tcA = this.teamColors[teamKeys[i]];
                 const tcB = this.teamColors[teamKeys[j]];
                 
-                // このカードの既存試合数をカウント
-                const existingCount = this.state.matches.filter(m => 
+                // このカードの既存試合をフィルタリング
+                const existingMatches = this.state.matches.filter(m => 
                     (m.teamA === teamKeys[i] && m.teamB === teamKeys[j]) ||
                     (m.teamA === teamKeys[j] && m.teamB === teamKeys[i])
-                ).length;
+                );
                 
-                const nextNumber = existingCount + 1;
+                // 既存の最大matchNumberを取得して+1
+                const maxMatchNumber = existingMatches.reduce((max, m) => 
+                    Math.max(max, m.matchNumber || 1), 0
+                );
+                const nextNumber = maxMatchNumber + 1;
                 
                 html += `
                     <button onclick="app.addMatch('${teamKeys[i]}', '${teamKeys[j]}')" 
@@ -992,7 +991,7 @@ class MultiTeamApp {
                             <span class="w-6 h-6 rounded text-white text-xs flex items-center justify-center font-bold" style="background-color: ${tcB.color};">${teamKeys[j]}</span>
                             <span class="text-sm font-medium">${teamB.name}</span>
                         </div>
-                        <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded">${nextNumber}回戦目</span>
+                        <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded">${nextNumber}回戦目を追加</span>
                     </button>
                 `;
             }
@@ -1007,15 +1006,21 @@ class MultiTeamApp {
     }
 
     addMatch(teamAKey, teamBKey) {
-        // このカードの既存試合数をカウント
-        const baseId = `${teamAKey}_vs_${teamBKey}`;
+        // このカードの既存試合をフィルタリング（teamA/teamBベースで統一）
         const existingMatches = this.state.matches.filter(m => 
-            m.id === baseId || m.id.startsWith(baseId + '_')
+            (m.teamA === teamAKey && m.teamB === teamBKey) ||
+            (m.teamA === teamBKey && m.teamB === teamAKey)
         );
-        const matchNumber = existingMatches.length + 1;
         
-        // 新しいマッチIDを生成
-        const newId = matchNumber === 1 ? baseId : `${baseId}_${matchNumber}`;
+        // 既存の最大matchNumberを取得して+1（削除後の欠番に対応）
+        const maxMatchNumber = existingMatches.reduce((max, m) => 
+            Math.max(max, m.matchNumber || 1), 0
+        );
+        const matchNumber = maxMatchNumber + 1;
+        
+        // 新しいマッチIDを生成（常にteamAKey_vs_teamBKey_N形式）
+        const baseId = `${teamAKey}_vs_${teamBKey}`;
+        const newId = matchNumber === 1 ? baseId : `${baseId}_r${matchNumber}`;
         
         this.state.matches.push({
             id: newId,
@@ -1189,6 +1194,13 @@ class MultiTeamApp {
             const isCurrent = this.state.currentMatch && this.state.currentMatch.id === match.id;
             const isCompleted = match.completed;
             const matchNumber = match.matchNumber || 1;
+            
+            // このカードの試合数をカウント（2回戦以上ある場合のみ回戦バッジを表示）
+            const sameCardMatches = this.state.matches.filter(m => 
+                (m.teamA === match.teamA && m.teamB === match.teamB) ||
+                (m.teamA === match.teamB && m.teamB === match.teamA)
+            );
+            const showMatchNumber = sameCardMatches.length > 1;
             const isExtraMatch = matchNumber > 1;
 
             return `
@@ -1200,7 +1212,7 @@ class MultiTeamApp {
                             <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
                             <span class="text-[10px] text-gray-400">vs</span>
                             <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
-                            ${matchNumber > 1 ? `<span class="match-number-badge">${matchNumber}回戦</span>` : ''}
+                            ${showMatchNumber ? `<span class="match-number-badge">${matchNumber}回戦</span>` : ''}
                         </div>
                         ${isCompleted ? `<span class="text-xs font-bold">${match.scoreA}-${match.scoreB}</span>` : '<span class="text-[10px] text-gray-400">未実施</span>'}
                     </div>
@@ -1556,13 +1568,20 @@ class MultiTeamApp {
             const teamB = this.state.teams[match.teamB];
             const winner = match.scoreA > match.scoreB ? 'A' : match.scoreB > match.scoreA ? 'B' : null;
             const matchNumber = match.matchNumber || 1;
+            
+            // このカードの試合数をカウント（2回戦以上ある場合のみ回戦表示）
+            const sameCardMatches = this.state.matches.filter(m => 
+                (m.teamA === match.teamA && m.teamB === match.teamB) ||
+                (m.teamA === match.teamB && m.teamB === match.teamA)
+            );
+            const showMatchNumber = sameCardMatches.length > 1;
 
             return `
                 <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                     <div class="flex items-center gap-2 flex-1 min-w-0">
                         <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center flex-shrink-0" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
                         <span class="text-xs truncate ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
-                        ${matchNumber > 1 ? `<span class="text-[9px] text-gray-400">(${matchNumber}回戦)</span>` : ''}
+                        ${showMatchNumber ? `<span class="text-[9px] text-gray-400 whitespace-nowrap">(${matchNumber}回戦)</span>` : ''}
                     </div>
                     <div class="text-center px-3 flex-shrink-0">
                         <span class="font-bold text-sm ${winner === 'A' ? 'text-green-600' : ''}">${match.scoreA}</span>
