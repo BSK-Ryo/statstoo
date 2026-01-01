@@ -7,7 +7,42 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
+<!-- 
+=================================================
+Google AdSense 設定手順
+=================================================
+1. AdSense審査申請時に、以下のスクリプトをdefault.htmlの<head>内に追加してください：
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+2. 審査通過後、このファイル内の以下を置き換えてください：
+   - ca-pub-XXXXXXXXXXXXXXXX → あなたのパブリッシャーID
+   - data-ad-slot="XXXXXXXXXX" → 各広告ユニットのスロットID
+
+3. 広告を有効化するため、各広告枠の後に以下を追加してください：
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+=================================================
+-->
+
 <style>
+    /* AdSense広告枠のスタイル */
+    .adsense-container {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* 広告が読み込まれるまでのプレースホルダー表示（開発時のみ） */
+    .adsense-container:empty::before {
+        content: "広告枠";
+        color: #9ca3af;
+        font-size: 12px;
+    }
+
     body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: #faf8f5;
@@ -390,6 +425,17 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             </div>
         </section>
 
+        <!-- AdSense広告枠①: TEAM COMPARISON下 -->
+        <div class="adsense-container my-4">
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <!-- 審査通過後、上記のca-pub-とdata-ad-slotを実際の値に置き換えてください -->
+        </div>
+
         <!-- Stats Table Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-3">
@@ -468,6 +514,17 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 </div>
             </div>
         </section>
+
+        <!-- AdSense広告枠②: BOX SCORE下 -->
+        <div class="adsense-container my-4">
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+            <!-- 審査通過後、上記のca-pub-とdata-ad-slotを実際の値に置き換えてください -->
+        </div>
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
@@ -677,6 +734,17 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 💡 各用語カードの右上にマウスを乗せると、説明文をコピーできます
             </p>
 
+            <!-- AdSense広告枠③: StatsTooとは？上 -->
+            <div class="adsense-container my-6">
+                <ins class="adsbygoogle"
+                    style="display:block"
+                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                    data-ad-slot="XXXXXXXXXX"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+                <!-- 審査通過後、上記のca-pub-とdata-ad-slotを実際の値に置き換えてください -->
+            </div>
+
             <!-- statstooとは セクション -->
             <article class="article-section" id="about-statstoo">
                 <div class="article-header">
@@ -804,6 +872,17 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     </section>
                 </div>
             </article>
+
+            <!-- AdSense広告枠④: StatsTooとは？下 -->
+            <div class="adsense-container my-6">
+                <ins class="adsbygoogle"
+                    style="display:block"
+                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                    data-ad-slot="XXXXXXXXXX"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+                <!-- 審査通過後、上記のca-pub-とdata-ad-slotを実際の値に置き換えてください -->
+            </div>
 
         </section>
 
