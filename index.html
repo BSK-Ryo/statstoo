@@ -1118,6 +1118,54 @@ Google AdSense 設定手順
                 oscillator.start(this.audioContext.currentTime);
                 oscillator.stop(this.audioContext.currentTime + 0.1);
             }
+
+            // 成功音: 高めの明るいトーン (得点成功時)
+            playSuccessSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.15);
+            }
+
+            // ミス音: 低めの短いトーン (シュートミス、TO時)
+            playMissSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            }
+
+            // 通常音: 中間のトーン (リバウンド、アシスト等)
+            playNeutralSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            }
         }
 
         // =============================
@@ -1940,7 +1988,16 @@ Google AdSense 設定手順
 
             addStat(statKey) {
                 if (!this.state.selectedPlayer) return;
-                this.sound.playClickSound();
+                
+                // スタッツの種類に応じた音を再生
+                if (['p2m', 'p3m', 'ftm'].includes(statKey)) {
+                    this.sound.playSuccessSound(); // 得点成功
+                } else if (['p2a', 'p3a', 'fta', 'to'].includes(statKey)) {
+                    this.sound.playMissSound(); // シュートミス、ターンオーバー
+                } else {
+                    this.sound.playNeutralSound(); // リバウンド、アシスト、スティール、ブロック、ファウル
+                }
+                
                 const { team, playerId } = this.state.selectedPlayer;
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (!player) return;
