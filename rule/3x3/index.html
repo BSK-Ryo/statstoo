@@ -1,0 +1,488 @@
+---
+layout: default
+title: 3x3バスケットボール ルール完全ガイド
+description: 3x3（スリーエックススリー）バスケットボールの公式ルールを分かりやすく解説。オリンピック正式種目のコートサイズ、得点方法、12秒ルールなど初心者でもわかる完全ガイド。
+---
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* ページ独自のスタイル */
+    .page-wrapper .main-content {
+        max-width: 896px;
+    }
+    
+    /* 3x3テーマカラー（青系でアクセント） */
+    .accent-3x3 {
+        color: #2563eb;
+    }
+    .bg-3x3 {
+        background-color: #2563eb;
+    }
+    .bg-3x3-light {
+        background-color: #dbeafe;
+    }
+    .border-3x3 {
+        border-color: #2563eb;
+    }
+
+    .active-tab {
+        background-color: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+    .inactive-tab {
+        background-color: white;
+        color: #4b5563;
+        border-color: #e2e8f0;
+    }
+    .inactive-tab:hover {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+    }
+    
+    /* Animation utilities */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Comparison Table */
+    .comparison-table th {
+        background-color: #f8fafc;
+    }
+    .comparison-table td, .comparison-table th {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .comparison-table tr:hover {
+        background-color: #f8fafc;
+    }
+
+    /* AdSense広告枠 */
+    .adsense-container {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        border-radius: 12px;
+        overflow: hidden;
+        margin: 2rem 0;
+        border: 2px dashed #e5e7eb;
+    }
+    .adsense-placeholder {
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    /* Number highlight */
+    .number-highlight {
+        font-size: 3rem;
+        font-weight: 900;
+        line-height: 1;
+    }
+</style>
+
+<header class="bg-secondary sticky top-0 z-30 border-b-[3px] border-blue-500">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+        <div class="flex items-center gap-3">
+            <span class="text-xl">🏀</span>
+            <span class="font-display text-xl tracking-wide text-white">3x3 <span class="text-blue-400">RULEBOOK</span></span>
+        </div>
+        <p class="text-white/60 text-xs mt-1">オリンピック正式種目・3人制バスケルールガイド</p>
+    </div>
+</header>
+
+<div class="bg-white border-b border-gray-100">
+    <div class="max-w-4xl mx-auto px-4 py-2">
+        <nav class="text-xs text-gray-500">
+            <a href="/" class="hover:text-primary transition">ホーム</a>
+            <span class="mx-2">/</span>
+            <a href="/rule/" class="hover:text-primary transition">ルール解説</a>
+            <span class="mx-2">/</span>
+            <span class="text-gray-700">3x3ルール</span>
+        </nav>
+    </div>
+</div>
+
+<div class="page-wrapper">
+    {% include sidebar-left.html %}
+    
+    <main class="main-content">
+        <div class="py-8 space-y-12 md:space-y-16">
+
+    <!-- イントロセクション -->
+    <section id="intro" class="text-center space-y-6 max-w-4xl mx-auto pt-4 scroll-mt-24">
+        <div class="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold tracking-wide mb-2">🏅 2020東京オリンピック正式種目</div>
+        <h1 class="text-3xl md:text-4xl font-bold text-secondary leading-tight">
+            3x3（スリーエックススリー）<br><span class="accent-3x3">バスケットボールのルール</span>
+        </h1>
+        <p class="text-base md:text-lg text-gray-600 leading-relaxed max-w-2xl mx-auto">
+            ハーフコートで行う3人対3人のスピーディーな競技。<br class="hidden md:inline">
+            12秒のショットクロック、先に21点で勝利など、5人制とは異なるルールが魅力です。
+        </p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+            <div class="bg-white p-5 rounded-xl shadow-md border-2 border-blue-100">
+                <div class="accent-3x3 text-2xl font-bold mb-1">10分 or 21点</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">試合終了条件</div>
+                <p class="text-sm text-gray-600 mt-2">先に21点獲得、または<br>10分経過時点で得点が多い方が勝利</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border-2 border-blue-100">
+                <div class="accent-3x3 text-2xl font-bold mb-1">3人制</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">プレイヤー</div>
+                <p class="text-sm text-gray-600 mt-2">コート上は各チーム3人。<br>交代は1名まで（計4名登録）</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md border-2 border-blue-100">
+                <div class="accent-3x3 text-2xl font-bold mb-1">1 / 2点</div>
+                <div class="text-xs font-bold text-gray-400 uppercase">得点種類</div>
+                <p class="text-sm text-gray-600 mt-2">アーク内=1点、<br>アーク外=2点、FT=1点</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5人制との比較セクション -->
+    <section id="comparison-section" class="scroll-mt-24">
+        <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3 mb-6">
+            <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
+            5人制バスケとの違い
+        </h2>
+        
+        <div class="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="comparison-table w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="font-bold text-gray-700">項目</th>
+                            <th class="font-bold accent-3x3">🏀 3x3</th>
+                            <th class="font-bold text-primary">🏀 5人制</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-medium">コート</td>
+                            <td>ハーフコート<br><span class="text-xs text-gray-500">15m × 11m</span></td>
+                            <td>フルコート<br><span class="text-xs text-gray-500">28m × 15m</span></td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">プレイヤー</td>
+                            <td>3人 + 控え1人</td>
+                            <td>5人 + ベンチ複数</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">試合時間</td>
+                            <td>10分（1ピリオド）<br><span class="text-xs text-gray-500">または先に21点</span></td>
+                            <td>10分 × 4クォーター<br><span class="text-xs text-gray-500">計40分</span></td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">ショットクロック</td>
+                            <td class="font-bold accent-3x3">12秒</td>
+                            <td>24秒</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">得点</td>
+                            <td>アーク内=1点<br>アーク外=2点</td>
+                            <td>2Pライン内=2点<br>3Pライン外=3点</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">フリースロー</td>
+                            <td>1点（すべて1本）</td>
+                            <td>1点 × 本数</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">試合開始</td>
+                            <td>コイントス</td>
+                            <td>ジャンプボール</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">攻守交代</td>
+                            <td>チェックボール<br><span class="text-xs text-gray-500">アーク外で交換</span></td>
+                            <td>スローイン</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">ファウル上限</td>
+                            <td>チーム6回/ゲーム<br><span class="text-xs text-gray-500">7回目からFT2本</span></td>
+                            <td>チーム4回/Q<br><span class="text-xs text-gray-500">5回目からFT</span></td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">個人ファウル</td>
+                            <td>4回で退場</td>
+                            <td>5回で退場</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+            <p class="text-sm text-gray-700">
+                <strong class="accent-3x3">💡 ポイント：</strong>3x3は「より速く、よりシンプルに」がコンセプト。ショットクロックが半分の12秒になることで、スピーディーな展開が求められます。
+            </p>
+        </div>
+    </section>
+
+    <!-- AdSense広告枠② -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
+    <!-- 基本ルールセクション -->
+    <section id="basic-rules" class="scroll-mt-24">
+        <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3 mb-6">
+            <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
+            3x3の基本ルール
+        </h2>
+
+        <div class="space-y-6">
+            <!-- 得点ルール -->
+            <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">🎯</span>
+                    得点のルール
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <div class="number-highlight accent-3x3">1</div>
+                        <div class="text-xs font-bold text-gray-400 uppercase mt-1">Point</div>
+                        <p class="text-sm text-gray-600 mt-2">アーク内のシュート<br>フリースロー</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg text-center border-2 border-blue-200">
+                        <div class="number-highlight accent-3x3">2</div>
+                        <div class="text-xs font-bold text-gray-400 uppercase mt-1">Points</div>
+                        <p class="text-sm text-gray-600 mt-2">アーク外のシュート<br>（5人制の3ポイント相当）</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <div class="number-highlight text-green-600">21</div>
+                        <div class="text-xs font-bold text-gray-400 uppercase mt-1">勝利点</div>
+                        <p class="text-sm text-gray-600 mt-2">先に21点で即勝利<br>（時間前でも終了）</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 試合の流れ -->
+            <div class="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-secondary mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">⏱️</span>
+                    試合の流れ
+                </h3>
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">1</div>
+                        <div>
+                            <h4 class="font-bold text-secondary">コイントス</h4>
+                            <p class="text-sm text-gray-600">勝者が「最初の攻撃権」か「延長時の攻撃権」を選択</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">2</div>
+                        <div>
+                            <h4 class="font-bold text-secondary">チェックボール</h4>
+                            <p class="text-sm text-gray-600">アーク外で攻守がボールを交換して試合開始・再開</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">3</div>
+                        <div>
+                            <h4 class="font-bold text-secondary">攻守交代時</h4>
+                            <p class="text-sm text-gray-600">得点後やディフェンスがボールを得た場合、アーク外（両足）まで出てからでないと攻撃できない</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">4</div>
+                        <div>
+                            <h4 class="font-bold text-secondary">試合終了</h4>
+                            <p class="text-sm text-gray-600">10分経過 or 21点先取で終了。同点は延長戦（先に2点）</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- クリアルール -->
+            <div class="bg-gradient-to-r from-blue-50 to-white rounded-xl p-6 border-2 border-blue-200">
+                <h3 class="text-lg font-bold text-secondary mb-3 flex items-center gap-2">
+                    <span>⚡</span> 重要：クリア（ボールの返し）
+                </h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    ディフェンスがボールを奪った時や、相手のシュートが外れてリバウンドを取った時は、<strong class="accent-3x3">ボールをアークの外に出さないと攻撃できません</strong>。これを「クリア」と呼びます。
+                </p>
+                <ul class="mt-3 text-sm text-gray-600 space-y-1">
+                    <li>✓ 両足がアーク外に出ている必要あり</li>
+                    <li>✓ パスでアーク外に出してもOK</li>
+                    <li>✓ クリアせずにシュートしても得点無効</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 秒数ルールセクション -->
+    <section class="bg-secondary rounded-xl p-8 text-white text-center relative overflow-hidden shadow-lg">
+        <div class="relative z-10 max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold mb-8 font-display tracking-wide">3x3の「秒数」ルール</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-blue-400 mb-2 font-display">12</div>
+                    <h3 class="font-bold text-lg mb-2">ショットクロック</h3>
+                    <p class="text-xs text-white/60">攻撃は12秒以内にシュート。5人制の半分のスピード感！</p>
+                </div>
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-blue-400 mb-2 font-display">5</div>
+                    <h3 class="font-bold text-lg mb-2">ドリブル/パス</h3>
+                    <p class="text-xs text-white/60">チェックボールを受けてから5秒以内にドリブルかパスが必要。</p>
+                </div>
+                <div class="bg-secondary-light/50 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+                    <div class="text-5xl font-black text-blue-400 mb-2 font-display">10</div>
+                    <h3 class="font-bold text-lg mb-2">試合時間</h3>
+                    <p class="text-xs text-white/60">1ピリオド10分。ただし21点先取で即終了。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AdSense広告枠③ -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
+    <!-- 反則ルールセクション -->
+    <section id="rules-section" class="scroll-mt-24">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-secondary flex items-center gap-3">
+                <span class="w-2 h-8 bg-blue-500 rounded-full"></span>
+                3x3の反則ルール
+            </h2>
+            
+            <div class="flex p-1 bg-gray-200 rounded-lg">
+                <button onclick="filterRules3x3('all')" class="rule-tab-3x3 px-4 py-1.5 rounded-md text-xs font-bold transition active-tab" data-cat="all">全て</button>
+                <button onclick="filterRules3x3('violation')" class="rule-tab-3x3 px-4 py-1.5 rounded-md text-xs font-bold transition inactive-tab" data-cat="violation">バイオレーション</button>
+                <button onclick="filterRules3x3('foul')" class="rule-tab-3x3 px-4 py-1.5 rounded-md text-xs font-bold transition inactive-tab" data-cat="foul">ファウル</button>
+            </div>
+        </div>
+
+        <p class="text-sm text-gray-500 mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100 inline-block">
+            💡 3x3のファウル管理は<strong>チーム合計</strong>で行われ、7回目以降は2本のフリースローが与えられます。
+        </p>
+
+        <div id="rules-grid-3x3" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- JavaScript で動的に生成 -->
+        </div>
+    </section>
+
+    <!-- 関連リンクセクション -->
+    <section class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+        <h2 class="text-lg font-bold text-secondary mb-4">📚 関連ページ</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <a href="/rule/" class="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition group">
+                <span class="text-2xl">🏀</span>
+                <div>
+                    <h3 class="font-bold text-secondary group-hover:text-primary transition">5人制バスケ ルール解説</h3>
+                    <p class="text-xs text-gray-500">一般・ミニバスのルールを解説</p>
+                </div>
+            </a>
+            <a href="/tools/" class="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:border-primary hover:shadow-md transition group">
+                <span class="text-2xl">📊</span>
+                <div>
+                    <h3 class="font-bold text-secondary group-hover:text-primary transition">スタッツ記録ツール</h3>
+                    <p class="text-xs text-gray-500">試合のスタッツを簡単に記録</p>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- AdSense広告枠④ -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠<br><small>（AdSense審査通過後に表示）</small></span>
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
+        </div>
+    </main>
+    
+    {% include sidebar-right.html %}
+</div>
+
+<script>
+    // --- DATA ---
+    const rules3x3Data = [
+        { cat: 'violation', name: 'ショットクロック（12秒）', desc: '12秒以内にシュートを打ちリングに当てる必要があります。', unique: true },
+        { cat: 'violation', name: 'クリア違反', desc: '攻守交代時、ボールをアーク外に出さずに攻撃した場合の違反。', unique: true },
+        { cat: 'violation', name: 'トラベリング', desc: 'ボールを持ったまま3歩以上歩くこと。', unique: false },
+        { cat: 'violation', name: 'ダブルドリブル', desc: 'ドリブルを止めた後、再びドリブルを開始すること。', unique: false },
+        { cat: 'violation', name: '5秒ルール', desc: 'チェックボール後、5秒以内にドリブルかパスをしないこと。', unique: true },
+        { cat: 'violation', name: 'アウトオブバウンズ', desc: 'ボールがコートの外に出ること。', unique: false },
+        { cat: 'foul', name: 'パーソナルファウル', desc: '相手プレイヤーへの不当な身体接触。4回で退場。', unique: false },
+        { cat: 'foul', name: 'チームファウル（7回〜）', desc: 'チーム合計7回目からは相手に2本のFTが与えられます。', unique: true },
+        { cat: 'foul', name: 'チームファウル（10回〜）', desc: 'チーム合計10回目からは2本のFT＋ボール保持権が与えられます。', unique: true },
+        { cat: 'foul', name: 'アンスポーツマンライクファウル', desc: '故意でプレーに関係ないファウル。2FT＋ボール保持。', unique: false },
+        { cat: 'foul', name: 'テクニカルファウル', desc: 'スポーツマンシップに反する行為。1FT＋ボール保持。', unique: false },
+    ];
+
+    // --- 反則ルール表示 ---
+    function renderRules3x3(filter = 'all') {
+        const grid = document.getElementById('rules-grid-3x3');
+        if (!grid) return;
+        
+        grid.innerHTML = '';
+        
+        const filtered = filter === 'all' 
+            ? rules3x3Data 
+            : rules3x3Data.filter(r => r.cat === filter);
+        
+        filtered.forEach(rule => {
+            const card = document.createElement('div');
+            card.className = `bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition ${rule.unique ? 'ring-2 ring-blue-200' : ''}`;
+            card.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="w-2 h-2 rounded-full ${rule.cat === 'foul' ? 'bg-red-500' : 'bg-yellow-500'}"></span>
+                    <h3 class="font-bold text-secondary text-sm">${rule.name}</h3>
+                    ${rule.unique ? '<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded font-bold">3x3特有</span>' : ''}
+                </div>
+                <p class="text-xs text-gray-600">${rule.desc}</p>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function filterRules3x3(cat) {
+        // タブの状態更新
+        document.querySelectorAll('.rule-tab-3x3').forEach(btn => {
+            if (btn.dataset.cat === cat) {
+                btn.classList.remove('inactive-tab');
+                btn.classList.add('active-tab');
+            } else {
+                btn.classList.remove('active-tab');
+                btn.classList.add('inactive-tab');
+            }
+        });
+        
+        renderRules3x3(cat);
+    }
+
+    // --- 初期化 ---
+    document.addEventListener('DOMContentLoaded', function() {
+        renderRules3x3();
+    });
+</script>
