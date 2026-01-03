@@ -32,6 +32,10 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
     .slide-up { transform: translateY(0%); pointer-events: auto; opacity: 1; }
     .slide-down { transform: translateY(110%); pointer-events: none; opacity: 0; }
 
+    #controller.slide-up button {
+        pointer-events: auto;
+    }
+
     /* Player Row */
     .player-row {
         transition: all 0.2s ease;
@@ -639,43 +643,75 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
 </div>
 
 <!-- Stats Controller -->
-<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 shadow-xl z-40 slide-down transition-all duration-300" style="max-height: 50vh; overflow-y: auto;">
-    <div class="max-w-4xl mx-auto p-4">
-        <div class="flex justify-between items-center mb-3">
-            <div class="flex items-center gap-2">
-                <span id="selected-player-name" class="font-bold text-secondary">選手名</span>
+<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
+    <div class="max-w-4xl mx-auto px-3 py-3">
+        
+        <div class="flex justify-between items-center mb-2">
+            <div id="selected-info" class="text-sm font-bold text-secondary"></div>
+            <div class="flex gap-2">
+                <button id="undo-btn" onclick="app.undoLastAction()" disabled class="text-[10px] text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed font-medium">
+                    <span>↩</span>
+                    <span id="undo-label">元に戻す</span>
+                </button>
+                <button onclick="app.deselectPlayer()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium">
+                    選択解除
+                </button>
             </div>
-            <button onclick="app.deselectPlayer()" class="text-gray-500 hover:text-gray-700 p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </div>
+
+        <!-- Scoring Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="app.recordStat('p2m')" class="btn-press bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                2P成功 +2
+            </button>
+            <button onclick="app.recordStat('p3m')" class="btn-press bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                3P成功 +3
+            </button>
+            <button onclick="app.recordStat('ftm')" class="btn-press bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                FT成功 +1
             </button>
         </div>
 
-        <div class="grid grid-cols-4 gap-2 mb-3">
-            <!-- Shooting -->
-            <button onclick="app.recordStat('p2m')" class="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-bold text-sm btn-press">2P○</button>
-            <button onclick="app.recordStat('p2a')" class="bg-red-400 hover:bg-red-500 text-white py-3 rounded-lg font-bold text-sm btn-press">2P×</button>
-            <button onclick="app.recordStat('p3m')" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold text-sm btn-press">3P○</button>
-            <button onclick="app.recordStat('p3a')" class="bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-bold text-sm btn-press">3P×</button>
-            
-            <!-- Free Throws -->
-            <button onclick="app.recordStat('ftm')" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-lg font-bold text-sm btn-press">FT○</button>
-            <button onclick="app.recordStat('fta')" class="bg-orange-400 hover:bg-orange-500 text-white py-3 rounded-lg font-bold text-sm btn-press">FT×</button>
-            
-            <!-- Rebounds -->
-            <button onclick="app.recordStat('orb')" class="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-bold text-sm btn-press">OR</button>
-            <button onclick="app.recordStat('drb')" class="bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-lg font-bold text-sm btn-press">DR</button>
-            
-            <!-- Other Stats -->
-            <button onclick="app.recordStat('ast')" class="bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-bold text-sm btn-press">AST</button>
-            <button onclick="app.recordStat('stl')" class="bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-lg font-bold text-sm btn-press">STL</button>
-            <button onclick="app.recordStat('blk')" class="bg-cyan-500 hover:bg-cyan-600 text-white py-3 rounded-lg font-bold text-sm btn-press">BLK</button>
-            <button onclick="app.recordStat('to')" class="bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-bold text-sm btn-press">TO</button>
+        <!-- Miss Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="app.recordStat('p2a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                2P ミス
+            </button>
+            <button onclick="app.recordStat('p3a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                3P ミス
+            </button>
+            <button onclick="app.recordStat('fta')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                FT ミス
+            </button>
         </div>
 
-        <!-- Undo Button -->
-        <button id="undo-btn" onclick="app.undoLastAction()" disabled class="w-full bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400 text-gray-700 py-2 rounded-lg font-medium text-sm btn-press transition">
-            ↩️ <span id="undo-label">元に戻す</span>
-        </button>
+        <!-- Other Stats Buttons -->
+        <div class="grid grid-cols-4 gap-2 mb-2">
+            <button onclick="app.recordStat('orb')" class="btn-press bg-primary/10 hover:bg-primary/20 text-primary-dark py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                OR
+            </button>
+            <button onclick="app.recordStat('drb')" class="btn-press bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                DR
+            </button>
+            <button onclick="app.recordStat('ast')" class="btn-press bg-green-100 hover:bg-green-200 text-green-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                AST
+            </button>
+            <button onclick="app.recordStat('pf')" class="btn-press bg-rose-100 hover:bg-rose-200 text-rose-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                PF
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="app.recordStat('stl')" class="btn-press bg-cyan-100 hover:bg-cyan-200 text-cyan-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                STL
+            </button>
+            <button onclick="app.recordStat('blk')" class="btn-press bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                BLK
+            </button>
+            <button onclick="app.recordStat('to')" class="btn-press bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                TO
+            </button>
+        </div>
     </div>
 </div>
 
@@ -936,7 +972,7 @@ class MultiTeamApp {
     }
 
     createEmptyStats() {
-        return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0 };
+        return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
     }
 
     generateMatches(teamKeys) {
@@ -1323,7 +1359,7 @@ class MultiTeamApp {
             this.state.selectedPlayer = { ...player, teamKey };
             this.showController();
             this.renderPlayerList();
-            document.getElementById('selected-player-name').textContent = `#${player.number} ${player.name}`;
+            document.getElementById('selected-info').textContent = `#${player.number} ${player.name} (${team.name})`;
         }
     }
 
@@ -1459,7 +1495,7 @@ class MultiTeamApp {
         const labels = {
             p2m: '2P成功', p2a: '2Pミス', p3m: '3P成功', p3a: '3Pミス',
             ftm: 'FT成功', fta: 'FTミス', orb: 'OR', drb: 'DR',
-            ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO'
+            ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF'
         };
         return labels[statType] || statType;
     }
@@ -1640,6 +1676,7 @@ class MultiTeamApp {
                     <th>STL</th>
                     <th>BLK</th>
                     <th>TO</th>
+                    <th>PF</th>
                     <th>EFF</th>
                 </tr>
             </thead>
@@ -1664,6 +1701,7 @@ class MultiTeamApp {
                             <td>${s.stl}</td>
                             <td>${s.blk}</td>
                             <td>${s.to}</td>
+                            <td>${s.pf || 0}</td>
                             <td class="font-bold ${p.eff >= 0 ? 'text-green-600' : 'text-red-600'}">${p.eff}</td>
                         </tr>
                     `;
@@ -1841,14 +1879,14 @@ class MultiTeamApp {
         csv += '\n';
 
         csv += '=== 個人スタッツ（累計）===\n';
-        csv += 'チーム,選手,背番号,PTS,2PM,2PA,3PM,3PA,FTM,FTA,OR,DR,AST,STL,BLK,TO,EFF\n';
+        csv += 'チーム,選手,背番号,PTS,2PM,2PA,3PM,3PA,FTM,FTA,OR,DR,AST,STL,BLK,TO,PF,EFF\n';
 
         Object.entries(this.state.teams).forEach(([teamKey, team]) => {
             team.players.forEach(player => {
                 const s = this.getTotalStats(player);
                 const pts = this.calculatePTS(s);
                 const eff = this.calculateEFF(s);
-                csv += `${team.name},${player.name},${player.number},${pts},${s.p2m},${s.p2a},${s.p3m},${s.p3a},${s.ftm},${s.fta},${s.orb},${s.drb},${s.ast},${s.stl},${s.blk},${s.to},${eff}\n`;
+                csv += `${team.name},${player.name},${player.number},${pts},${s.p2m},${s.p2a},${s.p3m},${s.p3a},${s.ftm},${s.fta},${s.orb},${s.drb},${s.ast},${s.stl},${s.blk},${s.to},${s.pf || 0},${eff}\n`;
             });
         });
 
