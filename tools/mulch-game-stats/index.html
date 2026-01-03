@@ -170,6 +170,12 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         100% { transform: rotate(360deg); }
     }
 
+    /* Image preview container */
+    .image-preview-container {
+        max-height: 50vh;
+        overflow: auto;
+    }
+
     /* Match Card */
     .match-card {
         background: white;
@@ -717,21 +723,56 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
 
 <!-- Image Preview Modal -->
 <div id="image-modal" class="modal-overlay">
-    <div class="modal-content p-4">
+    <div class="modal-content p-4 w-full max-w-lg">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-secondary">画像プレビュー</h3>
-            <button onclick="app.closeImageModal()" class="text-gray-500 hover:text-gray-700">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                <span>📸</span> スタッツ画像
+            </h3>
+            <button onclick="app.closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
         </div>
-        <div id="image-preview" class="mb-4"></div>
-        <div class="flex gap-2">
-            <button onclick="app.downloadImage()" class="flex-1 bg-primary hover:bg-primary-dark text-white py-2 rounded-lg font-bold text-sm btn-press">
-                💾 保存
-            </button>
-            <button onclick="app.shareImage()" class="flex-1 bg-secondary hover:bg-secondary-light text-white py-2 rounded-lg font-bold text-sm btn-press">
-                📤 シェア
-            </button>
+        
+        <!-- Loading State -->
+        <div id="image-loading" class="flex flex-col items-center justify-center py-8">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-500 text-sm">画像を生成中...</p>
+        </div>
+        
+        <!-- Image Preview -->
+        <div id="image-preview-wrapper" class="hidden">
+            <div class="image-preview-container mb-4 border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                <img id="generated-image" class="w-full" alt="Stats Image">
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <!-- Share Button (for mobile) -->
+                <button id="share-btn" onclick="app.shareImage()" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    SNSでシェア
+                </button>
+                
+                <!-- Download Button -->
+                <button onclick="app.downloadImage()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    画像をダウンロード
+                </button>
+                
+                <!-- Copy to Clipboard (Desktop) -->
+                <button id="copy-btn" onclick="app.copyImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    </svg>
+                    クリップボードにコピー
+                </button>
+            </div>
+            
+            <p class="text-xs text-gray-400 text-center mt-3">
+                💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます
+            </p>
         </div>
     </div>
 </div>
@@ -785,6 +826,11 @@ class MultiTeamApp {
             editMode: false,
             history: []  // Undo機能用の履歴
         };
+
+        // 画像生成用
+        this.currentImageData = null;
+        this.currentImageBlob = null;
+        this.currentImageType = null;
 
         // Audio Context for button sounds
         this.audioContext = null;
@@ -1801,7 +1847,10 @@ class MultiTeamApp {
     }
 
     async generateImage(elementId) {
-        document.getElementById('loading-overlay').classList.add('active');
+        // モーダルを開いてローディング状態を表示
+        document.getElementById('image-modal').classList.add('active');
+        document.getElementById('image-loading').classList.remove('hidden');
+        document.getElementById('image-preview-wrapper').classList.add('hidden');
 
         await new Promise(r => setTimeout(r, 100));
 
@@ -1816,18 +1865,30 @@ class MultiTeamApp {
 
             this.currentImageData = canvas.toDataURL('image/png');
             this.currentImageType = elementId;
-            document.getElementById('image-preview').innerHTML = `<img src="${this.currentImageData}" class="max-w-full rounded-lg shadow-lg">`;
-            document.getElementById('image-modal').classList.add('active');
+            
+            // Blobも保存（クリップボードコピー用）
+            canvas.toBlob((blob) => {
+                this.currentImageBlob = blob;
+            }, 'image/png');
+            
+            // 画像をプレビューに設定
+            document.getElementById('generated-image').src = this.currentImageData;
+            
+            // ローディングを非表示、プレビューを表示
+            document.getElementById('image-loading').classList.add('hidden');
+            document.getElementById('image-preview-wrapper').classList.remove('hidden');
         } catch (err) {
             alert('画像の生成に失敗しました');
             console.error(err);
+            document.getElementById('image-modal').classList.remove('active');
         }
-
-        document.getElementById('loading-overlay').classList.remove('active');
     }
 
     closeImageModal() {
         document.getElementById('image-modal').classList.remove('active');
+        // 次回のためにリセット
+        document.getElementById('image-loading').classList.remove('hidden');
+        document.getElementById('image-preview-wrapper').classList.add('hidden');
     }
 
     downloadImage() {
@@ -1851,6 +1912,48 @@ class MultiTeamApp {
             await navigator.share({ files: [file], title: 'バスケットボールスタッツ' });
         } catch (err) {
             this.downloadImage();
+        }
+    }
+
+    async copyImageToClipboard() {
+        if (!this.currentImageBlob) {
+            // Blobがない場合は生成
+            try {
+                const response = await fetch(this.currentImageData);
+                this.currentImageBlob = await response.blob();
+            } catch (err) {
+                alert('画像のコピーに失敗しました');
+                return;
+            }
+        }
+
+        try {
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    'image/png': this.currentImageBlob
+                })
+            ]);
+            
+            // コピー成功のフィードバック
+            const copyBtn = document.getElementById('copy-btn');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                コピーしました！
+            `;
+            copyBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            copyBtn.classList.add('bg-green-100', 'text-green-700');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('bg-green-100', 'text-green-700');
+                copyBtn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            }, 2000);
+        } catch (err) {
+            console.error('クリップボードへのコピーに失敗:', err);
+            alert('クリップボードへのコピーに失敗しました。ブラウザが対応していない可能性があります。');
         }
     }
 
