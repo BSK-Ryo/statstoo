@@ -214,27 +214,31 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
     
     /* チームカラーバッジ（画像生成用） */
     .team-badge {
+        width: 24px;
         min-width: 24px;
         height: 24px;
+        line-height: 24px;
         border-radius: 4px;
         color: white;
         font-size: 11px;
         font-weight: bold;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
         flex-shrink: 0;
     }
     .team-badge-sm {
-        min-width: 20px;
-        height: 20px;
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+        line-height: 22px;
         border-radius: 4px;
         color: white;
-        font-size: 10px;
+        font-size: 11px;
         font-weight: bold;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
         flex-shrink: 0;
     }
 
@@ -1667,7 +1671,7 @@ class MultiTeamApp {
                             <td class="font-bold px-3">${i + 1}</td>
                             <td class="text-left px-3">
                                 <div class="flex items-center gap-2">
-                                    <span class="team-badge" style="background-color: ${this.teamColors[team.id].color};">${team.id}</span>
+                                    <span class="team-badge" style="background-color: ${this.teamColors[team.id].color}; display: inline-block; text-align: center; line-height: 24px;">${team.id}</span>
                                     <span>${team.name}</span>
                                     ${i === 0 ? '<span class="winner-badge ml-1">👑</span>' : ''}
                                 </div>
@@ -1703,7 +1707,7 @@ class MultiTeamApp {
             return `
                 <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                     <div class="flex items-center gap-2 flex-1">
-                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamA].color}; display: inline-block; text-align: center; line-height: 22px;">${match.teamA}</span>
                         <span class="text-sm ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
                         ${showMatchNumber ? `<span class="text-xs text-gray-400">(${matchNumber}回戦)</span>` : ''}
                     </div>
@@ -1714,7 +1718,7 @@ class MultiTeamApp {
                     </div>
                     <div class="flex items-center gap-2 flex-1 justify-end">
                         <span class="text-sm ${winner === 'B' ? 'font-bold' : ''}">${teamB.name}</span>
-                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamB].color}; display: inline-block; text-align: center; line-height: 22px;">${match.teamB}</span>
                     </div>
                 </div>
             `;
@@ -1776,7 +1780,7 @@ class MultiTeamApp {
                             <td class="font-bold px-2">${i + 1}</td>
                             <td class="text-left px-2">
                                 <div class="flex items-center gap-2">
-                                    <span class="team-badge-sm" style="background-color: ${this.teamColors[p.teamKey].color};">${p.teamKey}</span>
+                                    <span class="team-badge-sm" style="background-color: ${this.teamColors[p.teamKey].color}; display: inline-block; text-align: center; line-height: 22px;">${p.teamKey}</span>
                                     <span>${p.name}</span>
                                 </div>
                             </td>
