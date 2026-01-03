@@ -194,6 +194,48 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         background: #faf8f5;
         padding: 16px;
         border-radius: 12px;
+        min-width: 360px;
+    }
+
+    /* Export用テーブルスタイル（画像生成時に適切に表示される） */
+    .export-section .stats-table {
+        font-size: 12px;
+        min-width: 100%;
+        table-layout: auto;
+    }
+    .export-section .stats-table th {
+        padding: 10px 6px;
+        white-space: nowrap;
+    }
+    .export-section .stats-table td {
+        padding: 10px 6px;
+        white-space: nowrap;
+    }
+    
+    /* チームカラーバッジ（画像生成用） */
+    .team-badge {
+        min-width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .team-badge-sm {
+        min-width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
     /* Article Section Styles - StatsToo Style */
@@ -608,31 +650,31 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
 
                         <!-- Other Awards -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <div class="text-xl mb-1">🔥</div>
-                                <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">得点王</div>
-                                <div id="award-scorer" class="text-sm font-bold text-secondary truncate">-</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">得点王</div>
+                                <div id="award-scorer" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <div class="text-xl mb-1">🎯</div>
-                                <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">3P王</div>
-                                <div id="award-3p" class="text-sm font-bold text-secondary truncate">-</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">3P王</div>
+                                <div id="award-3p" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <div class="text-xl mb-1">💪</div>
-                                <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">リバウンド王</div>
-                                <div id="award-rebound" class="text-sm font-bold text-secondary truncate">-</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">リバウンド王</div>
+                                <div id="award-rebound" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
                                 <div class="text-xl mb-1">🎁</div>
-                                <div class="text-[10px] font-bold text-gray-500 uppercase mb-1">アシスト王</div>
-                                <div id="award-assist" class="text-sm font-bold text-secondary truncate">-</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">アシスト王</div>
+                                <div id="award-assist" class="text-sm font-bold text-secondary">-</div>
                             </div>
                         </div>
 
                         <!-- EFF Ranking -->
                         <div class="bg-gray-50 rounded-xl p-4">
-                            <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">EFF ランキング TOP5</h3>
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">EFF ランキング TOP5</h3>
                             <div id="eff-ranking" class="space-y-1">
                                 <!-- Ranking will be rendered here -->
                             </div>
@@ -1612,11 +1654,11 @@ class MultiTeamApp {
                     <tr>
                         <th class="text-left px-3">順位</th>
                         <th class="text-left px-3">チーム</th>
-                        <th class="px-2">勝</th>
-                        <th class="px-2">敗</th>
-                        <th class="px-2">得点</th>
-                        <th class="px-2">失点</th>
-                        <th class="px-2">得失点差</th>
+                        <th class="px-3">勝</th>
+                        <th class="px-3">敗</th>
+                        <th class="px-3">得点</th>
+                        <th class="px-3">失点</th>
+                        <th class="px-3">得失点差</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1625,9 +1667,9 @@ class MultiTeamApp {
                             <td class="font-bold px-3">${i + 1}</td>
                             <td class="text-left px-3">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[team.id].color};">${team.id}</span>
-                                    <span class="truncate">${team.name}</span>
-                                    ${i === 0 ? '<span class="winner-badge">👑</span>' : ''}
+                                    <span class="team-badge" style="background-color: ${this.teamColors[team.id].color};">${team.id}</span>
+                                    <span>${team.name}</span>
+                                    ${i === 0 ? '<span class="winner-badge ml-1">👑</span>' : ''}
                                 </div>
                             </td>
                             <td class="font-bold text-green-600">${team.wins}</td>
@@ -1659,20 +1701,20 @@ class MultiTeamApp {
             const showMatchNumber = sameCardMatches.length > 1;
 
             return `
-                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                    <div class="flex items-center gap-2 flex-1 min-w-0">
-                        <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center flex-shrink-0" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
-                        <span class="text-xs truncate ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
-                        ${showMatchNumber ? `<span class="text-[9px] text-gray-400 whitespace-nowrap">(${matchNumber}回戦)</span>` : ''}
+                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center gap-2 flex-1">
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
+                        <span class="text-sm ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
+                        ${showMatchNumber ? `<span class="text-xs text-gray-400">(${matchNumber}回戦)</span>` : ''}
                     </div>
-                    <div class="text-center px-3 flex-shrink-0">
-                        <span class="font-bold text-sm ${winner === 'A' ? 'text-green-600' : ''}">${match.scoreA}</span>
-                        <span class="text-gray-400 mx-1">-</span>
-                        <span class="font-bold text-sm ${winner === 'B' ? 'text-green-600' : ''}">${match.scoreB}</span>
+                    <div class="text-center px-4 flex-shrink-0">
+                        <span class="font-bold text-base ${winner === 'A' ? 'text-green-600' : ''}">${match.scoreA}</span>
+                        <span class="text-gray-400 mx-2">-</span>
+                        <span class="font-bold text-base ${winner === 'B' ? 'text-green-600' : ''}">${match.scoreB}</span>
                     </div>
-                    <div class="flex items-center gap-2 flex-1 justify-end min-w-0">
-                        <span class="text-xs truncate ${winner === 'B' ? 'font-bold' : ''}">${teamB.name}</span>
-                        <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center flex-shrink-0" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
+                    <div class="flex items-center gap-2 flex-1 justify-end">
+                        <span class="text-sm ${winner === 'B' ? 'font-bold' : ''}">${teamB.name}</span>
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
                     </div>
                 </div>
             `;
@@ -1712,18 +1754,18 @@ class MultiTeamApp {
             <thead>
                 <tr>
                     <th class="text-left px-2">#</th>
-                    <th class="text-left px-2">選手</th>
-                    <th>PTS</th>
-                    <th>2P</th>
-                    <th>3P</th>
-                    <th>FT</th>
-                    <th>REB</th>
-                    <th>AST</th>
-                    <th>STL</th>
-                    <th>BLK</th>
-                    <th>TO</th>
-                    <th>PF</th>
-                    <th>EFF</th>
+                    <th class="text-left px-2" style="min-width: 100px;">選手</th>
+                    <th class="px-2">PTS</th>
+                    <th class="px-2">2P</th>
+                    <th class="px-2">3P</th>
+                    <th class="px-2">FT</th>
+                    <th class="px-2">REB</th>
+                    <th class="px-2">AST</th>
+                    <th class="px-2">STL</th>
+                    <th class="px-2">BLK</th>
+                    <th class="px-2">TO</th>
+                    <th class="px-2">PF</th>
+                    <th class="px-2">EFF</th>
                 </tr>
             </thead>
             <tbody>
@@ -1733,9 +1775,9 @@ class MultiTeamApp {
                         <tr>
                             <td class="font-bold px-2">${i + 1}</td>
                             <td class="text-left px-2">
-                                <div class="flex items-center gap-1">
-                                    <span class="w-4 h-4 rounded text-white text-[9px] flex items-center justify-center" style="background-color: ${this.teamColors[p.teamKey].color};">${p.teamKey}</span>
-                                    <span class="truncate max-w-[80px]">${p.name}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="team-badge-sm" style="background-color: ${this.teamColors[p.teamKey].color};">${p.teamKey}</span>
+                                    <span>${p.name}</span>
                                 </div>
                             </td>
                             <td class="font-bold">${p.pts}</td>
@@ -1821,15 +1863,15 @@ class MultiTeamApp {
         const rankingHtml = byEff.slice(0, 5).map((p, i) => `
             <div class="flex items-center justify-between py-2 ${i < 4 ? 'border-b border-gray-100' : ''}">
                 <div class="flex items-center gap-3">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-400 text-white' : i === 1 ? 'bg-gray-300 text-gray-700' : i === 2 ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600'}">${i + 1}</span>
+                    <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-400 text-white' : i === 1 ? 'bg-gray-300 text-gray-700' : i === 2 ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600'}">${i + 1}</span>
                     <div>
                         <div class="font-medium text-sm text-secondary">${p.name}</div>
-                        <div class="text-[10px] text-gray-500">${p.teamName}</div>
+                        <div class="text-xs text-gray-500">${p.teamName}</div>
                     </div>
                 </div>
                 <div class="text-right">
                     <div class="font-bold text-lg ${p.eff >= 0 ? 'text-green-600' : 'text-red-600'}">${p.eff}</div>
-                    <div class="text-[10px] text-gray-500">${p.pts}pts ${p.reb}r ${p.ast}a</div>
+                    <div class="text-xs text-gray-500">${p.pts}pts ${p.reb}r ${p.ast}a</div>
                 </div>
             </div>
         `).join('');
