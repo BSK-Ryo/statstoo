@@ -29,13 +29,10 @@ extra_css: |
     .profile-avatar {
         width: 100px;
         height: 100px;
-        background: linear-gradient(135deg, #EA580C 0%, #C2410C 100%);
         border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         margin: 0 auto 1rem;
-        font-size: 2.5rem;
+        object-fit: cover;
+        border: 3px solid #EA580C;
     }
     .profile-name { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.25rem; }
     .profile-role { font-size: 0.875rem; color: #64748b; margin-bottom: 1rem; }
@@ -74,7 +71,7 @@ extra_css: |
         
         <!-- Profile Card -->
         <div class="profile-card">
-            <div class="profile-avatar">👤</div>
+            <img class="profile-avatar" src="https://www.statstoo.com/image/favicon.png" alt="Ryousei">
             <h2 class="profile-name"> Ryousei </h2>
             <p class="profile-role">StatsToo 運営者・開発者</p>
             <p class="text-sm text-gray-600 max-w-md mx-auto">
