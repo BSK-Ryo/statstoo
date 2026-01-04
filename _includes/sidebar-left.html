@@ -1,13 +1,18 @@
 <!-- Left Sidebar (Desktop Only) -->
 <aside class="sidebar sidebar-left">
     <div class="sidebar-inner">
-        <!-- Ad Space -->
+        <!-- Ad Space (Top) -->
         <div class="sidebar-ad">
             <div class="sidebar-ad-label">広告</div>
+            <!-- AdSense広告: サイドバー左上 300×250 -->
             <div class="sidebar-ad-placeholder">
-                <!-- AdSense Code Here -->
-                AdSense<br>300×250
+                広告枠
             </div>
+            <!-- 審査通過後、上のdiv.sidebar-ad-placeholderを削除し、下のinsタグのstyleをdisplay:inline-blockに変更してください -->
+            <ins class="adsbygoogle"
+                style="display:none;width:300px;height:250px"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"></ins>
         </div>
         
         <!-- Tools Links -->
@@ -21,7 +26,7 @@
                         <div class="sidebar-link-desc">試合中の選手全員のスタッツを記録</div>
                     </div>
                 </a>
-                <a href="/tools/mulch-team-stats/" class="sidebar-link{% if page.url contains 'multi-team-stats' %} active{% endif %}">
+                <a href="/tools/mulch-game-stats/" class="sidebar-link{% if page.url contains 'multi-game-stats' %} active{% endif %}">
                     <span class="sidebar-link-icon">🏀</span>
                     <div class="sidebar-link-content">
                         <div class="sidebar-link-title">マルチゲームスタッツ</div>
@@ -36,13 +41,27 @@
                     </div>
                 </a>
                 <a href="/tools/2point-shot-chart/" class="sidebar-link{% if page.url contains '2point-shot-chart' %} active{% endif %}">
-                    <span class="sidebar-link-icon">🏀</span>
+                    <span class="sidebar-link-icon">🎯</span>
                     <div class="sidebar-link-content">
                         <div class="sidebar-link-title">2Pシュートチャート</div>
                         <div class="sidebar-link-desc">11箇所のエリア別成功率を記録</div>
                     </div>
                 </a>
             </div>
+        </div>
+
+        <!-- Ad Space (Bottom) -->
+        <div class="sidebar-ad">
+            <div class="sidebar-ad-label">広告</div>
+            <!-- AdSense広告: サイドバー左下 300×250 -->
+            <div class="sidebar-ad-placeholder">
+                広告枠
+            </div>
+            <!-- 審査通過後、上のdiv.sidebar-ad-placeholderを削除し、下のinsタグのstyleをdisplay:inline-blockに変更してください -->
+            <ins class="adsbygoogle"
+                style="display:none;width:300px;height:250px"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"></ins>
         </div>
     </div>
 </aside>

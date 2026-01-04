@@ -176,7 +176,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .article-block { margin-bottom: 2rem; }
     .article-block:last-child { margin-bottom: 0; }
     .article-block h2 { font-size: 1.25rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
-    .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+    .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.25rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #e8f4f8 0%, #f5fafb 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #0891b2; border-radius: 0 6px 6px 0; }
     .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
     .article-block p:last-child { margin-bottom: 0; }
     
@@ -249,6 +249,25 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     
     /* Hidden container for image generation */
     .export-container { position: absolute; left: -9999px; top: 0; background: white; padding: 20px; }
+    
+    /* AdSense広告枠 */
+    .adsense-container {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        border: 2px dashed #e5e7eb;
+    }
+    .adsense-placeholder {
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.5;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -364,6 +383,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         </table>
     </div>
     
+    <!-- AdSense広告枠①: スポット別成績下 -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠</span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+    
     <div class="history-section">
         <div class="history-header">
             <div class="history-header-left"><span>📅</span> 練習履歴</div>
@@ -382,10 +413,22 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         </div>
     </div>
 
+    <!-- AdSense広告枠②: 練習履歴下 -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠</span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
+
     <article class="article-section">
         <div class="article-header">
             <span class="article-icon">📖</span>
-            <h2 class="article-title">3Pシュートを上達させるために</h2>
+            <h2 class="article-title">3Pシュートを上達させるためのコツを知ろう</h2>
         </div>
         
         <div class="article-content">
@@ -418,6 +461,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                     ただし、練習と試合では状況が異なります。ディフェンスのプレッシャーがない練習では、より高い成功率を目指しましょう。
                 </p>
             </section>
+            
+            <!-- AdSense広告枠③: 記事内（成功率の目安の後） -->
+            <div class="adsense-container" style="margin: 1.5rem 0;">
+                <span class="adsense-placeholder">広告枠</span>
+                <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+                <ins class="adsbygoogle"
+                    style="display:none"
+                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                    data-ad-slot="XXXXXXXXXX"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
             
             <section class="article-block">
                 <h2>🏀 5つのスポットについて</h2>
@@ -464,20 +519,36 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h2>💡 練習のポイント</h2>
-                <ul class="article-list-check">
-                    <li>まずは得意なスポットを見つけ、そこから広げていく</li>
-                    <li>苦手なスポットを重点的に練習する</li>
-                    <li>フォームを固めるため、近い距離から徐々に下がる</li>
-                    <li>試合を想定し、キャッチ＆シュートの練習を取り入れる</li>
-                    <li>記録を続けて、成長を可視化する</li>
-                </ul>
+                <h2>💡 【運営者自論】3Pを決めるためのポイントとは？シューターメンタリティを考えてみよう</h2>
+                <p>3ポイントにおいては、かなり<b>メンタル</b>が重要だと感じています。</p>
+                <p>なのでこの章では、シュートフォームの改善とか効果的な練習方法とかではなく、メンタルに焦点を当てて、特に重要な2つを紹介します。
+                    <ul class="article-list-check">
+                        <li>シュートミスは悪いミスではなく良いミス！</li>
+                        <li>プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！</li>
+                    </ul>
+                <p>シュートフォームの改善方法や練習方法に関しては、Youtubeで色んな方が取り上げているのでそちらを参考にしてください笑</p>
+                
+                <h3 class="article-block">シュートミスは悪いミスではなく良いミス！</h3>
+                <p>大前提ですが、シュートミスはミスの中でも良いミスです。なので、シュートミスに恐れながらシュートを打つのはやめましょう。</p>
+                <p>「入らなかったらどうしよう、、。」「入らなかったら怒られる、、。」</p>
+                <p>そう考えてしまう気持ちはわかりますが、これは足枷にしかなりません。入らなかったらまた練習すれば良い話なので、ミスに恐れながら打つのではなく「今の自分の実力がわかる」と思って自信持って打ちましょう。</p>
+
+                <h3 class="article-block">プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！</h3>
+                <p>プレッシャーは自身の実力を高めてくれる味方という考え方<strong>「ポジティブストレスマインドセット」</strong>を持つようにしましょう。</p>
+                <p>緊張してしまって思うようにプレーができない方がいると思います。実際、運営者も緊張しやすいタチで、試合前は腹痛でトイレに駆け込むのがルーティーンでした、。</p>
+                <p>認めたくは無いですが、要は「チキンハート」だったのです。同じだなと思った方は「ネガティブストレスマインドセット」という考え方が根付いてしまってます。</p>
+                <div class="spot-item">
+                    <b>【ネガティブストレスマインドセットとは】</b> <p>「プレッシャー＝ストレス」「ストレス＝悪い物」という考え方</p>
+                </div>
+                <p>「プレッシャー＝ストレス」という考え方までは否定しませんが、「ストレス＝悪い物」ではなく「ストレス＝良い物」と考え方を徐々にでも変えていければ、プレッシャーが味方になってくれます。</p>
+                <p>まずは「ストレス メリット」もしくは「ユーストレスとは」と検索して、「ストレス＝悪い物」という考え方から脱却しましょう。</p>
+
             </section>
             
             <section class="article-block">
-                <h2>📈 このツールの活用法</h2>
+                <h2>📈 「3pointshotchart」を使ってわかること</h2>
                 <p>
-                    毎回の練習で記録を残すことで、以下のことがわかるようになります：
+                    毎回の練習で記録を残すことで、以下のことがわかるようになります。
                 </p>
                 <ul class="article-list-check">
                     <li>得意なスポット・苦手なスポットの把握</li>
@@ -489,8 +560,38 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
                     履歴機能を使って、月ごとの成長を確認しましょう。画像出力機能でSNSにシェアすれば、モチベーション維持にも繋がります。
                 </p>
             </section>
+
+            <section class="article-block">
+                <h2>【番外編】本ツールの活用方法</h2>
+                <p>
+                    ただ「練習場所・日時」を登録して、5箇所からのシュートを記録するだけではもったいない！練習情報には下記のような情報を入力して活用の幅を広げよう！
+                </p>
+                <ul class="article-list-check">
+                    <li>ワンドリからのプルアップ</li>
+                    <li>ツードリからのプルアップ</li>
+                    <li>ステップバック</li>
+                    <li>レッグスルーからのプルアップ</li>
+                    <li>ビハインドからのプルアップ</li>
+                    <li>フェイクからワンドリプルアップ etc...</li>
+                </ul>
+                <p>
+                    会場情報じゃなくて、色んな打ち方をマスターして行って、生粋のシューターを目指そう！
+                </p>
+            </section>
         </div>
     </article>
+    
+    <!-- AdSense広告枠④: 記事セクション下 -->
+    <div class="adsense-container">
+        <span class="adsense-placeholder">広告枠</span>
+        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <ins class="adsbygoogle"
+            style="display:none"
+            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+            data-ad-slot="XXXXXXXXXX"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+    </div>
     
     <div class="bottom-spacer"></div>
         </div>

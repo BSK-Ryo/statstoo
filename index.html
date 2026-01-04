@@ -7,7 +7,43 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
+<!-- 
+=================================================
+Google AdSense 設定手順
+=================================================
+1. AdSense審査申請時に、以下のスクリプトをdefault.htmlの<head>内に追加してください：
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+2. 審査通過後、このファイル内の以下を置き換えてください：
+   - ca-pub-XXXXXXXXXXXXXXXX → あなたのパブリッシャーID
+   - data-ad-slot="XXXXXXXXXX" → 各広告ユニットのスロットID
+
+3. 広告を有効化するため、各広告枠の後に以下を追加してください：
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+=================================================
+-->
+
 <style>
+    /* AdSense広告枠のスタイル */
+    .adsense-container {
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px dashed #e5e7eb;
+        margin: 1rem 0;
+    }
+    .adsense-placeholder {
+        color: #9ca3af;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
     body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: #faf8f5;
@@ -390,6 +426,18 @@ description: バスケットボールのスタッツを簡単に記録・分析�
             </div>
         </section>
 
+        <!-- AdSense広告枠①: TEAM COMPARISON下 -->
+        <div class="adsense-container my-4">
+            <span class="adsense-placeholder">広告枠</span>
+            <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+            <ins class="adsbygoogle"
+                style="display:none"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+        </div>
+
         <!-- Stats Table Section -->
         <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
             <div class="flex justify-between items-center mb-3">
@@ -468,6 +516,18 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 </div>
             </div>
         </section>
+
+        <!-- AdSense広告枠②: BOX SCORE下 -->
+        <div class="adsense-container my-4">
+            <span class="adsense-placeholder">広告枠</span>
+            <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+            <ins class="adsbygoogle"
+                style="display:none"
+                data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                data-ad-slot="XXXXXXXXXX"
+                data-ad-format="auto"
+                data-full-width-responsive="true"></ins>
+        </div>
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
@@ -677,6 +737,18 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 💡 各用語カードの右上にマウスを乗せると、説明文をコピーできます
             </p>
 
+            <!-- AdSense広告枠③: StatsTooとは？上 -->
+            <div class="adsense-container my-6">
+                <span class="adsense-placeholder">広告枠</span>
+                <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+                <ins class="adsbygoogle"
+                    style="display:none"
+                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                    data-ad-slot="XXXXXXXXXX"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
+
             <!-- statstooとは セクション -->
             <article class="article-section" id="about-statstoo">
                 <div class="article-header">
@@ -685,10 +757,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 </div>
                 
                 <div class="article-content">
-                    <p class="article-lead">
-                        <strong>statstoo</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。試合中のリアルタイム・後日録画した動画からの記録なら「試合スタッツ記録ツール」、シュート練習を記録したいなら「3Pショットチャート」「2Pショットチャート」と2つのツールをご用意しました。
-                        プレイヤーの皆様の成長をデータでサポートします。ぜひご活用くださいませ。
-                    </p>
+                    <p><strong>StatsToo</strong>は、バスケットボールのスタッツ記録・分析に特化した完全無料のWebツール集です。</p><br>
+                    <p>試合中のリアルタイム・後日録画した動画からの記録なら<b>「試合スタッツ記録」</b>、個人的にシュート練習を記録したいなら<b>「3Pショットチャート」「2Pショットチャート」</b>と2つのツールをご用意しました。</p><br>
+                    <p>また、レクリエーション用に<b>「マルチゲームスタッツ」</b>という複数チームで記録できるツールもあります。</p><br>
+                    <p>プレイヤーの皆様の成長をできるだけ手軽でわかりやすくデータでサポートします。ぜひご活用くださいませ！</p><br>
                     
                     <section class="article-block">
                         <h2>✨ 特徴</h2>
@@ -710,7 +782,10 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                                 <div class="feature-card-text">データ安全</div>
                             </div>
                         </div>
-                        <p>※データはお使いのブラウザにのみに保存されるので、外部サーバーには送信されません。</p>
+                        <p>データはお使いのブラウザにのみに保存されるので、外部サーバーには送信されないのでご安心ください。</p><br>
+                        <p>また、不便で申し訳ないですが、スマホで記録している情報をそのままPC版で引き継ぐことはできないです、、。</p>
+                        <p>「引き継げるようにしてほしい」というお声が多ければ頑張りたいところですが、アドレス登録が必要になる可能性もあること、ご承知おきください。</p><br>
+                        <p>データに関してですが、<b>ブラウザのキャッシュをクリアした場合、記録していた月次の記録なども消えてしまう</b>のでご注意ください。</p>
                     </section>
                     
                     <section class="article-block">
@@ -732,7 +807,7 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
-                                <div class="step-text"><strong>リアルタイム記録</strong> — 選手をタップしてシュート・リバウンド等を記録</div>
+                                <div class="step-text"><strong>リアルタイム記録</strong> — 選手をタップしてシュート・リバウンド等を記録！</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">3</span>
@@ -747,11 +822,26 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
-                                <div class="step-text"><strong>各スポットをタップして記録</strong> — 各箇所をタップしてシュートの成功・失敗数を記録</div>
+                                <div class="step-text"><strong>各スポットをタップして記録</strong> — 各箇所をタップしてシュートの成功・失敗数を記録！</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">3</span>
-                                <div class="step-text"><strong>結果を保存・出力</strong> — 画面右上の「保存」ボタンでデータを保存。月次でデータを集計しよう</div>
+                                <div class="step-text"><strong>結果を保存・出力</strong> — 画面右上の「保存」ボタンでデータを保存。月次でデータを集計しよう！</div>
+                            </div>
+                        </div>
+                        <h3>マルチゲームスタッツ</h3>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>チームの登録</strong> —参加するチームのメンバーを登録しましょう。※最大5チーム </div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>【試合開始】後対戦カードを選択しスタッツを記録する</strong> — 対戦カードごとに細かく記録が可能！</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>結果の自動集計</strong> — 「勝敗数」「個人累計」「MVP」とさまざまな指標で集計できるぞ！</div>
                             </div>
                         </div>
                     </section>
@@ -786,6 +876,13 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                                 </div>
                                 <p class="tool-card-desc">試合中のシュート・リバウンド・アシスト等をリアルタイムで記録。チーム比較グラフ付き。</p>
                             </div>
+                            <div class="tool-card tool-card-game">
+                                <div class="tool-card-header">
+                                    <span class="tool-card-icon">🏆</span>
+                                    <h3 class="tool-card-title">マルチゲームスタッツ</h3>
+                                </div>
+                                <p class="tool-card-desc">複数チームでスタッツを記録。個人累計・MVPなども記録・選出してくれます。</p>
+                            </div>
                             <div class="tool-card tool-card-shot">
                                 <div class="tool-card-header">
                                     <span class="tool-card-icon">🎯</span>
@@ -804,6 +901,18 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                     </section>
                 </div>
             </article>
+
+            <!-- AdSense広告枠④: StatsTooとは？下 -->
+            <div class="adsense-container my-6">
+                <span class="adsense-placeholder">広告枠</span>
+                <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+                <ins class="adsbygoogle"
+                    style="display:none"
+                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+                    data-ad-slot="XXXXXXXXXX"
+                    data-ad-format="auto"
+                    data-full-width-responsive="true"></ins>
+            </div>
 
         </section>
 
@@ -1033,6 +1142,54 @@ description: バスケットボールのスタッツを簡単に記録・分析�
                 gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
                 oscillator.start(this.audioContext.currentTime);
                 oscillator.stop(this.audioContext.currentTime + 0.1);
+            }
+
+            // 成功音: 高めの明るいトーン (得点成功時)
+            playSuccessSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.15);
+            }
+
+            // ミス音: 低めの短いトーン (シュートミス、TO時)
+            playMissSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
+            }
+
+            // 通常音: 中間のトーン (リバウンド、アシスト等)
+            playNeutralSound() {
+                if (!this.audioContext) return;
+                const ctx = this.audioContext;
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                oscillator.start(ctx.currentTime);
+                oscillator.stop(ctx.currentTime + 0.1);
             }
         }
 
@@ -1856,7 +2013,16 @@ description: バスケットボールのスタッツを簡単に記録・分析�
 
             addStat(statKey) {
                 if (!this.state.selectedPlayer) return;
-                this.sound.playClickSound();
+                
+                // スタッツの種類に応じた音を再生
+                if (['p2m', 'p3m', 'ftm'].includes(statKey)) {
+                    this.sound.playSuccessSound(); // 得点成功
+                } else if (['p2a', 'p3a', 'fta', 'to'].includes(statKey)) {
+                    this.sound.playMissSound(); // シュートミス、ターンオーバー
+                } else {
+                    this.sound.playNeutralSound(); // リバウンド、アシスト、スティール、ブロック、ファウル
+                }
+                
                 const { team, playerId } = this.state.selectedPlayer;
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (!player) return;

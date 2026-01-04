@@ -32,6 +32,10 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
     .slide-up { transform: translateY(0%); pointer-events: auto; opacity: 1; }
     .slide-down { transform: translateY(110%); pointer-events: none; opacity: 0; }
 
+    #controller.slide-up button {
+        pointer-events: auto;
+    }
+
     /* Player Row */
     .player-row {
         transition: all 0.2s ease;
@@ -166,6 +170,12 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         100% { transform: rotate(360deg); }
     }
 
+    /* Image preview container */
+    .image-preview-container {
+        max-height: 50vh;
+        overflow: auto;
+    }
+
     /* Match Card */
     .match-card {
         background: white;
@@ -184,6 +194,52 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         background: #faf8f5;
         padding: 16px;
         border-radius: 12px;
+        min-width: 360px;
+    }
+
+    /* Export用テーブルスタイル（画像生成時に適切に表示される） */
+    .export-section .stats-table {
+        font-size: 12px;
+        min-width: 100%;
+        table-layout: auto;
+    }
+    .export-section .stats-table th {
+        padding: 10px 6px;
+        white-space: nowrap;
+    }
+    .export-section .stats-table td {
+        padding: 10px 6px;
+        white-space: nowrap;
+    }
+    
+    /* チームカラーバッジ（画像生成用） */
+    .team-badge {
+        width: 24px;
+        min-width: 24px;
+        height: 24px;
+        line-height: 24px;
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        flex-shrink: 0;
+    }
+    .team-badge-sm {
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 4px;
+        color: white;
+        font-size: 11px;
+        font-weight: bold;
+        display: inline-block;
+        text-align: center;
+        vertical-align: middle;
+        flex-shrink: 0;
     }
 
     /* Article Section Styles - StatsToo Style */
@@ -228,6 +284,34 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
         text-align: center;
         color: #94a3b8;
         font-size: 0.875rem;
+    }
+
+    /* Add Match Button */
+    .add-match-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: 2px dashed #34d399;
+    }
+    .add-match-btn:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    /* Match Number Badge */
+    .match-number-badge {
+        background: rgba(0,0,0,0.15);
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 9px;
+        margin-left: 4px;
+    }
+
+    /* Delete Match Button */
+    .delete-match-btn {
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .match-card:hover .delete-match-btn {
+        opacity: 1;
     }
 </style>
 
@@ -372,7 +456,8 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                     <p>
                         • <strong>自動保存</strong>：データはブラウザに自動保存され、次回アクセス時に復元できます。<br>
                         • <strong>画像生成</strong>：勝敗表やMVP結果を画像で保存してSNSでシェアできます。<br>
-                        • <strong>CSV出力</strong>：全データをCSVファイルでダウンロードできます。
+                        • <strong>CSV出力</strong>：全データをCSVファイルでダウンロードできます。<br>
+                        • <strong>試合追加</strong>：同じ対戦カードの2回戦、3回戦を追加できます。
                     </p>
                 </div>
             </div>
@@ -395,9 +480,14 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
             <div id="tab-match" class="tab-content space-y-4">
                 <!-- Match Selector -->
                 <div class="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-lg">🎯</span>
-                        <span class="font-bold text-sm text-secondary">対戦カード選択</span>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">🎯</span>
+                            <span class="font-bold text-sm text-secondary">対戦カード選択</span>
+                        </div>
+                        <button onclick="app.showAddMatchModal()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm transition flex items-center gap-1 btn-press">
+                            <span>➕</span> 試合追加
+                        </button>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="match-selector">
                         <!-- Match buttons will be rendered here -->
@@ -498,105 +588,41 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                             <span class="font-bold text-sm text-secondary">データ出力</span>
                         </div>
                         <button onclick="app.exportCSV()" class="text-xs bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1 btn-press">
-                            <span>📄</span> CSV出力
+                            <span>💾</span> CSV出力
                         </button>
                     </div>
                 </div>
-
-                <!-- Ad Space -->
-                <div class="ad-placeholder">
-                    広告<br>AdSense
-                </div>
-
-                <!-- Standings Guide Section -->
-                <section class="article-section">
-                    <div class="article-header">
-                        <span class="article-icon">📊</span>
-                        <h2 class="article-title">勝敗表の見方</h2>
-                    </div>
-                    <div class="article-content">
-                        <div class="article-block">
-                            <h3>📋 順位の決め方</h3>
-                            <p>
-                                順位は以下の優先順位で決定されます：<br><br>
-                                <strong>1. 勝利数</strong>：勝ち数が多いチームが上位<br>
-                                <strong>2. 得失点差</strong>：勝ち数が同じ場合、得点から失点を引いた値が大きいチームが上位
-                            </p>
-                        </div>
-                        <div class="article-block">
-                            <h3>💡 活用のヒント</h3>
-                            <p>
-                                • 画像生成でSNSにシェアして、チームメンバーと結果を共有しましょう<br>
-                                • CSVでダウンロードすれば、Excelやスプレッドシートで詳細分析できます
-                            </p>
-                        </div>
-                    </div>
-                </section>
             </div>
 
             <!-- Stats Tab -->
             <div id="tab-stats" class="tab-content hidden space-y-4">
                 <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-3">
+                    <div class="flex justify-between items-center mb-3">
                         <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                             <span class="text-lg">👤</span>
-                            <span class="font-display text-lg tracking-wide">PLAYER STATS</span>
+                            <span class="font-display text-lg tracking-wide">INDIVIDUAL STATS</span>
                         </h2>
-                        <div class="flex gap-2 items-center">
-                            <select id="stats-sort" onchange="app.renderCumulativeStats()" class="text-xs px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
-                                <option value="pts">得点順</option>
-                                <option value="eff">EFF順</option>
-                                <option value="reb">リバウンド順</option>
-                                <option value="ast">アシスト順</option>
-                                <option value="p3m">3P成功順</option>
-                            </select>
-                            <button onclick="app.generateImage('stats-export')" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1 btn-press">
-                                <span>📸</span> 画像生成
-                            </button>
+                        <select id="stats-sort" onchange="app.renderCumulativeStats()" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/30">
+                            <option value="pts">得点順</option>
+                            <option value="eff">EFF順</option>
+                            <option value="reb">リバウンド順</option>
+                            <option value="ast">アシスト順</option>
+                            <option value="p3m">3P成功順</option>
+                        </select>
+                    </div>
+                    
+                    <div id="stats-export" class="export-section">
+                        <div class="overflow-x-auto">
+                            <table class="stats-table w-full" id="cumulative-stats-table">
+                                <!-- Stats will be rendered here -->
+                            </table>
                         </div>
                     </div>
                     
-                    <div id="stats-export" class="export-section overflow-x-auto">
-                        <table id="cumulative-stats-table" class="stats-table w-full">
-                            <!-- Stats will be rendered here -->
-                        </table>
-                    </div>
-                </section>
-
-                <!-- Ad Space -->
-                <div class="ad-placeholder">
-                    広告<br>AdSense
-                </div>
-
-                <!-- EFF Explanation Section -->
-                <section class="article-section">
-                    <div class="article-header">
-                        <span class="article-icon">📈</span>
-                        <h2 class="article-title">EFF（効率）とは？</h2>
-                    </div>
-                    <div class="article-content">
-                        <p class="article-lead">
-                            EFF（Efficiency）は選手の総合的な貢献度を数値化した指標です。<br>
-                            得点だけでなく、リバウンドやアシストなども含めた「チームへの貢献」を評価します。
-                        </p>
-                        <div class="article-block">
-                            <h3>🔢 計算式</h3>
-                            <p>
-                                <strong>EFF = (PTS + REB + AST + STL + BLK) − (FGミス + FTミス + TO)</strong><br><br>
-                                プラス要素：得点、リバウンド、アシスト、スティール、ブロック<br>
-                                マイナス要素：シュートミス、フリースローミス、ターンオーバー
-                            </p>
-                        </div>
-                        <div class="article-block">
-                            <h3>💡 EFFの目安</h3>
-                            <p>
-                                • <strong>20以上</strong>：エース級の大活躍<br>
-                                • <strong>10〜19</strong>：チームに大きく貢献<br>
-                                • <strong>5〜9</strong>：堅実な働き<br>
-                                • <strong>0〜4</strong>：控えめな出場<br>
-                                • <strong>マイナス</strong>：ミスが多い試合
-                            </p>
-                        </div>
+                    <div class="mt-3 flex justify-end">
+                        <button onclick="app.generateImage('stats-export')" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1 btn-press">
+                            <span>📸</span> 画像生成
+                        </button>
                     </div>
                 </section>
             </div>
@@ -613,83 +639,48 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
                             <span>📸</span> 画像生成
                         </button>
                     </div>
-                    
+
                     <div id="mvp-export" class="export-section space-y-4">
                         <!-- MVP Card -->
-                        <div class="mvp-card rounded-xl p-6 text-center">
-                            <div class="text-4xl mb-2">🏆</div>
-                            <div class="text-sm text-amber-700 font-medium mb-1">MVP（最高効率）</div>
-                            <div id="mvp-name" class="text-2xl font-bold text-gray-900">-</div>
-                            <div id="mvp-team" class="text-sm text-gray-600 mt-1">-</div>
-                            <div id="mvp-stats" class="text-sm text-amber-800 mt-2 font-medium">-</div>
+                        <div class="mvp-card rounded-xl p-4">
+                            <div class="text-center">
+                                <div class="text-3xl mb-1">👑</div>
+                                <div class="text-xs font-bold text-amber-700 uppercase tracking-wider mb-2">Most Valuable Player</div>
+                                <div id="mvp-name" class="text-2xl font-bold text-secondary">-</div>
+                                <div id="mvp-team" class="text-sm text-gray-600 mb-2">-</div>
+                                <div id="mvp-stats" class="text-xs bg-white/60 rounded-lg px-3 py-1.5 inline-block font-medium">-</div>
+                            </div>
                         </div>
 
-                        <!-- Award Categories -->
+                        <!-- Other Awards -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-                                <div class="text-2xl mb-1">👑</div>
-                                <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">得点王</div>
-                                <div id="award-scorer" class="font-bold text-sm mt-1 text-secondary">-</div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <div class="text-xl mb-1">🔥</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">得点王</div>
+                                <div id="award-scorer" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-                                <div class="text-2xl mb-1">🎯</div>
-                                <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">3Pキング</div>
-                                <div id="award-3p" class="font-bold text-sm mt-1 text-secondary">-</div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <div class="text-xl mb-1">🎯</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">3P王</div>
+                                <div id="award-3p" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-                                <div class="text-2xl mb-1">💪</div>
-                                <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">リバウンド王</div>
-                                <div id="award-rebound" class="font-bold text-sm mt-1 text-secondary">-</div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <div class="text-xl mb-1">💪</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">リバウンド王</div>
+                                <div id="award-rebound" class="text-sm font-bold text-secondary">-</div>
                             </div>
-                            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-                                <div class="text-2xl mb-1">🤝</div>
-                                <div class="text-xs text-gray-500 font-bold uppercase tracking-wide">アシスト王</div>
-                                <div id="award-assist" class="font-bold text-sm mt-1 text-secondary">-</div>
+                            <div class="bg-gray-50 rounded-xl p-4 text-center">
+                                <div class="text-xl mb-1">🎁</div>
+                                <div class="text-xs font-bold text-gray-500 uppercase mb-1">アシスト王</div>
+                                <div id="award-assist" class="text-sm font-bold text-secondary">-</div>
                             </div>
                         </div>
 
                         <!-- EFF Ranking -->
-                        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                            <h3 class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">EFFランキング TOP5</h3>
-                            <div id="eff-ranking">
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">EFF ランキング TOP5</h3>
+                            <div id="eff-ranking" class="space-y-1">
                                 <!-- Ranking will be rendered here -->
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Ad Space -->
-                <div class="ad-placeholder">
-                    広告<br>AdSense
-                </div>
-
-                <!-- Awards Explanation Section -->
-                <section class="article-section">
-                    <div class="article-header">
-                        <span class="article-icon">🎖️</span>
-                        <h2 class="article-title">各賞について</h2>
-                    </div>
-                    <div class="article-content">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <div class="glossary-card">
-                                <div class="glossary-card-title"><span>🏆</span> MVP</div>
-                                <div class="glossary-card-text">全試合を通じてEFF（効率）が最も高かった選手に贈られます。得点だけでなく総合的な貢献度を評価。</div>
-                            </div>
-                            <div class="glossary-card">
-                                <div class="glossary-card-title"><span>👑</span> 得点王</div>
-                                <div class="glossary-card-text">全試合での合計得点が最も多かった選手。チームの攻撃を牽引したエースの証。</div>
-                            </div>
-                            <div class="glossary-card">
-                                <div class="glossary-card-title"><span>🎯</span> 3Pキング</div>
-                                <div class="glossary-card-text">3ポイントシュート成功数が最も多かった選手。長距離砲の名手。</div>
-                            </div>
-                            <div class="glossary-card">
-                                <div class="glossary-card-title"><span>💪</span> リバウンド王</div>
-                                <div class="glossary-card-text">リバウンド（OR+DR）の合計が最も多かった選手。ペイントエリアを支配した証。</div>
-                            </div>
-                            <div class="glossary-card">
-                                <div class="glossary-card-title"><span>🤝</span> アシスト王</div>
-                                <div class="glossary-card-text">アシスト数が最も多かった選手。味方を活かすプレーメイカーの証。</div>
                             </div>
                         </div>
                     </div>
@@ -703,61 +694,160 @@ description: 3〜5チームでのバスケットボール対戦スタッツを�
 {% include sidebar-right.html %}
 </div>
 
-<!-- Controller -->
-<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl rounded-t-3xl p-4 z-50 transition-all duration-300 slide-down">
-    <div class="max-w-md mx-auto">
-        <div class="flex justify-between items-center mb-3">
-            <span id="selected-player-name" class="font-bold text-secondary">選手を選択</span>
-            <button onclick="app.deselectPlayer()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+<!-- Stats Controller -->
+<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
+    <div class="max-w-4xl mx-auto px-3 py-3">
+        
+        <div class="flex justify-between items-center mb-2">
+            <div id="selected-info" class="text-sm font-bold text-secondary"></div>
+            <div class="flex gap-2">
+                <button id="undo-btn" onclick="app.undoLastAction()" disabled class="text-[10px] text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed font-medium">
+                    <span>↩</span>
+                    <span id="undo-label">元に戻す</span>
+                </button>
+                <button onclick="app.deselectPlayer()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium">
+                    選択解除
+                </button>
+            </div>
         </div>
 
-        <!-- Stat Buttons -->
-        <div class="grid grid-cols-4 gap-2 mb-2">
-            <button onclick="app.recordStat('p2m')" class="bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold btn-press text-sm">2P ○</button>
-            <button onclick="app.recordStat('p2a')" class="bg-red-400 hover:bg-red-500 text-white py-3 rounded-xl font-bold btn-press text-sm">2P ✕</button>
-            <button onclick="app.recordStat('p3m')" class="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold btn-press text-sm">3P ○</button>
-            <button onclick="app.recordStat('p3a')" class="bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold btn-press text-sm">3P ✕</button>
+        <!-- Scoring Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="app.recordStat('p2m')" class="btn-press bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                2P成功 +2
+            </button>
+            <button onclick="app.recordStat('p3m')" class="btn-press bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                3P成功 +3
+            </button>
+            <button onclick="app.recordStat('ftm')" class="btn-press bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                FT成功 +1
+            </button>
         </div>
-        <div class="grid grid-cols-4 gap-2 mb-2">
-            <button onclick="app.recordStat('ftm')" class="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl font-bold btn-press text-sm">FT ○</button>
-            <button onclick="app.recordStat('fta')" class="bg-blue-400 hover:bg-blue-500 text-white py-3 rounded-xl font-bold btn-press text-sm">FT ✕</button>
-            <button onclick="app.recordStat('orb')" class="bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-xl font-bold btn-press text-sm">OR</button>
-            <button onclick="app.recordStat('drb')" class="bg-amber-400 hover:bg-amber-500 text-white py-3 rounded-xl font-bold btn-press text-sm">DR</button>
+
+        <!-- Miss Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="app.recordStat('p2a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                2P ミス
+            </button>
+            <button onclick="app.recordStat('p3a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                3P ミス
+            </button>
+            <button onclick="app.recordStat('fta')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                FT ミス
+            </button>
         </div>
-        <div class="grid grid-cols-4 gap-2">
-            <button onclick="app.recordStat('ast')" class="bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-xl font-bold btn-press text-sm">AST</button>
-            <button onclick="app.recordStat('stl')" class="bg-teal-500 hover:bg-teal-600 text-white py-3 rounded-xl font-bold btn-press text-sm">STL</button>
-            <button onclick="app.recordStat('blk')" class="bg-indigo-500 hover:bg-indigo-600 text-white py-3 rounded-xl font-bold btn-press text-sm">BLK</button>
-            <button onclick="app.recordStat('to')" class="bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl font-bold btn-press text-sm">TO</button>
+
+        <!-- Other Stats Buttons -->
+        <div class="grid grid-cols-4 gap-2 mb-2">
+            <button onclick="app.recordStat('orb')" class="btn-press bg-primary/10 hover:bg-primary/20 text-primary-dark py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                OR
+            </button>
+            <button onclick="app.recordStat('drb')" class="btn-press bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                DR
+            </button>
+            <button onclick="app.recordStat('ast')" class="btn-press bg-green-100 hover:bg-green-200 text-green-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                AST
+            </button>
+            <button onclick="app.recordStat('pf')" class="btn-press bg-rose-100 hover:bg-rose-200 text-rose-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                PF
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="app.recordStat('stl')" class="btn-press bg-cyan-100 hover:bg-cyan-200 text-cyan-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                STL
+            </button>
+            <button onclick="app.recordStat('blk')" class="btn-press bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                BLK
+            </button>
+            <button onclick="app.recordStat('to')" class="btn-press bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                TO
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Image Preview Modal -->
 <div id="image-modal" class="modal-overlay">
+    <div class="modal-content p-4 w-full max-w-lg">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                <span>📸</span> スタッツ画像
+            </h3>
+            <button onclick="app.closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="image-loading" class="flex flex-col items-center justify-center py-8">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-500 text-sm">画像を生成中...</p>
+        </div>
+        
+        <!-- Image Preview -->
+        <div id="image-preview-wrapper" class="hidden">
+            <div class="image-preview-container mb-4 border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                <img id="generated-image" class="w-full" alt="Stats Image">
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <!-- Share Button (for mobile) -->
+                <button id="share-btn" onclick="app.shareImage()" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    SNSでシェア
+                </button>
+                
+                <!-- Download Button -->
+                <button onclick="app.downloadImage()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    画像をダウンロード
+                </button>
+                
+                <!-- Copy to Clipboard (Desktop) -->
+                <button id="copy-btn" onclick="app.copyImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    </svg>
+                    クリップボードにコピー
+                </button>
+            </div>
+            
+            <p class="text-xs text-gray-400 text-center mt-3">
+                💡 スマホの場合は「SNSでシェア」からLINE、X、Instagramなどに直接シェアできます
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Add Match Modal -->
+<div id="add-match-modal" class="modal-overlay">
     <div class="modal-content p-4">
-        <div class="flex justify-between items-center mb-3">
-            <h3 class="font-bold text-secondary">画像プレビュー</h3>
-            <button onclick="app.closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">&times;</button>
-        </div>
-        <div id="image-preview" class="mb-4 flex justify-center max-h-[50vh] overflow-auto">
-            <!-- Image will be inserted here -->
-        </div>
-        <div class="flex gap-2">
-            <button onclick="app.downloadImage()" class="flex-1 bg-primary hover:bg-primary-dark text-white py-3 rounded-xl font-bold btn-press flex items-center justify-center gap-2">
-                <span>💾</span> 保存
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-secondary">🏀 試合を追加</h3>
+            <button onclick="app.closeAddMatchModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
-            <button onclick="app.shareImage()" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-bold btn-press flex items-center justify-center gap-2">
-                <span>📤</span> 共有
+        </div>
+        <p class="text-sm text-gray-600 mb-4">追加する対戦カードを選択してください。同じカードを複数回追加できます（2回戦、3回戦など）。</p>
+        <div id="add-match-options" class="space-y-2 max-h-64 overflow-y-auto">
+            <!-- Match options will be rendered here -->
+        </div>
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <button onclick="app.closeAddMatchModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-medium text-sm btn-press">
+                キャンセル
             </button>
         </div>
     </div>
 </div>
 
 <!-- Loading Overlay -->
-<div id="loading-overlay" class="modal-overlay" style="background: rgba(255,255,255,0.9);">
+<div id="loading-overlay" class="modal-overlay">
     <div class="text-center">
-        <div class="spinner mx-auto mb-4"></div>
+        <div class="spinner mx-auto mb-3"></div>
         <p class="text-gray-600 font-medium">画像を生成中...</p>
     </div>
 </div>
@@ -779,10 +869,73 @@ class MultiTeamApp {
             matches: [],
             currentMatch: null,
             selectedPlayer: null,
-            editMode: false
+            editMode: false,
+            history: []  // Undo機能用の履歴
         };
 
+        // 画像生成用
+        this.currentImageData = null;
+        this.currentImageBlob = null;
+        this.currentImageType = null;
+
+        // Audio Context for button sounds
+        this.audioContext = null;
+        this.initAudio();
+
         this.init();
+    }
+
+    initAudio() {
+        // Initialize AudioContext on first user interaction
+        const initOnInteraction = () => {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            document.removeEventListener('touchstart', initOnInteraction);
+            document.removeEventListener('click', initOnInteraction);
+        };
+        document.addEventListener('touchstart', initOnInteraction, { once: true });
+        document.addEventListener('click', initOnInteraction, { once: true });
+    }
+
+    playSound(type) {
+        if (!this.audioContext) {
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        const ctx = this.audioContext;
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        // Different sounds based on stat type
+        if (type === 'success') {
+            // Success sound: Higher pitch, pleasant tone
+            oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.15);
+        } else if (type === 'miss') {
+            // Miss sound: Lower pitch, short
+            oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        } else {
+            // Neutral sound: Middle pitch for other stats
+            oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        }
     }
 
     init() {
@@ -790,6 +943,32 @@ class MultiTeamApp {
     }
 
     setTeamCount(count) {
+        const oldCount = this.state.teamCount;
+        const oldTeams = this.state.teams;
+        const oldMatches = this.state.matches;
+        
+        // チームを減らす場合は確認
+        if (count < oldCount && Object.keys(oldTeams).length > 0) {
+            const removingTeams = ['A', 'B', 'C', 'D', 'E'].slice(count, oldCount);
+            const hasData = removingTeams.some(key => {
+                const team = oldTeams[key];
+                if (!team) return false;
+                return team.players.some(p => Object.keys(p.matchStats).length > 0);
+            });
+            
+            if (hasData) {
+                const teamNames = removingTeams.map(k => oldTeams[k]?.name || `チーム${k}`).join('、');
+                if (!confirm(`${teamNames}のデータが削除されます。よろしいですか？`)) {
+                    // ボタンの状態を元に戻す
+                    document.querySelectorAll('.count-tab').forEach(btn => {
+                        const btnCount = parseInt(btn.dataset.count);
+                        btn.classList.toggle('active', btnCount === oldCount);
+                    });
+                    return;
+                }
+            }
+        }
+
         this.state.teamCount = count;
 
         document.querySelectorAll('.count-tab').forEach(btn => {
@@ -798,27 +977,80 @@ class MultiTeamApp {
         });
 
         const teamKeys = ['A', 'B', 'C', 'D', 'E'].slice(0, count);
-        this.state.teams = {};
+        const newTeams = {};
+        
+        // 既存のチームデータを保持、新規チームは作成
         teamKeys.forEach(key => {
-            this.state.teams[key] = {
-                id: key,
-                name: `チーム${key}`,
-                players: [
-                    this.createPlayer(1),
-                    this.createPlayer(2),
-                    this.createPlayer(3),
-                    this.createPlayer(4),
-                    this.createPlayer(5)
-                ],
-                wins: 0,
-                losses: 0,
-                pointsFor: 0,
-                pointsAgainst: 0
-            };
+            if (oldTeams[key]) {
+                // 既存チームを維持
+                newTeams[key] = oldTeams[key];
+            } else {
+                // 新規チームを作成
+                newTeams[key] = {
+                    id: key,
+                    name: `チーム${key}`,
+                    players: [
+                        this.createPlayer(1),
+                        this.createPlayer(2),
+                        this.createPlayer(3),
+                        this.createPlayer(4),
+                        this.createPlayer(5)
+                    ],
+                    wins: 0,
+                    losses: 0,
+                    pointsFor: 0,
+                    pointsAgainst: 0
+                };
+            }
         });
+        
+        this.state.teams = newTeams;
 
-        this.generateMatches(teamKeys);
+        // 対戦カードの更新（既存のマッチデータを保持）
+        this.updateMatches(teamKeys, oldMatches);
         this.renderTeamSetup();
+    }
+
+    updateMatches(teamKeys, oldMatches) {
+        const newMatches = [];
+        
+        // 総当たりの基本マッチを生成/維持
+        for (let i = 0; i < teamKeys.length; i++) {
+            for (let j = i + 1; j < teamKeys.length; j++) {
+                const baseId = `${teamKeys[i]}_vs_${teamKeys[j]}`;
+                
+                // このカードの既存マッチを探す（teamA/teamBベースでフィルタリング）
+                const existingMatches = oldMatches.filter(m => 
+                    (m.teamA === teamKeys[i] && m.teamB === teamKeys[j]) ||
+                    (m.teamA === teamKeys[j] && m.teamB === teamKeys[i])
+                );
+                
+                if (existingMatches.length > 0) {
+                    // 既存のマッチを維持
+                    existingMatches.forEach(m => newMatches.push(m));
+                } else {
+                    // 新規マッチを作成
+                    newMatches.push({
+                        id: baseId,
+                        teamA: teamKeys[i],
+                        teamB: teamKeys[j],
+                        scoreA: 0,
+                        scoreB: 0,
+                        completed: false,
+                        matchNumber: 1
+                    });
+                }
+            }
+        }
+        
+        // マッチをソート（チームA → チームB → 回戦番号の順）
+        newMatches.sort((a, b) => {
+            if (a.teamA !== b.teamA) return a.teamA.localeCompare(b.teamA);
+            if (a.teamB !== b.teamB) return a.teamB.localeCompare(b.teamB);
+            return (a.matchNumber || 1) - (b.matchNumber || 1);
+        });
+        
+        this.state.matches = newMatches;
     }
 
     createPlayer(num) {
@@ -832,7 +1064,7 @@ class MultiTeamApp {
     }
 
     createEmptyStats() {
-        return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0 };
+        return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
     }
 
     generateMatches(teamKeys) {
@@ -845,10 +1077,135 @@ class MultiTeamApp {
                     teamB: teamKeys[j],
                     scoreA: 0,
                     scoreB: 0,
-                    completed: false
+                    completed: false,
+                    matchNumber: 1
                 });
             }
         }
+    }
+
+    // 試合追加モーダル表示
+    showAddMatchModal() {
+        const container = document.getElementById('add-match-options');
+        const teamKeys = Object.keys(this.state.teams);
+        
+        let html = '';
+        for (let i = 0; i < teamKeys.length; i++) {
+            for (let j = i + 1; j < teamKeys.length; j++) {
+                const teamA = this.state.teams[teamKeys[i]];
+                const teamB = this.state.teams[teamKeys[j]];
+                const tcA = this.teamColors[teamKeys[i]];
+                const tcB = this.teamColors[teamKeys[j]];
+                
+                // このカードの既存試合をフィルタリング
+                const existingMatches = this.state.matches.filter(m => 
+                    (m.teamA === teamKeys[i] && m.teamB === teamKeys[j]) ||
+                    (m.teamA === teamKeys[j] && m.teamB === teamKeys[i])
+                );
+                
+                // 既存の最大matchNumberを取得して+1
+                const maxMatchNumber = existingMatches.reduce((max, m) => 
+                    Math.max(max, m.matchNumber || 1), 0
+                );
+                const nextNumber = maxMatchNumber + 1;
+                
+                html += `
+                    <button onclick="app.addMatch('${teamKeys[i]}', '${teamKeys[j]}')" 
+                        class="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded text-white text-xs flex items-center justify-center font-bold" style="background-color: ${tcA.color};">${teamKeys[i]}</span>
+                            <span class="text-sm font-medium">${teamA.name}</span>
+                            <span class="text-gray-400 mx-1">vs</span>
+                            <span class="w-6 h-6 rounded text-white text-xs flex items-center justify-center font-bold" style="background-color: ${tcB.color};">${teamKeys[j]}</span>
+                            <span class="text-sm font-medium">${teamB.name}</span>
+                        </div>
+                        <span class="text-xs text-gray-500 bg-white px-2 py-1 rounded">${nextNumber}回戦目を追加</span>
+                    </button>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+        document.getElementById('add-match-modal').classList.add('active');
+    }
+
+    closeAddMatchModal() {
+        document.getElementById('add-match-modal').classList.remove('active');
+    }
+
+    addMatch(teamAKey, teamBKey) {
+        // このカードの既存試合をフィルタリング（teamA/teamBベースで統一）
+        const existingMatches = this.state.matches.filter(m => 
+            (m.teamA === teamAKey && m.teamB === teamBKey) ||
+            (m.teamA === teamBKey && m.teamB === teamAKey)
+        );
+        
+        // 既存の最大matchNumberを取得して+1（削除後の欠番に対応）
+        const maxMatchNumber = existingMatches.reduce((max, m) => 
+            Math.max(max, m.matchNumber || 1), 0
+        );
+        const matchNumber = maxMatchNumber + 1;
+        
+        // 新しいマッチIDを生成（常にteamAKey_vs_teamBKey_N形式）
+        const baseId = `${teamAKey}_vs_${teamBKey}`;
+        const newId = matchNumber === 1 ? baseId : `${baseId}_r${matchNumber}`;
+        
+        this.state.matches.push({
+            id: newId,
+            teamA: teamAKey,
+            teamB: teamBKey,
+            scoreA: 0,
+            scoreB: 0,
+            completed: false,
+            matchNumber: matchNumber
+        });
+        
+        this.closeAddMatchModal();
+        this.renderMatchSelector();
+        this.saveData();
+        
+        // 追加した試合を選択
+        this.selectMatch(newId);
+    }
+
+    deleteMatch(matchId, event) {
+        event.stopPropagation();
+        
+        const match = this.state.matches.find(m => m.id === matchId);
+        if (!match) return;
+        
+        const teamA = this.state.teams[match.teamA];
+        const teamB = this.state.teams[match.teamB];
+        const matchNum = match.matchNumber || 1;
+        
+        if (!confirm(`${teamA.name} vs ${teamB.name}（${matchNum}回戦）を削除しますか？\nこの試合のスタッツも削除されます。`)) {
+            return;
+        }
+        
+        // この試合のスタッツを削除
+        Object.values(this.state.teams).forEach(team => {
+            team.players.forEach(player => {
+                delete player.matchStats[matchId];
+            });
+        });
+        
+        // マッチを削除
+        const index = this.state.matches.findIndex(m => m.id === matchId);
+        if (index > -1) {
+            this.state.matches.splice(index, 1);
+        }
+        
+        // 現在選択中の試合が削除された場合
+        if (this.state.currentMatch && this.state.currentMatch.id === matchId) {
+            this.state.currentMatch = this.state.matches[0] || null;
+            if (this.state.currentMatch) {
+                this.selectMatch(this.state.currentMatch.id);
+            }
+        }
+        
+        this.renderMatchSelector();
+        this.updateStandings();
+        this.saveData();
     }
 
     renderTeamSetup() {
@@ -943,15 +1300,18 @@ class MultiTeamApp {
         document.getElementById('btn-back-setup').classList.add('hidden');
         document.getElementById('header-scoreboard').classList.add('hidden');
         this.hideController();
+        this.renderTeamSetup();
     }
 
     selectMatch(matchId) {
         this.state.currentMatch = this.state.matches.find(m => m.id === matchId);
         this.state.selectedPlayer = null;
+        this.state.history = [];  // 試合切替時に履歴をクリア
         this.hideController();
         this.renderMatchSelector();
         this.renderCurrentMatch();
         this.renderPlayerList();
+        this.updateUndoButton();
     }
 
     renderMatchSelector() {
@@ -961,20 +1321,31 @@ class MultiTeamApp {
             const teamB = this.state.teams[match.teamB];
             const isCurrent = this.state.currentMatch && this.state.currentMatch.id === match.id;
             const isCompleted = match.completed;
+            const matchNumber = match.matchNumber || 1;
+            
+            // このカードの試合数をカウント（2回戦以上ある場合のみ回戦バッジを表示）
+            const sameCardMatches = this.state.matches.filter(m => 
+                (m.teamA === match.teamA && m.teamB === match.teamB) ||
+                (m.teamA === match.teamB && m.teamB === match.teamA)
+            );
+            const showMatchNumber = sameCardMatches.length > 1;
+            const isExtraMatch = matchNumber > 1;
 
             return `
-                <button onclick="app.selectMatch('${match.id}')" 
-                    class="match-card ${isCurrent ? 'current' : ''} ${isCompleted ? 'opacity-70' : ''} text-left transition-all hover:shadow-md">
+                <div onclick="app.selectMatch('${match.id}')" 
+                    class="match-card ${isCurrent ? 'current' : ''} ${isCompleted ? 'opacity-70' : ''} text-left transition-all hover:shadow-md relative group cursor-pointer">
+                    ${isExtraMatch ? `<button onclick="event.stopPropagation(); app.deleteMatch('${match.id}', event)" class="delete-match-btn absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full text-xs flex items-center justify-center shadow">×</button>` : ''}
                     <div class="flex items-center justify-between mb-1">
                         <div class="flex items-center gap-1">
                             <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
                             <span class="text-[10px] text-gray-400">vs</span>
                             <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
+                            ${showMatchNumber ? `<span class="match-number-badge">${matchNumber}回戦</span>` : ''}
                         </div>
                         ${isCompleted ? `<span class="text-xs font-bold">${match.scoreA}-${match.scoreB}</span>` : '<span class="text-[10px] text-gray-400">未実施</span>'}
                     </div>
                     <div class="text-xs truncate text-gray-600">${teamA.name} vs ${teamB.name}</div>
-                </button>
+                </div>
             `;
         }).join('');
     }
@@ -1080,7 +1451,7 @@ class MultiTeamApp {
             this.state.selectedPlayer = { ...player, teamKey };
             this.showController();
             this.renderPlayerList();
-            document.getElementById('selected-player-name').textContent = `#${player.number} ${player.name}`;
+            document.getElementById('selected-info').textContent = `#${player.number} ${player.name} (${team.name})`;
         }
     }
 
@@ -1113,6 +1484,25 @@ class MultiTeamApp {
             player.matchStats[matchId] = this.createEmptyStats();
         }
 
+        // Play sound based on stat type
+        if (['p2m', 'p3m', 'ftm'].includes(statType)) {
+            this.playSound('success');
+        } else if (['p2a', 'p3a', 'fta', 'to'].includes(statType)) {
+            this.playSound('miss');
+        } else {
+            this.playSound('neutral');
+        }
+
+        // Save history for undo
+        this.state.history.push({
+            teamKey,
+            playerId,
+            matchId,
+            statType,
+            playerName: player.name,
+            playerNumber: player.number
+        });
+
         if (statType === 'p2a') {
             player.matchStats[matchId].p2a++;
         } else if (statType === 'p3a') {
@@ -1136,6 +1526,70 @@ class MultiTeamApp {
         this.renderPlayerList();
         this.updateStandings();
         this.saveData();
+        this.updateUndoButton();
+    }
+
+    undoLastAction() {
+        if (this.state.history.length === 0) return;
+
+        const last = this.state.history.pop();
+        const player = this.state.teams[last.teamKey].players.find(p => p.id === last.playerId);
+
+        if (!player || !player.matchStats[last.matchId]) return;
+
+        const stats = player.matchStats[last.matchId];
+
+        // Revert the stat
+        if (last.statType === 'p2a') {
+            stats.p2a = Math.max(0, stats.p2a - 1);
+        } else if (last.statType === 'p3a') {
+            stats.p3a = Math.max(0, stats.p3a - 1);
+        } else if (last.statType === 'fta') {
+            stats.fta = Math.max(0, stats.fta - 1);
+        } else if (last.statType === 'p2m') {
+            stats.p2m = Math.max(0, stats.p2m - 1);
+            stats.p2a = Math.max(0, stats.p2a - 1);
+        } else if (last.statType === 'p3m') {
+            stats.p3m = Math.max(0, stats.p3m - 1);
+            stats.p3a = Math.max(0, stats.p3a - 1);
+        } else if (last.statType === 'ftm') {
+            stats.ftm = Math.max(0, stats.ftm - 1);
+            stats.fta = Math.max(0, stats.fta - 1);
+        } else {
+            stats[last.statType] = Math.max(0, stats[last.statType] - 1);
+        }
+
+        this.playSound('neutral');
+        this.updateMatchScore();
+        this.renderPlayerList();
+        this.updateStandings();
+        this.saveData();
+        this.updateUndoButton();
+    }
+
+    updateUndoButton() {
+        const undoLabel = document.getElementById('undo-label');
+        const undoBtn = document.getElementById('undo-btn');
+        
+        if (!undoLabel || !undoBtn) return;  // DOM未準備時は何もしない
+        
+        if (this.state.history.length > 0) {
+            const last = this.state.history[this.state.history.length - 1];
+            undoLabel.textContent = `#${last.playerNumber} ${this.getStatLabel(last.statType)} を取消`;
+            undoBtn.disabled = false;
+        } else {
+            undoLabel.textContent = '元に戻す';
+            undoBtn.disabled = true;
+        }
+    }
+
+    getStatLabel(statType) {
+        const labels = {
+            p2m: '2P成功', p2a: '2Pミス', p3m: '3P成功', p3a: '3Pミス',
+            ftm: 'FT成功', fta: 'FTミス', orb: 'OR', drb: 'DR',
+            ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF'
+        };
+        return labels[statType] || statType;
     }
 
     updateStandings() {
@@ -1204,11 +1658,11 @@ class MultiTeamApp {
                     <tr>
                         <th class="text-left px-3">順位</th>
                         <th class="text-left px-3">チーム</th>
-                        <th class="px-2">勝</th>
-                        <th class="px-2">敗</th>
-                        <th class="px-2">得点</th>
-                        <th class="px-2">失点</th>
-                        <th class="px-2">得失点差</th>
+                        <th class="px-3">勝</th>
+                        <th class="px-3">敗</th>
+                        <th class="px-3">得点</th>
+                        <th class="px-3">失点</th>
+                        <th class="px-3">得失点差</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1217,9 +1671,9 @@ class MultiTeamApp {
                             <td class="font-bold px-3">${i + 1}</td>
                             <td class="text-left px-3">
                                 <div class="flex items-center gap-2">
-                                    <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center font-bold" style="background-color: ${this.teamColors[team.id].color};">${team.id}</span>
-                                    <span class="truncate">${team.name}</span>
-                                    ${i === 0 ? '<span class="winner-badge">👑</span>' : ''}
+                                    <span class="team-badge" style="background-color: ${this.teamColors[team.id].color}; display: inline-block; text-align: center; line-height: 24px;">${team.id}</span>
+                                    <span>${team.name}</span>
+                                    ${i === 0 ? '<span class="winner-badge ml-1">👑</span>' : ''}
                                 </div>
                             </td>
                             <td class="font-bold text-green-600">${team.wins}</td>
@@ -1241,21 +1695,30 @@ class MultiTeamApp {
             const teamA = this.state.teams[match.teamA];
             const teamB = this.state.teams[match.teamB];
             const winner = match.scoreA > match.scoreB ? 'A' : match.scoreB > match.scoreA ? 'B' : null;
+            const matchNumber = match.matchNumber || 1;
+            
+            // このカードの試合数をカウント（2回戦以上ある場合のみ回戦表示）
+            const sameCardMatches = this.state.matches.filter(m => 
+                (m.teamA === match.teamA && m.teamB === match.teamB) ||
+                (m.teamA === match.teamB && m.teamB === match.teamA)
+            );
+            const showMatchNumber = sameCardMatches.length > 1;
 
             return `
-                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                    <div class="flex items-center gap-2 flex-1 min-w-0">
-                        <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center flex-shrink-0" style="background-color: ${this.teamColors[match.teamA].color};">${match.teamA}</span>
-                        <span class="text-xs truncate ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
+                <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center gap-2 flex-1">
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamA].color}; display: inline-block; text-align: center; line-height: 22px;">${match.teamA}</span>
+                        <span class="text-sm ${winner === 'A' ? 'font-bold' : ''}">${teamA.name}</span>
+                        ${showMatchNumber ? `<span class="text-xs text-gray-400">(${matchNumber}回戦)</span>` : ''}
                     </div>
-                    <div class="text-center px-3 flex-shrink-0">
-                        <span class="font-bold text-sm ${winner === 'A' ? 'text-green-600' : ''}">${match.scoreA}</span>
-                        <span class="text-gray-400 mx-1">-</span>
-                        <span class="font-bold text-sm ${winner === 'B' ? 'text-green-600' : ''}">${match.scoreB}</span>
+                    <div class="text-center px-4 flex-shrink-0">
+                        <span class="font-bold text-base ${winner === 'A' ? 'text-green-600' : ''}">${match.scoreA}</span>
+                        <span class="text-gray-400 mx-2">-</span>
+                        <span class="font-bold text-base ${winner === 'B' ? 'text-green-600' : ''}">${match.scoreB}</span>
                     </div>
-                    <div class="flex items-center gap-2 flex-1 justify-end min-w-0">
-                        <span class="text-xs truncate ${winner === 'B' ? 'font-bold' : ''}">${teamB.name}</span>
-                        <span class="w-5 h-5 rounded text-white text-[10px] flex items-center justify-center flex-shrink-0" style="background-color: ${this.teamColors[match.teamB].color};">${match.teamB}</span>
+                    <div class="flex items-center gap-2 flex-1 justify-end">
+                        <span class="text-sm ${winner === 'B' ? 'font-bold' : ''}">${teamB.name}</span>
+                        <span class="team-badge-sm" style="background-color: ${this.teamColors[match.teamB].color}; display: inline-block; text-align: center; line-height: 22px;">${match.teamB}</span>
                     </div>
                 </div>
             `;
@@ -1295,17 +1758,18 @@ class MultiTeamApp {
             <thead>
                 <tr>
                     <th class="text-left px-2">#</th>
-                    <th class="text-left px-2">選手</th>
-                    <th>PTS</th>
-                    <th>2P</th>
-                    <th>3P</th>
-                    <th>FT</th>
-                    <th>REB</th>
-                    <th>AST</th>
-                    <th>STL</th>
-                    <th>BLK</th>
-                    <th>TO</th>
-                    <th>EFF</th>
+                    <th class="text-left px-2" style="min-width: 100px;">選手</th>
+                    <th class="px-2">PTS</th>
+                    <th class="px-2">2P</th>
+                    <th class="px-2">3P</th>
+                    <th class="px-2">FT</th>
+                    <th class="px-2">REB</th>
+                    <th class="px-2">AST</th>
+                    <th class="px-2">STL</th>
+                    <th class="px-2">BLK</th>
+                    <th class="px-2">TO</th>
+                    <th class="px-2">PF</th>
+                    <th class="px-2">EFF</th>
                 </tr>
             </thead>
             <tbody>
@@ -1315,9 +1779,9 @@ class MultiTeamApp {
                         <tr>
                             <td class="font-bold px-2">${i + 1}</td>
                             <td class="text-left px-2">
-                                <div class="flex items-center gap-1">
-                                    <span class="w-4 h-4 rounded text-white text-[9px] flex items-center justify-center" style="background-color: ${this.teamColors[p.teamKey].color};">${p.teamKey}</span>
-                                    <span class="truncate max-w-[80px]">${p.name}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="team-badge-sm" style="background-color: ${this.teamColors[p.teamKey].color}; display: inline-block; text-align: center; line-height: 22px;">${p.teamKey}</span>
+                                    <span>${p.name}</span>
                                 </div>
                             </td>
                             <td class="font-bold">${p.pts}</td>
@@ -1329,6 +1793,7 @@ class MultiTeamApp {
                             <td>${s.stl}</td>
                             <td>${s.blk}</td>
                             <td>${s.to}</td>
+                            <td>${s.pf || 0}</td>
                             <td class="font-bold ${p.eff >= 0 ? 'text-green-600' : 'text-red-600'}">${p.eff}</td>
                         </tr>
                     `;
@@ -1402,15 +1867,15 @@ class MultiTeamApp {
         const rankingHtml = byEff.slice(0, 5).map((p, i) => `
             <div class="flex items-center justify-between py-2 ${i < 4 ? 'border-b border-gray-100' : ''}">
                 <div class="flex items-center gap-3">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-400 text-white' : i === 1 ? 'bg-gray-300 text-gray-700' : i === 2 ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600'}">${i + 1}</span>
+                    <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-amber-400 text-white' : i === 1 ? 'bg-gray-300 text-gray-700' : i === 2 ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-600'}">${i + 1}</span>
                     <div>
                         <div class="font-medium text-sm text-secondary">${p.name}</div>
-                        <div class="text-[10px] text-gray-500">${p.teamName}</div>
+                        <div class="text-xs text-gray-500">${p.teamName}</div>
                     </div>
                 </div>
                 <div class="text-right">
                     <div class="font-bold text-lg ${p.eff >= 0 ? 'text-green-600' : 'text-red-600'}">${p.eff}</div>
-                    <div class="text-[10px] text-gray-500">${p.pts}pts ${p.reb}r ${p.ast}a</div>
+                    <div class="text-xs text-gray-500">${p.pts}pts ${p.reb}r ${p.ast}a</div>
                 </div>
             </div>
         `).join('');
@@ -1428,7 +1893,10 @@ class MultiTeamApp {
     }
 
     async generateImage(elementId) {
-        document.getElementById('loading-overlay').classList.add('active');
+        // モーダルを開いてローディング状態を表示
+        document.getElementById('image-modal').classList.add('active');
+        document.getElementById('image-loading').classList.remove('hidden');
+        document.getElementById('image-preview-wrapper').classList.add('hidden');
 
         await new Promise(r => setTimeout(r, 100));
 
@@ -1443,18 +1911,30 @@ class MultiTeamApp {
 
             this.currentImageData = canvas.toDataURL('image/png');
             this.currentImageType = elementId;
-            document.getElementById('image-preview').innerHTML = `<img src="${this.currentImageData}" class="max-w-full rounded-lg shadow-lg">`;
-            document.getElementById('image-modal').classList.add('active');
+            
+            // Blobも保存（クリップボードコピー用）
+            canvas.toBlob((blob) => {
+                this.currentImageBlob = blob;
+            }, 'image/png');
+            
+            // 画像をプレビューに設定
+            document.getElementById('generated-image').src = this.currentImageData;
+            
+            // ローディングを非表示、プレビューを表示
+            document.getElementById('image-loading').classList.add('hidden');
+            document.getElementById('image-preview-wrapper').classList.remove('hidden');
         } catch (err) {
             alert('画像の生成に失敗しました');
             console.error(err);
+            document.getElementById('image-modal').classList.remove('active');
         }
-
-        document.getElementById('loading-overlay').classList.remove('active');
     }
 
     closeImageModal() {
         document.getElementById('image-modal').classList.remove('active');
+        // 次回のためにリセット
+        document.getElementById('image-loading').classList.remove('hidden');
+        document.getElementById('image-preview-wrapper').classList.add('hidden');
     }
 
     downloadImage() {
@@ -1481,15 +1961,58 @@ class MultiTeamApp {
         }
     }
 
+    async copyImageToClipboard() {
+        if (!this.currentImageBlob) {
+            // Blobがない場合は生成
+            try {
+                const response = await fetch(this.currentImageData);
+                this.currentImageBlob = await response.blob();
+            } catch (err) {
+                alert('画像のコピーに失敗しました');
+                return;
+            }
+        }
+
+        try {
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    'image/png': this.currentImageBlob
+                })
+            ]);
+            
+            // コピー成功のフィードバック
+            const copyBtn = document.getElementById('copy-btn');
+            const originalHtml = copyBtn.innerHTML;
+            copyBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                コピーしました！
+            `;
+            copyBtn.classList.remove('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            copyBtn.classList.add('bg-green-100', 'text-green-700');
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHtml;
+                copyBtn.classList.remove('bg-green-100', 'text-green-700');
+                copyBtn.classList.add('bg-gray-100', 'hover:bg-gray-200', 'text-gray-700');
+            }, 2000);
+        } catch (err) {
+            console.error('クリップボードへのコピーに失敗:', err);
+            alert('クリップボードへのコピーに失敗しました。ブラウザが対応していない可能性があります。');
+        }
+    }
+
     exportCSV() {
         let csv = '\ufeff';
 
         csv += '=== 試合結果サマリー ===\n';
-        csv += '対戦カード,スコア\n';
+        csv += '対戦カード,回戦,スコア\n';
         this.state.matches.forEach(match => {
             const teamA = this.state.teams[match.teamA];
             const teamB = this.state.teams[match.teamB];
-            csv += `${teamA.name} vs ${teamB.name},${match.scoreA} - ${match.scoreB}\n`;
+            const matchNum = match.matchNumber || 1;
+            csv += `${teamA.name} vs ${teamB.name},${matchNum}回戦,${match.scoreA} - ${match.scoreB}\n`;
         });
         csv += '\n';
 
@@ -1505,14 +2028,14 @@ class MultiTeamApp {
         csv += '\n';
 
         csv += '=== 個人スタッツ（累計）===\n';
-        csv += 'チーム,選手,背番号,PTS,2PM,2PA,3PM,3PA,FTM,FTA,OR,DR,AST,STL,BLK,TO,EFF\n';
+        csv += 'チーム,選手,背番号,PTS,2PM,2PA,3PM,3PA,FTM,FTA,OR,DR,AST,STL,BLK,TO,PF,EFF\n';
 
         Object.entries(this.state.teams).forEach(([teamKey, team]) => {
             team.players.forEach(player => {
                 const s = this.getTotalStats(player);
                 const pts = this.calculatePTS(s);
                 const eff = this.calculateEFF(s);
-                csv += `${team.name},${player.name},${player.number},${pts},${s.p2m},${s.p2a},${s.p3m},${s.p3a},${s.ftm},${s.fta},${s.orb},${s.drb},${s.ast},${s.stl},${s.blk},${s.to},${eff}\n`;
+                csv += `${team.name},${player.name},${player.number},${pts},${s.p2m},${s.p2a},${s.p3m},${s.p3a},${s.ftm},${s.fta},${s.orb},${s.drb},${s.ast},${s.stl},${s.blk},${s.to},${s.pf || 0},${eff}\n`;
             });
         });
 
