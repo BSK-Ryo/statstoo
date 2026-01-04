@@ -26,14 +26,14 @@
                         <div class="sidebar-link-desc">ツールの使い方を説明</div>
                     </div>
                 </a>
-                <a href="/rule/" class="sidebar-link{% if page.url contains '/rule/' %} active{% endif %}">
+                <a href="/rule/" class="sidebar-link{% if page.url == '/rule/' %} active{% endif %}">
                     <span class="sidebar-link-icon">📋</span>
                     <div class="sidebar-link-content">
                         <div class="sidebar-link-title">バスケの基本ルール</div>
                         <div class="sidebar-link-desc">バスケのルールとポジションを初心者向けに解説</div>
                     </div>
                 </a>
-                <a href="/rule/3x3" class="sidebar-link{% if page.url contains '/rule/' %} active{% endif %}">
+                <a href="/rule/3x3" class="sidebar-link{% if page.url contains '/rule/3x3' %} active{% endif %}">
                     <span class="sidebar-link-icon">📋</span>
                     <div class="sidebar-link-content">
                         <div class="sidebar-link-title">3x3の基本ルール</div>
@@ -50,7 +50,7 @@
             <div class="sidebar-ad-placeholder">
                 広告枠
             </div>
-            <!-- 審査申請時、上のdiv.sidebar-ad-placeholderを削除し、下のinsタグのstyleをdisplay:inline-blockに変更してください -->
+            <!-- 審査通過後、上のdiv.sidebar-ad-placeholderを削除し、下のinsタグのstyleをdisplay:inline-blockに変更してください -->
             <ins class="adsbygoogle"
                 style="display:none;width:300px;height:250px"
                 data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
