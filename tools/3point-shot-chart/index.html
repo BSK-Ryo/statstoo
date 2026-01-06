@@ -110,11 +110,17 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     .spot-details-header-left { display: flex; align-items: center; gap: 0.5rem; }
     .spot-details-header-actions { display: flex; gap: 0.5rem; }
     .spot-details-info { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; padding: 0.75rem 1rem; background: #faf8f5; border-bottom: 1px solid #f1f1f1; }
-    .spot-info-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; }
+    .spot-info-item { display: flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; flex-shrink: 0; }
     .spot-info-icon { font-size: 0.7rem; }
     .spot-info-value { color: #1e293b; font-weight: 500; }
-    .spot-info-venue { flex: 1; min-width: 150px; }
+    .spot-info-venue { flex: 1; min-width: 100px; }
     .spot-info-venue .spot-info-value { color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+    /* スマホ向け: 練習情報を縦に並べる */
+    @media (max-width: 400px) {
+        .spot-details-info { flex-direction: column; gap: 0.375rem; }
+        .spot-info-venue { min-width: 0; }
+        .spot-info-venue .spot-info-value { max-width: none; }
+    }
     .spot-table { width: 100%; border-collapse: collapse; }
     .spot-table th, .spot-table td { padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
     .spot-table th { background: #faf8f5; font-weight: 700; color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -268,6 +274,191 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         text-align: center;
         line-height: 1.5;
     }
+
+    /* 運営者自論セクション専用スタイル */
+    .opinion-section {
+        background: linear-gradient(135deg, #fef7ed 0%, #fff8f3 50%, #fefcfa 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid #fed7aa;
+        position: relative;
+    }
+    .opinion-section::before {
+        content: "💭";
+        position: absolute;
+        top: -12px;
+        left: 20px;
+        font-size: 1.5rem;
+        background: #fff;
+        padding: 0 0.5rem;
+    }
+    .opinion-intro {
+        font-size: 1rem;
+        color: #1e293b;
+        line-height: 1.9;
+        margin-bottom: 1.25rem;
+        font-weight: 500;
+    }
+    .opinion-note {
+        font-size: 0.85rem;
+        color: #64748b;
+        background: #fff;
+        padding: 0.875rem 1rem;
+        border-radius: 10px;
+        margin-top: 1.5rem;
+        border-left: 3px solid #cbd5e1;
+        line-height: 1.7;
+    }
+    .key-points-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 2px 12px rgba(234, 88, 12, 0.08);
+        margin-bottom: 1.5rem;
+    }
+    .key-points-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #EA580C;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .key-points-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .key-points-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: linear-gradient(90deg, #fef3e7 0%, transparent 100%);
+        border-radius: 8px;
+        margin-bottom: 0.625rem;
+        font-size: 0.9rem;
+        color: #1e293b;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+    .key-points-list li:last-child {
+        margin-bottom: 0;
+    }
+    .key-points-list li::before {
+        content: "🔥";
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+    .mental-subsection {
+        background: #fff;
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border: 1px solid #f1f5f9;
+    }
+    .mental-subsection:last-of-type {
+        margin-bottom: 0;
+    }
+    .mental-subsection-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+    }
+    .mental-subsection-title .subsection-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #EA580C 0%, #f97316 100%);
+        color: #fff;
+        font-size: 0.85rem;
+        border-radius: 6px;
+    }
+    .mental-text {
+        font-size: 0.9rem;
+        color: #374151;
+        line-height: 1.9;
+        margin-bottom: 1rem;
+    }
+    .mental-text:last-child {
+        margin-bottom: 0;
+    }
+    .mental-text b, .mental-text strong {
+        color: #1e293b;
+        font-weight: 700;
+    }
+    .quote-block {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+        font-style: italic;
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.7;
+        position: relative;
+        border-left: 4px solid #94a3b8;
+    }
+    .quote-block::before {
+        content: '"';
+        position: absolute;
+        top: -5px;
+        left: 10px;
+        font-size: 2.5rem;
+        color: #e2e8f0;
+        font-family: Georgia, serif;
+        line-height: 1;
+    }
+    .highlight-box {
+        background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+        border-left: 4px solid #3b82f6;
+    }
+    .highlight-box-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .highlight-box-content {
+        font-size: 0.875rem;
+        color: #1e40af;
+        line-height: 1.7;
+    }
+    .action-box {
+        background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin: 1rem 0;
+        border-left: 4px solid #22c55e;
+    }
+    .action-box-content {
+        font-size: 0.9rem;
+        color: #166534;
+        line-height: 1.7;
+        font-weight: 500;
+    }
+    .action-box-content strong {
+        color: #15803d;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
@@ -385,14 +576,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     
     <!-- AdSense広告枠①: スポット別成績下 -->
     <div class="adsense-container">
-        <span class="adsense-placeholder">広告枠</span>
-        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1459200463172380"
+            crossorigin="anonymous"></script>
+        <!-- 3p-chart-content-ad-1  （スポット別成績下） -->
         <ins class="adsbygoogle"
-            style="display:none"
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
+            style="display:block"
+            data-ad-client="ca-pub-1459200463172380"
+            data-ad-slot="2848285846"
             data-ad-format="auto"
             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </div>
     
     <div class="history-section">
@@ -415,14 +610,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
 
     <!-- AdSense広告枠②: 練習履歴下 -->
     <div class="adsense-container">
-        <span class="adsense-placeholder">広告枠</span>
-        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1459200463172380"
+            crossorigin="anonymous"></script>
+        <!-- 3p-chart-content-ad-2  （練習履歴下） -->
         <ins class="adsbygoogle"
-            style="display:none"
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
+            style="display:block"
+            data-ad-client="ca-pub-1459200463172380"
+            data-ad-slot="8634625687"
             data-ad-format="auto"
             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </div>
 
     <article class="article-section">
@@ -464,14 +663,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             
             <!-- AdSense広告枠③: 記事内（成功率の目安の後） -->
             <div class="adsense-container" style="margin: 1.5rem 0;">
-                <span class="adsense-placeholder">広告枠</span>
-                <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1459200463172380"
+                    crossorigin="anonymous"></script>
+                <!-- 3p-chart-content-ad-3  （記事内） -->
                 <ins class="adsbygoogle"
-                    style="display:none"
-                    data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-                    data-ad-slot="XXXXXXXXXX"
+                    style="display:block"
+                    data-ad-client="ca-pub-1459200463172380"
+                    data-ad-slot="2013377015"
                     data-ad-format="auto"
                     data-full-width-responsive="true"></ins>
+                <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
             </div>
             
             <section class="article-block">
@@ -519,30 +722,96 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             </section>
             
             <section class="article-block">
-                <h2>💡 【運営者自論】3Pを決めるためのポイントとは？シューターメンタリティを考えてみよう</h2>
-                <p>3ポイントにおいては、かなり<b>メンタル</b>が重要だと感じています。</p>
-                <p>なのでこの章では、シュートフォームの改善とか効果的な練習方法とかではなく、メンタルに焦点を当てて、特に重要な2つを紹介します。
-                    <ul class="article-list-check">
-                        <li>シュートミスは悪いミスではなく良いミス！</li>
-                        <li>プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！</li>
-                    </ul>
-                <p>シュートフォームの改善方法や練習方法に関しては、Youtubeで色んな方が取り上げているのでそちらを参考にしてください笑</p>
+                <h2>💡 【運営者自論】3Pを決めるためのポイントとは？シューターメンタリティを知ろう</h2>
                 
-                <h3 class="article-block">シュートミスは悪いミスではなく良いミス！</h3>
-                <p>大前提ですが、シュートミスはミスの中でも良いミスです。なので、シュートミスに恐れながらシュートを打つのはやめましょう。</p>
-                <p>「入らなかったらどうしよう、、。」「入らなかったら怒られる、、。」</p>
-                <p>そう考えてしまう気持ちはわかりますが、これは足枷にしかなりません。入らなかったらまた練習すれば良い話なので、ミスに恐れながら打つのではなく「今の自分の実力がわかる」と思って自信持って打ちましょう。</p>
-
-                <h3 class="article-block">プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！</h3>
-                <p>プレッシャーは自身の実力を高めてくれる味方という考え方<strong>「ポジティブストレスマインドセット」</strong>を持つようにしましょう。</p>
-                <p>緊張してしまって思うようにプレーができない方がいると思います。実際、運営者も緊張しやすいタチで、試合前は腹痛でトイレに駆け込むのがルーティーンでした、。</p>
-                <p>認めたくは無いですが、要は「チキンハート」だったのです。同じだなと思った方は「ネガティブストレスマインドセット」という考え方が根付いてしまってます。</p>
-                <div class="spot-item">
-                    <b>【ネガティブストレスマインドセットとは】</b> <p>「プレッシャー＝ストレス」「ストレス＝悪い物」という考え方</p>
+                <div class="opinion-section">
+                    <p class="opinion-intro">
+                        3ポイントにおいては、かなり<b>メンタル</b>が重要だと感じています。<br>
+                        なのでこの章では、シュートフォームの改善とか効果的な練習方法とかではなく、<strong>メンタルに焦点を当てて</strong>、特に重要な2つを紹介します。
+                    </p>
+                    
+                    <div class="key-points-card">
+                        <div class="key-points-title">
+                            <span>📌</span> 今回のキーポイント
+                        </div>
+                        <ul class="key-points-list">
+                            <li>シュートミスは悪いミスではなく良いミス！</li>
+                            <li>プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！</li>
+                        </ul>
+                    </div>
+                    
+                    <p class="opinion-note">
+                        💡 シュートフォームの改善方法や練習方法に関しては、YouTubeで色んな方が取り上げているのでそちらを参考にしてください笑
+                    </p>
                 </div>
-                <p>「プレッシャー＝ストレス」という考え方までは否定しませんが、「ストレス＝悪い物」ではなく「ストレス＝良い物」と考え方を徐々にでも変えていければ、プレッシャーが味方になってくれます。</p>
-                <p>まずは「ストレス メリット」もしくは「ユーストレスとは」と検索して、「ストレス＝悪い物」という考え方から脱却しましょう。</p>
-
+                
+                <!-- サブセクション1 -->
+                <div class="mental-subsection">
+                    <h3 class="mental-subsection-title">
+                        <span class="subsection-icon">1</span>
+                        シュートミスは悪いミスではなく良いミス！
+                    </h3>
+                    
+                    <p class="mental-text">
+                        大前提ですが、<strong>シュートミスはミスの中でも良いミス</strong>です。<br>
+                        なので、シュートミスに恐れながらシュートを打つのはやめましょう。
+                    </p>
+                    
+                    <div class="quote-block">
+                        「入らなかったらどうしよう、、。」<br>
+                        「入らなかったら怒られる、、。」
+                    </div>
+                    
+                    <p class="mental-text">
+                        そう考えてしまう気持ちはわかりますが、これは足枷にしかなりません。
+                    </p>
+                    
+                    <div class="action-box">
+                        <p class="action-box-content">
+                            入らなかったらまた練習すれば良い話なので、ミスに恐れながら打つのではなく<strong>「今の自分の実力がわかる」</strong>と思って自信持って打ちましょう！
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- サブセクション2 -->
+                <div class="mental-subsection">
+                    <h3 class="mental-subsection-title">
+                        <span class="subsection-icon">2</span>
+                        プレッシャーは敵ではなくパフォーマンスを上げてくれる味方！
+                    </h3>
+                    
+                    <p class="mental-text">
+                        プレッシャーは自身の実力を高めてくれる味方という考え方<strong>「ポジティブストレスマインドセット」</strong>を持つようにしましょう。
+                    </p>
+                    
+                    <p class="mental-text">
+                        緊張してしまって思うようにプレーができない方がいると思います。実際、運営者も緊張しやすいタチで、試合前は腹痛でトイレに駆け込むのがルーティーンでした、。
+                    </p>
+                    
+                    <p class="mental-text">
+                        認めたくは無いですが、要は<strong>「チキンハート」</strong>だったのです。同じだなと思った方は「ネガティブストレスマインドセット」という考え方が根付いてしまってます。
+                    </p>
+                    
+                    <div class="highlight-box">
+                        <div class="highlight-box-title">
+                            <span>📖</span> ネガティブストレスマインドセットとは
+                        </div>
+                        <p class="highlight-box-content">
+                            「プレッシャー＝ストレス」「ストレス＝悪い物」という考え方
+                        </p>
+                    </div>
+                    
+                    <p class="mental-text">
+                        「プレッシャー＝ストレス」という考え方までは否定しませんが、<strong>「ストレス＝悪い物」ではなく「ストレス＝良い物」</strong>と考え方を徐々にでも変えていければ、プレッシャーが味方になってくれます。
+                    </p>
+                    
+                    <div class="action-box">
+                        <p class="action-box-content">
+                            🔍 まずは「ストレス メリット」もしくは「ユーストレスとは」と検索して、「ストレス＝悪い物」という考え方から脱却しましょう！
+                        </p>
+                    </div>
+                </div>
+                
             </section>
             
             <section class="article-block">
@@ -583,14 +852,18 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
     
     <!-- AdSense広告枠④: 記事セクション下 -->
     <div class="adsense-container">
-        <span class="adsense-placeholder">広告枠</span>
-        <!-- 審査通過後、上のspanを削除し、下のinsタグのstyleをdisplay:blockに変更してください -->
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1459200463172380"
+            crossorigin="anonymous"></script>
+        <!-- 3p-chart-content-ad-4  （記事セクション下） -->
         <ins class="adsbygoogle"
-            style="display:none"
-            data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-            data-ad-slot="XXXXXXXXXX"
+            style="display:block"
+            data-ad-client="ca-pub-1459200463172380"
+            data-ad-slot="8143671095"
             data-ad-format="auto"
             data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
     </div>
     
     <div class="bottom-spacer"></div>
