@@ -104,6 +104,16 @@
                     </div>
                 </div>
                 
+                <!-- バスケコラム -->
+                <a href="/column/" class="nav-link px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5
+                   {% if page.url contains '/column/' %}
+                       bg-primary text-white
+                   {% else %}
+                       text-white/70 hover:text-white hover:bg-white/10
+                   {% endif %}">
+                    <span>✍️</span> バスケコラム
+                </a>
+                
                 <div class="flex-grow"></div>
 
                 <!-- Instagram -->
@@ -241,6 +251,16 @@
                     </a>
                 </div>
             </div>
+            
+            <!-- バスケコラム -->
+            <a href="/column/" class="block px-3 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2
+               {% if page.url contains '/column/' %}
+                   bg-primary text-white
+               {% else %}
+                   text-white/70 hover:text-white hover:bg-white/10
+               {% endif %}">
+                <span>✍️</span> バスケコラム
+            </a>
             
             <div class="border-t border-white/10 my-2 pt-2">
                 <!-- Instagram -->
