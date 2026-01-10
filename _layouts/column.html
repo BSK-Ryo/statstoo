@@ -1,0 +1,617 @@
+---
+---
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    {% include head.html %}
+    
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1459200463172380" crossorigin="anonymous"></script>
+    
+    <!-- コラムページ専用CSS -->
+    <style>
+    /* ===========================================
+       コラム記事ページ専用スタイル
+       =========================================== */
+    
+    /* ----- 変数 ----- */
+    :root {
+        --column-primary: #f97316;
+        --column-primary-dark: #ea580c;
+        --column-bg: #1e293b;
+        --column-card-bg: #334155;
+        --column-text: #f1f5f9;
+        --column-text-muted: #94a3b8;
+        --column-border: #475569;
+    }
+    
+    /* ----- コンテナ ----- */
+    .column-article {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    /* ----- パンくずリスト ----- */
+    .breadcrumb {
+        font-size: 0.85rem;
+        color: var(--column-text-muted);
+        margin-bottom: 2rem;
+    }
+    .breadcrumb a {
+        color: var(--column-primary);
+        text-decoration: none;
+    }
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    .breadcrumb .separator {
+        margin: 0 0.5rem;
+    }
+    .breadcrumb .current {
+        color: var(--column-text);
+    }
+    
+    /* ----- 記事ヘッダー ----- */
+    .article-header {
+        margin-bottom: 2rem;
+    }
+    .article-category {
+        display: inline-block;
+        background: var(--column-primary);
+        color: white;
+        font-size: 0.8rem;
+        padding: 0.3rem 1rem;
+        border-radius: 1rem;
+        margin-bottom: 1rem;
+    }
+    .article-title {
+        font-size: 1.75rem;
+        color: var(--column-text);
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+    .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: var(--column-text-muted);
+        margin-bottom: 1rem;
+    }
+    .article-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .article-tags .tag {
+        background: var(--column-card-bg);
+        color: var(--column-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    /* ----- アイキャッチ画像 ----- */
+    .article-thumbnail {
+        margin-bottom: 2rem;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .article-thumbnail img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    /* ----- 目次 ----- */
+    .table-of-contents {
+        background: var(--column-card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .table-of-contents h2 {
+        font-size: 1.1rem;
+        color: var(--column-text);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--column-border);
+    }
+    .toc-list {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+    }
+    .toc-list li {
+        margin-bottom: 0.5rem;
+    }
+    .toc-list a {
+        color: var(--column-text-muted);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    .toc-list a:hover {
+        color: var(--column-primary);
+    }
+    .toc-list ul {
+        padding-left: 1.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* ----- 記事本文 ----- */
+    .article-content {
+        color: var(--column-text);
+        line-height: 1.9;
+        font-size: 1rem;
+    }
+    .article-content h2 {
+        font-size: 1.5rem;
+        color: var(--column-text);
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--column-primary);
+    }
+    .article-content h3 {
+        font-size: 1.25rem;
+        color: var(--column-text);
+        margin: 2rem 0 1rem;
+    }
+    .article-content h4 {
+        font-size: 1.1rem;
+        color: var(--column-text);
+        margin: 1.5rem 0 0.75rem;
+    }
+    .article-content p {
+        margin-bottom: 1.5rem;
+    }
+    .article-content a {
+        color: var(--column-primary);
+        text-decoration: underline;
+    }
+    .article-content ul,
+    .article-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 1.5rem;
+    }
+    .article-content li {
+        margin-bottom: 0.5rem;
+    }
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+    .article-content blockquote {
+        background: var(--column-card-bg);
+        border-left: 4px solid var(--column-primary);
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+        border-radius: 0 8px 8px 0;
+    }
+    .article-content blockquote p {
+        margin-bottom: 0;
+    }
+    .article-content code {
+        background: var(--column-card-bg);
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+    .article-content pre {
+        background: var(--column-card-bg);
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+    }
+    .article-content pre code {
+        background: transparent;
+        padding: 0;
+    }
+    
+    /* 特殊ボックス */
+    .article-content .note,
+    .article-content .point,
+    .article-content .warning {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+    .article-content .note {
+        background: rgba(59, 130, 246, 0.1);
+        border-left: 4px solid #3b82f6;
+    }
+    .article-content .point {
+        background: rgba(34, 197, 94, 0.1);
+        border-left: 4px solid #22c55e;
+    }
+    .article-content .warning {
+        background: rgba(249, 115, 22, 0.1);
+        border-left: 4px solid #f97316;
+    }
+    
+    /* テーブル */
+    .article-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+    }
+    .article-content th,
+    .article-content td {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--column-border);
+        text-align: left;
+    }
+    .article-content th {
+        background: var(--column-card-bg);
+        font-weight: bold;
+    }
+    .article-content tr:nth-child(even) {
+        background: rgba(51, 65, 85, 0.5);
+    }
+    
+    /* ----- 広告枠 ----- */
+    .ad-space {
+        background: var(--column-card-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 2rem 0;
+        text-align: center;
+        min-height: 100px;
+    }
+    .ad-label {
+        font-size: 0.75rem;
+        color: var(--column-text-muted);
+        margin-bottom: 0.5rem;
+    }
+    
+    /* ----- 関連記事 ----- */
+    .related-posts {
+        margin: 3rem 0 2rem;
+    }
+    .related-posts h2 {
+        font-size: 1.25rem;
+        color: var(--column-text);
+        margin-bottom: 1rem;
+    }
+    .related-posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    .related-post-card {
+        background: var(--column-card-bg);
+        border-radius: 8px;
+        overflow: hidden;
+        text-decoration: none;
+        transition: transform 0.3s ease;
+    }
+    .related-post-card:hover {
+        transform: translateY(-2px);
+    }
+    .related-post-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+    }
+    .related-post-title {
+        display: block;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--column-text);
+        line-height: 1.4;
+    }
+    
+    /* ----- CTAセクション ----- */
+    .article-cta {
+        background: linear-gradient(135deg, var(--column-primary) 0%, var(--column-primary-dark) 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        margin: 3rem 0 2rem;
+    }
+    .article-cta h3 {
+        color: white;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+    }
+    .article-cta p {
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 1.5rem;
+    }
+    .cta-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+    }
+    .cta-btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: transform 0.3s ease;
+    }
+    .cta-btn:hover {
+        transform: translateY(-2px);
+    }
+    .cta-btn.primary {
+        background: white;
+        color: var(--column-primary);
+    }
+    .cta-btn.secondary {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+    
+    /* ----- SNSシェアボタン ----- */
+    .share-buttons {
+        margin: 2rem 0;
+    }
+    .share-buttons h3 {
+        font-size: 1rem;
+        color: var(--column-text);
+        margin-bottom: 1rem;
+    }
+    .share-btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .share-btn {
+        display: inline-block;
+        padding: 0.6rem 1.25rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: white;
+        transition: opacity 0.3s ease;
+    }
+    .share-btn:hover {
+        opacity: 0.85;
+    }
+    .share-btn.twitter { background: #1da1f2; }
+    .share-btn.facebook { background: #1877f2; }
+    .share-btn.line { background: #06c755; }
+    
+    /* ----- 記事ナビゲーション ----- */
+    .article-navigation {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+    .nav-link {
+        background: var(--column-card-bg);
+        border-radius: 8px;
+        padding: 1rem;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+    .nav-link:hover {
+        background: var(--column-border);
+    }
+    .nav-link.next {
+        text-align: right;
+    }
+    .nav-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--column-text-muted);
+        margin-bottom: 0.25rem;
+    }
+    .nav-title {
+        display: block;
+        color: var(--column-text);
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    /* ----- 一覧へ戻る ----- */
+    .back-to-list {
+        text-align: center;
+        margin: 2rem 0;
+    }
+    .back-link {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: var(--column-card-bg);
+        color: var(--column-text);
+        text-decoration: none;
+        border-radius: 8px;
+        transition: background 0.3s ease;
+    }
+    .back-link:hover {
+        background: var(--column-border);
+    }
+    
+    /* ----- レスポンシブ ----- */
+    @media (max-width: 768px) {
+        .article-title { font-size: 1.5rem; }
+        .article-content h2 { font-size: 1.3rem; }
+        .article-content h3 { font-size: 1.15rem; }
+        .article-navigation { grid-template-columns: 1fr; }
+        .nav-link.next { text-align: left; }
+        .cta-buttons { flex-direction: column; }
+        .cta-btn { width: 100%; text-align: center; }
+    }
+    @media (max-width: 480px) {
+        .column-article { padding: 1rem 0.75rem; }
+        .article-meta { flex-direction: column; gap: 0.5rem; }
+        .share-btn-group { flex-direction: column; }
+        .share-btn { text-align: center; }
+    }
+    </style>
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1WJZ8S3YRP"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-1WJZ8S3YRP');
+    </script>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    {% include header.html %}
+
+    <main class="flex-grow bg-slate-800">
+        <div class="column-article">
+            <!-- パンくずリスト -->
+            <nav class="breadcrumb">
+                <a href="/">ホーム</a>
+                <span class="separator">></span>
+                <a href="/column/">コラム一覧</a>
+                <span class="separator">></span>
+                <span class="current">{{ page.title }}</span>
+            </nav>
+
+            <!-- 記事ヘッダー -->
+            <header class="article-header">
+                {% if page.category %}
+                <span class="article-category">{{ page.category }}</span>
+                {% endif %}
+                <h1 class="article-title">{{ page.title }}</h1>
+                
+                <div class="article-meta">
+                    <time class="article-date" datetime="{{ page.date | date: '%Y-%m-%d' }}">
+                        📅 {{ page.date | date: "%Y年%m月%d日" }}
+                    </time>
+                    {% if page.update %}
+                    <time class="article-update">
+                        🔄 更新: {{ page.update | date: "%Y年%m月%d日" }}
+                    </time>
+                    {% endif %}
+                    {% if page.author %}
+                    <span class="article-author">✍️ {{ page.author }}</span>
+                    {% endif %}
+                </div>
+
+                {% if page.tags %}
+                <div class="article-tags">
+                    {% for tag in page.tags %}
+                    <span class="tag">#{{ tag }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </header>
+
+            <!-- アイキャッチ画像 -->
+            {% if page.thumbnail %}
+            <div class="article-thumbnail">
+                <img src="{{ page.thumbnail }}" alt="{{ page.title }}" loading="lazy">
+            </div>
+            {% endif %}
+
+            <!-- 広告枠（上部） -->
+            <div class="ad-space">
+                <p class="ad-label">広告</p>
+                <!-- Google AdSense 広告ユニット -->
+            </div>
+
+            <!-- 目次 -->
+            {% if page.toc != false %}
+            <nav class="table-of-contents" id="toc">
+                <h2>📋 目次</h2>
+                <ul class="toc-list" id="toc-list">
+                    <!-- JavaScriptで自動生成 -->
+                </ul>
+            </nav>
+            {% endif %}
+
+            <!-- 記事本文 -->
+            <article class="article-content" id="article-content">
+                {{ content }}
+            </article>
+
+            <!-- 広告枠（下部） -->
+            <div class="ad-space">
+                <p class="ad-label">広告</p>
+                <!-- Google AdSense 広告ユニット -->
+            </div>
+
+            <!-- CTAセクション -->
+            <section class="article-cta">
+                <h3>🏀 StatsTooを使ってみよう！</h3>
+                <p>バスケットボールのスタッツ記録・分析に特化した完全無料のWebツールです。</p>
+                <div class="cta-buttons">
+                    <a href="/" class="cta-btn primary">📊 試合スタッツ記録</a>
+                    <a href="/tools/3point-shot-chart/" class="cta-btn secondary">🎯 3Pショットチャート</a>
+                </div>
+            </section>
+
+            <!-- SNSシェアボタン -->
+            <section class="share-buttons">
+                <h3>📢 この記事をシェア</h3>
+                <div class="share-btn-group">
+                    <a href="https://twitter.com/intent/tweet?url={{ site.url }}{{ page.url }}&text={{ page.title | url_encode }}" 
+                       target="_blank" rel="noopener" class="share-btn twitter">
+                        X (Twitter)
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ site.url }}{{ page.url }}" 
+                       target="_blank" rel="noopener" class="share-btn facebook">
+                        Facebook
+                    </a>
+                    <a href="https://line.me/R/msg/text/?{{ page.title | url_encode }}%0A{{ site.url }}{{ page.url }}" 
+                       target="_blank" rel="noopener" class="share-btn line">
+                        LINE
+                    </a>
+                </div>
+            </section>
+
+            <!-- 一覧へ戻る -->
+            <div class="back-to-list">
+                <a href="/column/" class="back-link">📋 コラム一覧へ戻る</a>
+            </div>
+        </div>
+    </main>
+
+    {% include footer.html %}
+
+    <!-- 目次自動生成スクリプト -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleContent = document.getElementById('article-content');
+        const tocList = document.getElementById('toc-list');
+        const toc = document.getElementById('toc');
+        
+        if (!articleContent || !tocList) return;
+        
+        const headings = articleContent.querySelectorAll('h2, h3');
+        
+        if (headings.length === 0) {
+            if (toc) toc.style.display = 'none';
+            return;
+        }
+        
+        headings.forEach((heading, index) => {
+            // IDを付与
+            const id = 'heading-' + index;
+            heading.id = id;
+            
+            // 目次アイテムを作成
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = '#' + id;
+            a.textContent = heading.textContent;
+            
+            // H3はインデント
+            if (heading.tagName === 'H3') {
+                li.style.paddingLeft = '1rem';
+                a.style.fontSize = '0.9rem';
+            }
+            
+            li.appendChild(a);
+            tocList.appendChild(li);
+        });
+    });
+    </script>
+
+</body>
+</html>

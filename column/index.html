@@ -1,0 +1,140 @@
+---
+layout: default
+title: コラム一覧 | バスケットボール情報
+description: バスケットボールに関するコラム・お役立ち情報をお届けします。戦術解説、練習方法、ルール解説など幅広いトピックを掲載。
+permalink: /column/
+page_label: BASKETBALL COLUMN
+page_title: コラム一覧
+page_subtitle: バスケットボールに関するお役立ち情報をお届けします
+extra_css: |
+    .column-index { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+    .category-filter { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 2rem; }
+    .filter-btn { background: #334155; color: #f1f5f9; border: 1px solid #475569; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+    .filter-btn:hover, .filter-btn.active { background: #f97316; border-color: #f97316; color: white; }
+    .column-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+    .column-card { background: #334155; border-radius: 12px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .column-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+    .column-card a { text-decoration: none; color: inherit; display: block; }
+    .card-thumbnail { width: 100%; height: 180px; overflow: hidden; background: #1e293b; }
+    .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+    .column-card:hover .card-thumbnail img { transform: scale(1.05); }
+    .card-thumbnail.placeholder { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #334155 0%, #1e293b 100%); }
+    .placeholder-icon { font-size: 3rem; opacity: 0.5; }
+    .card-content { padding: 1.25rem; }
+    .card-category { display: inline-block; background: #f97316; color: white; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 1rem; margin-bottom: 0.75rem; }
+    .card-title { font-size: 1.1rem; color: #f1f5f9; margin-bottom: 0.75rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-excerpt { font-size: 0.9rem; color: #94a3b8; line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8; }
+    .card-tags { display: flex; gap: 0.5rem; }
+    .tag-small { font-size: 0.75rem; color: #f97316; }
+    .no-articles { text-align: center; padding: 4rem 2rem; color: #94a3b8; }
+    .no-articles p { margin-bottom: 0.5rem; }
+    .ad-space { background: #334155; border-radius: 8px; padding: 1rem; margin: 2rem 0; text-align: center; min-height: 100px; }
+    .ad-label { font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; }
+    @media (max-width: 768px) { .column-list { grid-template-columns: 1fr; } }
+---
+
+<div class="column-index">
+    <!-- カテゴリフィルター -->
+    <nav class="category-filter">
+        <button class="filter-btn active" data-category="all">すべて</button>
+        <button class="filter-btn" data-category="戦術">🎯 戦術</button>
+        <button class="filter-btn" data-category="練習">💪 練習</button>
+        <button class="filter-btn" data-category="ルール">📋 ルール</button>
+        <button class="filter-btn" data-category="用具">🏀 用具</button>
+        <button class="filter-btn" data-category="その他">📌 その他</button>
+    </nav>
+
+    <!-- 広告枠 -->
+    <div class="ad-space">
+        <p class="ad-label">広告</p>
+        <!-- Google AdSense 広告ユニット -->
+    </div>
+
+    <!-- 記事一覧 -->
+    <div class="column-list">
+        {% assign columns = site.pages | where: "layout", "column" | sort: "date" | reverse %}
+        {% for column in columns %}
+        <article class="column-card" data-category="{{ column.category | default: 'その他' }}">
+            <a href="{{ column.url }}">
+                {% if column.thumbnail %}
+                <div class="card-thumbnail">
+                    <img src="{{ column.thumbnail }}" alt="{{ column.title }}" loading="lazy">
+                </div>
+                {% else %}
+                <div class="card-thumbnail placeholder">
+                    <span class="placeholder-icon">🏀</span>
+                </div>
+                {% endif %}
+                
+                <div class="card-content">
+                    {% if column.category %}
+                    <span class="card-category">{{ column.category }}</span>
+                    {% endif %}
+                    
+                    <h2 class="card-title">{{ column.title }}</h2>
+                    
+                    {% if column.excerpt %}
+                    <p class="card-excerpt">{{ column.excerpt }}</p>
+                    {% endif %}
+                    
+                    <div class="card-meta">
+                        <time datetime="{{ column.date | date: '%Y-%m-%d' }}">
+                            {{ column.date | date: "%Y.%m.%d" }}
+                        </time>
+                        {% if column.tags %}
+                        <div class="card-tags">
+                            {% for tag in column.tags limit:3 %}
+                            <span class="tag-small">#{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- 記事がない場合 -->
+    {% assign column_count = site.pages | where: "layout", "column" | size %}
+    {% if column_count == 0 %}
+    <div class="no-articles">
+        <p>📝 現在、コラム記事を準備中です。</p>
+        <p>近日公開予定ですので、お楽しみに！</p>
+    </div>
+    {% endif %}
+
+    <!-- 広告枠 -->
+    <div class="ad-space">
+        <p class="ad-label">広告</p>
+        <!-- Google AdSense 広告ユニット -->
+    </div>
+</div>
+
+<script>
+// カテゴリフィルター機能
+document.addEventListener('DOMContentLoaded', function() {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const columnCards = document.querySelectorAll('.column-card');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            // ボタンのアクティブ状態を更新
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // カードの表示/非表示を切り替え
+            columnCards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
