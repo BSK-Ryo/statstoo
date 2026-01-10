@@ -1,13 +1,12 @@
 import os
 import datetime
-import google.generativeai as genai
+from google import genai
 
-# --- 設定: ここを調整してください ---
+# --- 設定 ---
 API_KEY = os.environ.get("GEMINI_API_KEY")
-OUTPUT_DIR = "column"  # 記事の保存先フォルダ
-# -------------------------------
+OUTPUT_DIR = "column"
+# -----------
 
-# AIへの命令（プロンプト）
 PROMPT = """
 あなたはプロのWebライターです。
 以下の条件に従って、バスケットボールに関する記事を1つ書いてください。
@@ -38,26 +37,27 @@ permalink: /column/{{英数字のスラッグ}}/
 
 def main():
     if not API_KEY:
-        print("Error: API Keyが見つかりません")
+        print("Error: API Keyが見つかりません。GitHub Secretsを確認してください。")
         return
 
-    genai.configure(api_key=API_KEY)
-    model = genai.GenerativeModel('gemini-1.5-flash')
-
     try:
-        # 記事生成
-        response = model.generate_content(PROMPT)
+        # 新しいクライアントの初期化
+        client = genai.Client(api_key=API_KEY)
+        
+        # 記事生成 (モデル名を指定)
+        response = client.models.generate_content(
+            model='gemini-1.5-flash',
+            contents=PROMPT
+        )
+        
         content = response.text.replace("```markdown", "").replace("```", "").strip()
 
-        # 保存先の準備
+        # 保存処理
         os.makedirs(OUTPUT_DIR, exist_ok=True)
-        
-        # ファイル名を日付にする (例: 2026-01-10-auto.md)
         today = datetime.date.today()
         filename = f"{today}-auto.md"
         filepath = os.path.join(OUTPUT_DIR, filename)
 
-        # ファイル書き込み
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(content)
         
