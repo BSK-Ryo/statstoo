@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📹 動画スタッツ記録 | StatsToo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#EA580C',
+                        'primary-dark': '#C2410C',
+                        secondary: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans JP', 'sans-serif'],
+                        display: ['Bebas Neue', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #faf8f5;
+            color: #1e293b;
+        }
+        .font-display {
+            font-family: 'Bebas Neue', sans-serif;
+        }
+        .btn-press:active { transform: scale(0.96); }
+        
+        /* Player Row Styles */
+        .player-row {
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        .player-row.selected {
+            background-color: #e0e7ff;
+            border-left-color: #4f46e5;
+        }
+        
+        /* Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Controller slide animation */
+        .slide-up { 
+            transform: translateY(0%); 
+            pointer-events: auto;
+            opacity: 1;
+        }
+        .slide-down { 
+            transform: translateY(110%); 
+            pointer-events: none;
+            opacity: 0;
+        }
+        #controller.slide-up button {
+            pointer-events: auto;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 280px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="pb-64">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-secondary flex items-center justify-center gap-2">
+                <span class="text-3xl">📹</span>
+                <span class="font-display text-3xl tracking-wide">VIDEO STATS TRACKER</span>
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">YouTubeの試合動画を見ながらスタッツを記録</p>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            
+            <!-- Video Section (Left) -->
+            <div class="lg:col-span-2 space-y-4">
+                
+                <!-- URL Input -->
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <div class="flex gap-2">
+                        <input type="text" id="youtubeUrl" 
+                            placeholder="YouTube URLを貼り付け（例: https://www.youtube.com/watch?v=xxxxx）"
+                            class="flex-1 text-sm px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                        <button onclick="loadVideo()" class="btn-press bg-primary hover:bg-primary-dark text-white font-bold px-5 py-3 rounded-lg transition shadow-md text-sm whitespace-nowrap">
+                            動画を読み込む
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Video Player -->
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <div class="relative w-full" style="padding-top: 56.25%;">
+                        <div id="player" class="absolute inset-0 bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+                            <div class="text-center text-gray-400">
+                                <div class="text-5xl mb-3">🎬</div>
+                                <p class="text-sm">YouTube URLを入力して動画を読み込んでください</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Controls -->
+                    <div class="flex items-center justify-center gap-3 mt-4 flex-wrap">
+                        <button onclick="seekBackward()" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+                            ⏪ 5秒
+                        </button>
+                        <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-press bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg text-sm font-bold transition shadow-md">
+                            ▶️ 再生
+                        </button>
+                        <button onclick="seekForward()" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+                            5秒 ⏩
+                        </button>
+                        <select id="speedSelect" onchange="changeSpeed()" class="text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30">
+                            <option value="0.25">0.25x</option>
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x 速度</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2x</option>
+                        </select>
+                        <div id="currentTime" class="bg-secondary text-white px-4 py-2 rounded-lg font-mono text-lg font-bold">
+                            0:00
+                        </div>
+                    </div>
+                    
+                    <!-- Keyboard Shortcuts -->
+                    <div class="mt-4 p-3 bg-gray-50 rounded-lg">
+                        <p class="text-xs text-gray-500 text-center">
+                            ⌨️ ショートカット: 
+                            <span class="bg-gray-200 px-1.5 py-0.5 rounded mx-1">Space</span> 再生/停止
+                            <span class="bg-gray-200 px-1.5 py-0.5 rounded mx-1">←</span> 5秒戻る
+                            <span class="bg-gray-200 px-1.5 py-0.5 rounded mx-1">→</span> 5秒進む
+                            <span class="bg-gray-200 px-1.5 py-0.5 rounded mx-1">Ctrl+Z</span> 元に戻す
+                        </p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="space-y-4">
+                
+                <!-- Player Selection -->
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-3">
+                        <span class="text-lg">👥</span>
+                        <span>選手を選択</span>
+                    </h2>
+                    <div id="playerGrid" class="space-y-2">
+                        <!-- Dynamic player buttons -->
+                    </div>
+                    <button onclick="addPlayer()" class="w-full mt-3 py-2 border-2 border-dashed border-gray-300 hover:border-primary text-gray-400 hover:text-primary rounded-lg text-sm font-medium transition">
+                        + 選手を追加
+                    </button>
+                </section>
+
+                <!-- Stats Log -->
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-3">
+                        <span class="text-lg">📝</span>
+                        <span>記録ログ</span>
+                    </h2>
+                    <div id="statsLog" class="max-h-48 overflow-y-auto no-scrollbar bg-gray-50 rounded-lg p-2">
+                        <p class="text-center text-gray-400 text-sm py-4">まだ記録がありません</p>
+                    </div>
+                    <button id="undoBtn" onclick="undoLast()" disabled class="w-full mt-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-200 rounded-lg text-sm font-medium transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        ↩ 元に戻す
+                    </button>
+                </section>
+                
+                <!-- Box Score -->
+                <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                    <h2 class="font-bold text-sm text-secondary flex items-center gap-2 mb-3">
+                        <span class="text-lg">📋</span>
+                        <span class="font-display text-lg tracking-wide">BOX SCORE</span>
+                    </h2>
+                    <div class="overflow-x-auto no-scrollbar border border-gray-100 rounded-lg">
+                        <table class="w-full text-xs">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th class="p-2 text-left font-bold">選手</th>
+                                    <th class="p-2 font-bold">PTS</th>
+                                    <th class="p-2">2P</th>
+                                    <th class="p-2">3P</th>
+                                    <th class="p-2">FT</th>
+                                    <th class="p-2">REB</th>
+                                    <th class="p-2">AST</th>
+                                    <th class="p-2">STL</th>
+                                    <th class="p-2">BLK</th>
+                                    <th class="p-2">TO</th>
+                                    <th class="p-2">PF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="boxScoreBody" class="text-xs">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Controller Panel (StatsToo Style) -->
+    <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
+        <div class="max-w-4xl mx-auto px-3 py-3">
+            
+            <!-- Time & Selected Info -->
+            <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-gray-500">再生位置:</span>
+                    <span id="controllerTime" class="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">0:00</span>
+                </div>
+                <div id="selected-info" class="text-sm font-bold text-secondary"></div>
+            </div>
+            
+            <div class="flex justify-between items-center mb-2">
+                <div id="controller-player-name" class="text-sm font-bold text-secondary"></div>
+                <div class="flex gap-2">
+                    <button id="controller-undo-btn" onclick="undoLast()" class="text-[10px] text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed font-medium">
+                        <span>↩</span>
+                        <span>元に戻す</span>
+                    </button>
+                    <button onclick="deselectPlayer()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium">
+                        選択解除
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scoring Buttons -->
+            <div class="grid grid-cols-3 gap-2 mb-2">
+                <button onclick="recordStat('2P', true)" class="btn-press bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                    2P成功 +2
+                </button>
+                <button onclick="recordStat('3P', true)" class="btn-press bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                    3P成功 +3
+                </button>
+                <button onclick="recordStat('FT', true)" class="btn-press bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                    FT成功 +1
+                </button>
+            </div>
+
+            <!-- Miss Buttons -->
+            <div class="grid grid-cols-3 gap-2 mb-2">
+                <button onclick="recordStat('2P', false)" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                    2P ミス
+                </button>
+                <button onclick="recordStat('3P', false)" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                    3P ミス
+                </button>
+                <button onclick="recordStat('FT', false)" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                    FT ミス
+                </button>
+            </div>
+
+            <!-- Other Stats Buttons -->
+            <div class="grid grid-cols-4 gap-2 mb-2">
+                <button onclick="recordStat('OR')" class="btn-press bg-primary/10 hover:bg-primary/20 text-primary-dark py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                    OR
+                </button>
+                <button onclick="recordStat('DR')" class="btn-press bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                    DR
+                </button>
+                <button onclick="recordStat('AST')" class="btn-press bg-green-100 hover:bg-green-200 text-green-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                    AST
+                </button>
+                <button onclick="recordStat('PF')" class="btn-press bg-rose-100 hover:bg-rose-200 text-rose-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                    PF
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="recordStat('STL')" class="btn-press bg-cyan-100 hover:bg-cyan-200 text-cyan-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                    STL
+                </button>
+                <button onclick="recordStat('BLK')" class="btn-press bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                    BLK
+                </button>
+                <button onclick="recordStat('TO')" class="btn-press bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                    TO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- YouTube IFrame API -->
+    <script>
+        // YouTube Player
+        let player = null;
+        let isPlayerReady = false;
+        let timeUpdateInterval = null;
+
+        // Players data
+        let players = [
+            { id: 1, number: 4, name: '選手A' },
+            { id: 2, number: 7, name: '選手B' },
+            { id: 3, number: 11, name: '選手C' },
+            { id: 4, number: 14, name: '選手D' },
+            { id: 5, number: 23, name: '選手E' }
+        ];
+
+        let selectedPlayerId = null;
+        let statsLog = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPlayers();
+            updateBoxScore();
+            setupKeyboardShortcuts();
+        });
+
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            console.log('YouTube API Ready');
+        }
+
+        function loadVideo() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                showToast('有効なYouTube URLを入力してください');
+                return;
+            }
+
+            const playerDiv = document.getElementById('player');
+            
+            if (player) {
+                player.destroy();
+            }
+
+            player = new YT.Player('player', {
+                videoId: videoId,
+                playerVars: {
+                    'playsinline': 1,
+                    'rel': 0,
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+
+            showToast('動画を読み込みました！');
+        }
+
+        function extractVideoId(url) {
+            const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
+            const match = url.match(regex);
+            return match ? match[1] : null;
+        }
+
+        function onPlayerReady(event) {
+            isPlayerReady = true;
+            startTimeUpdate();
+        }
+
+        function onPlayerStateChange(event) {
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            if (event.data === YT.PlayerState.PLAYING) {
+                playPauseBtn.textContent = '⏸️ 一時停止';
+            } else {
+                playPauseBtn.textContent = '▶️ 再生';
+            }
+        }
+
+        function startTimeUpdate() {
+            if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+            timeUpdateInterval = setInterval(() => {
+                if (player && isPlayerReady && typeof player.getCurrentTime === 'function') {
+                    const time = player.getCurrentTime();
+                    const formatted = formatTime(time);
+                    document.getElementById('currentTime').textContent = formatted;
+                    document.getElementById('controllerTime').textContent = formatted;
+                }
+            }, 100);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function togglePlayPause() {
+            if (!player || !isPlayerReady) return;
+            
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
+
+        function seekBackward() {
+            if (!player || !isPlayerReady) return;
+            const currentTime = player.getCurrentTime();
+            player.seekTo(Math.max(0, currentTime - 5), true);
+        }
+
+        function seekForward() {
+            if (!player || !isPlayerReady) return;
+            const currentTime = player.getCurrentTime();
+            player.seekTo(currentTime + 5, true);
+        }
+
+        function changeSpeed() {
+            if (!player || !isPlayerReady) return;
+            const speed = parseFloat(document.getElementById('speedSelect').value);
+            player.setPlaybackRate(speed);
+        }
+
+        // Player Management
+        function renderPlayers() {
+            const grid = document.getElementById('playerGrid');
+            grid.innerHTML = players.map(p => `
+                <div class="player-row ${selectedPlayerId === p.id ? 'selected' : ''} 
+                    flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer transition"
+                    onclick="selectPlayer(${p.id})"
+                    ondblclick="editPlayer(${p.id})">
+                    <div class="flex items-center gap-2">
+                        <span class="text-primary font-bold">#${p.number}</span>
+                        <span class="font-medium">${p.name}</span>
+                    </div>
+                    <span class="text-xs text-gray-400">${getPlayerPTS(p.id)} PTS</span>
+                </div>
+            `).join('');
+        }
+        
+        function getPlayerPTS(playerId) {
+            const logs = statsLog.filter(l => l.playerId === playerId);
+            let pts = 0;
+            logs.forEach(l => {
+                if (l.type === '2P' && l.success) pts += 2;
+                if (l.type === '3P' && l.success) pts += 3;
+                if (l.type === 'FT' && l.success) pts += 1;
+            });
+            return pts;
+        }
+
+        function selectPlayer(id) {
+            selectedPlayerId = selectedPlayerId === id ? null : id;
+            renderPlayers();
+            updateController();
+        }
+        
+        function deselectPlayer() {
+            selectedPlayerId = null;
+            renderPlayers();
+            updateController();
+        }
+        
+        function updateController() {
+            const controller = document.getElementById('controller');
+            const playerNameEl = document.getElementById('controller-player-name');
+            
+            if (selectedPlayerId) {
+                const player = players.find(p => p.id === selectedPlayerId);
+                playerNameEl.textContent = `#${player.number} ${player.name}`;
+                controller.classList.remove('slide-down');
+                controller.classList.add('slide-up');
+            } else {
+                playerNameEl.textContent = '';
+                controller.classList.remove('slide-up');
+                controller.classList.add('slide-down');
+            }
+        }
+
+        function editPlayer(id) {
+            const p = players.find(p => p.id === id);
+            if (!p) return;
+
+            const newName = prompt('選手名を入力:', p.name);
+            if (newName !== null) p.name = newName.trim() || p.name;
+
+            const newNumber = prompt('背番号を入力:', p.number);
+            if (newNumber !== null) {
+                const num = parseInt(newNumber);
+                if (!isNaN(num)) p.number = num;
+            }
+
+            renderPlayers();
+            updateBoxScore();
+        }
+
+        function addPlayer() {
+            const name = prompt('選手名を入力:');
+            if (!name) return;
+
+            const number = prompt('背番号を入力:');
+            const num = parseInt(number) || players.length + 1;
+
+            const newId = Math.max(...players.map(p => p.id), 0) + 1;
+            players.push({
+                id: newId,
+                number: num,
+                name: name.trim()
+            });
+
+            renderPlayers();
+            updateBoxScore();
+        }
+
+        // Stats Recording
+        function recordStat(type, success = null) {
+            if (!selectedPlayerId) {
+                showToast('選手を選択してください');
+                return;
+            }
+
+            const p = players.find(p => p.id === selectedPlayerId);
+            if (!p) return;
+
+            const currentTime = isPlayerReady && player && typeof player.getCurrentTime === 'function' 
+                ? player.getCurrentTime() 
+                : 0;
+
+            const entry = {
+                id: Date.now(),
+                playerId: selectedPlayerId,
+                playerName: p.name,
+                playerNumber: p.number,
+                type: type,
+                success: success,
+                time: currentTime,
+                timeFormatted: formatTime(currentTime)
+            };
+
+            statsLog.push(entry);
+            updateStatsLog();
+            updateBoxScore();
+            renderPlayers();
+
+            const actionText = getActionText(type, success);
+            showToast(`${p.name}: ${actionText}`);
+        }
+
+        function getActionText(type, success) {
+            if (type === '2P') return success ? '2P成功 +2' : '2Pミス';
+            if (type === '3P') return success ? '3P成功 +3' : '3Pミス';
+            if (type === 'FT') return success ? 'FT成功 +1' : 'FTミス';
+            return type;
+        }
+
+        function updateStatsLog() {
+            const logDiv = document.getElementById('statsLog');
+            const undoBtn = document.getElementById('undoBtn');
+            const controllerUndoBtn = document.getElementById('controller-undo-btn');
+
+            if (statsLog.length === 0) {
+                logDiv.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">まだ記録がありません</p>';
+                undoBtn.disabled = true;
+                controllerUndoBtn.disabled = true;
+                return;
+            }
+
+            undoBtn.disabled = false;
+            controllerUndoBtn.disabled = false;
+
+            // Show last 20 entries, newest first
+            const recentLogs = [...statsLog].reverse().slice(0, 20);
+            
+            logDiv.innerHTML = recentLogs.map(entry => {
+                const successClass = entry.success === true ? 'text-green-600' : (entry.success === false ? 'text-red-500' : 'text-gray-600');
+                return `
+                    <div class="flex items-center gap-2 p-2 border-b border-gray-100 last:border-b-0 text-xs">
+                        <span class="text-primary font-mono font-bold min-w-[40px]">${entry.timeFormatted}</span>
+                        <span class="text-blue-600 font-medium min-w-[70px]">#${entry.playerNumber} ${entry.playerName}</span>
+                        <span class="${successClass} font-medium">${getActionText(entry.type, entry.success)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function undoLast() {
+            if (statsLog.length === 0) return;
+            
+            const removed = statsLog.pop();
+            updateStatsLog();
+            updateBoxScore();
+            renderPlayers();
+            showToast(`取り消し: ${removed.playerName} - ${getActionText(removed.type, removed.success)}`);
+        }
+
+        function updateBoxScore() {
+            const tbody = document.getElementById('boxScoreBody');
+            
+            const playerStats = players.map(p => {
+                const logs = statsLog.filter(l => l.playerId === p.id);
+                
+                const stats = {
+                    pts: 0,
+                    fg2m: 0, fg2a: 0,
+                    fg3m: 0, fg3a: 0,
+                    ftm: 0, fta: 0,
+                    or: 0, dr: 0,
+                    ast: 0, stl: 0, blk: 0, to: 0, pf: 0
+                };
+
+                logs.forEach(l => {
+                    switch(l.type) {
+                        case '2P':
+                            stats.fg2a++;
+                            if (l.success) { stats.fg2m++; stats.pts += 2; }
+                            break;
+                        case '3P':
+                            stats.fg3a++;
+                            if (l.success) { stats.fg3m++; stats.pts += 3; }
+                            break;
+                        case 'FT':
+                            stats.fta++;
+                            if (l.success) { stats.ftm++; stats.pts += 1; }
+                            break;
+                        case 'OR': stats.or++; break;
+                        case 'DR': stats.dr++; break;
+                        case 'AST': stats.ast++; break;
+                        case 'STL': stats.stl++; break;
+                        case 'BLK': stats.blk++; break;
+                        case 'TO': stats.to++; break;
+                        case 'PF': stats.pf++; break;
+                    }
+                });
+
+                return { player: p, stats };
+            });
+
+            tbody.innerHTML = playerStats.map(({ player, stats }) => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                    <td class="p-2 text-left font-bold whitespace-nowrap">
+                        <span class="text-primary">#${player.number}</span> ${player.name}
+                    </td>
+                    <td class="p-2 font-bold text-center">${stats.pts}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.fg2m}-${stats.fg2a}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.fg3m}-${stats.fg3a}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.ftm}-${stats.fta}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.or + stats.dr}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.ast}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.stl}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.blk}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.to}</td>
+                    <td class="p-2 text-center text-gray-600">${stats.pf}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Keyboard Shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ignore if typing in input
+                if (e.target.tagName === 'INPUT') return;
+
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    togglePlayPause();
+                } else if (e.code === 'ArrowLeft') {
+                    e.preventDefault();
+                    seekBackward();
+                } else if (e.code === 'ArrowRight') {
+                    e.preventDefault();
+                    seekForward();
+                } else if (e.ctrlKey && e.code === 'KeyZ') {
+                    e.preventDefault();
+                    undoLast();
+                }
+            });
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+    </script>
+</body>
+</html>
