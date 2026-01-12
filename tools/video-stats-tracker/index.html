@@ -1,0 +1,572 @@
+---
+layout: default
+title: 動画スタッツ記録
+description: YouTubeの試合動画を見ながらバスケットボールのスタッツを記録できるツールです。画面1つでPC操作が完結し、試合を録画しておいて後日スタッツをつけたい方におすすめです。
+---
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+    /* Controller Animation */
+    .slide-up { 
+        transform: translateY(0%); 
+        pointer-events: auto;
+        opacity: 1;
+    }
+    .slide-down { 
+        transform: translateY(110%); 
+        pointer-events: none;
+        opacity: 0;
+    }
+    #controller.slide-up button {
+        pointer-events: auto;
+    }
+
+    /* Player Row Styles */
+    .player-row {
+        transition: all 0.2s ease;
+        border-left: 4px solid transparent;
+    }
+    .player-row.selected-ally {
+        background-color: #e0e7ff;
+        border-left-color: #4f46e5;
+    }
+    .player-row.selected-enemy {
+        background-color: #ffe4e6;
+        border-left-color: #e11d48;
+    }
+
+    /* Button Active State */
+    .btn-press:active { transform: scale(0.96); }
+
+    /* Scrollbar Hiding */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Custom checkbox */
+    .custom-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: #EA580C;
+    }
+
+    /* Edit input */
+    .edit-input {
+        width: 100%;
+        padding: 4px 8px;
+        border: 1px solid #d6d3d1;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    .edit-input:focus {
+        outline: 2px solid #EA580C;
+        border-color: transparent;
+    }
+
+    /* Toast */
+    .video-toast {
+        position: fixed;
+        bottom: 280px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        opacity: 0;
+        transition: all 0.3s;
+        z-index: 1000;
+        font-size: 14px;
+    }
+    .video-toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+
+    /* Modal Styles */
+    .video-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .video-modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .video-modal-content {
+        background: white;
+        border-radius: 16px;
+        max-width: 500px;
+        width: 100%;
+        max-height: 90vh;
+        overflow: auto;
+        transform: scale(0.9);
+        transition: transform 0.3s ease;
+    }
+    .video-modal-overlay.active .video-modal-content {
+        transform: scale(1);
+    }
+
+    /* Spinner */
+    .video-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #EA580C;
+        border-radius: 50%;
+        animation: video-spin 1s linear infinite;
+    }
+    @keyframes video-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* YouTube iframe を親要素いっぱいに広げる */
+    #player {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    #player iframe {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+</style>
+
+<!-- Page Header -->
+<div class="bg-gradient-to-r from-secondary to-secondary-light relative overflow-hidden page-header-pattern">
+    <div class="max-w-6xl mx-auto px-4 py-8 relative">
+        <div class="text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <span class="text-4xl">📹</span>
+                <h1 class="font-display text-3xl md:text-4xl tracking-wide text-white">VIDEO STATS TRACKER</h1>
+            </div>
+            <p class="text-white/70 text-sm">YouTubeの試合動画を見ながらスタッツを記録</p>
+        </div>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 py-4 pb-64">
+
+    <!-- Top Controls -->
+    <div class="flex justify-between items-center mb-4">
+        <button id="btn-edit-mode" onclick="toggleEditMode()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+            ✎ メンバー編集
+        </button>
+        <button onclick="resetGame()" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition">
+            リセット
+        </button>
+    </div>
+
+    <!-- Scoreboard -->
+    <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100 mb-4">
+        <div class="flex items-center justify-center gap-4">
+            <div class="flex-1 text-center">
+                <input type="text" id="name-teamA" value="味方チーム" onchange="updateTeamName('A', this.value)" class="text-center text-sm font-bold text-indigo-600 bg-transparent border-b border-transparent hover:border-indigo-300 focus:border-indigo-500 focus:outline-none w-full max-w-[120px]">
+                <div id="score-teamA" class="font-display text-4xl text-secondary">0</div>
+            </div>
+            <div class="text-2xl text-gray-300 font-display">VS</div>
+            <div class="flex-1 text-center">
+                <input type="text" id="name-teamB" value="相手チーム" onchange="updateTeamName('B', this.value)" class="text-center text-sm font-bold text-rose-600 bg-transparent border-b border-transparent hover:border-rose-300 focus:border-rose-500 focus:outline-none w-full max-w-[120px]">
+                <div id="score-teamB" class="font-display text-4xl text-secondary">0</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        
+        <!-- Video Section (Left) -->
+        <div class="lg:col-span-2 space-y-4">
+            
+            <!-- URL Input -->
+            <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100">
+                <div class="flex gap-2">
+                    <input type="text" id="youtubeUrl" 
+                        placeholder="YouTube URLを貼り付け"
+                        class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                    <button onclick="loadVideo()" class="btn-press bg-primary hover:bg-primary-dark text-white font-bold px-4 py-2 rounded-lg transition shadow-md text-sm whitespace-nowrap">
+                        読み込む
+                    </button>
+                </div>
+            </section>
+
+            <!-- Video Player -->
+            <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100">
+                <div class="relative w-full" style="padding-top: 56.25%;">
+                    <div id="player" class="absolute inset-0 bg-gray-900 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div class="text-center text-gray-400">
+                            <div class="text-4xl mb-2">🎬</div>
+                            <p class="text-xs">YouTube URLを入力して動画を読み込んでください</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Controls -->
+                <div class="flex items-center justify-center gap-2 mt-3 flex-wrap">
+                    <button onclick="seekBackward()" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                        ⏪ 5秒
+                    </button>
+                    <button id="playPauseBtn" onclick="togglePlayPause()" class="btn-press bg-primary hover:bg-primary-dark text-white px-4 py-1.5 rounded-lg text-xs font-bold transition shadow-md">
+                        ▶️ 再生
+                    </button>
+                    <button onclick="seekForward()" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-medium transition">
+                        5秒 ⏩
+                    </button>
+                    <select id="speedSelect" onchange="changeSpeed()" class="text-xs px-2 py-1.5 border border-gray-200 rounded-lg focus:outline-none">
+                        <option value="0.5">0.5x</option>
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                    <div id="currentTime" class="bg-secondary text-white px-3 py-1.5 rounded-lg font-mono text-sm font-bold">
+                        0:00
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Stats Log -->
+            <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                        <span>📝</span> 記録ログ
+                    </h2>
+                    <button id="undoBtn" onclick="undoLast()" disabled class="text-xs text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition disabled:opacity-40 disabled:cursor-not-allowed font-medium">
+                        ↩ 元に戻す
+                    </button>
+                </div>
+                <div id="statsLog" class="max-h-32 overflow-y-auto no-scrollbar bg-gray-50 rounded-lg p-2">
+                    <p class="text-center text-gray-400 text-xs py-3">まだ記録がありません</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Sidebar - Team Selection -->
+        <div class="space-y-4">
+            
+            <!-- Edit Mode Status Bar -->
+            <div id="status-bar" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-700">
+                <p class="font-bold mb-1">🔧 編集・交代モード</p>
+                <ul class="text-[10px] space-y-0.5">
+                    <li>☑ チェック: コートに出ている選手</li>
+                    <li>名前タップ: 名前を変更</li>
+                    <li>+ ボタン: 選手を追加</li>
+                </ul>
+            </div>
+            
+            <!-- Team A (Ally) -->
+            <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100 border-l-4 border-l-indigo-500">
+                <h2 class="font-bold text-sm text-indigo-600 flex items-center gap-2 mb-2">
+                    <span>👥</span>
+                    <span id="header-teamA">味方チーム</span>
+                    <span class="text-[10px] text-gray-400 ml-auto font-normal">PTS / PF / AST</span>
+                </h2>
+                <div id="list-teamA" class="space-y-1 max-h-40 overflow-y-auto no-scrollbar">
+                </div>
+                <button id="add-teamA" onclick="addNewPlayer('A')" class="hidden w-full mt-2 py-1.5 border-2 border-dashed border-gray-300 hover:border-indigo-400 text-gray-400 hover:text-indigo-500 rounded-lg text-xs font-medium transition">
+                    + 選手を追加
+                </button>
+            </section>
+
+            <!-- Team B (Enemy) -->
+            <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100 border-l-4 border-l-rose-500">
+                <h2 class="font-bold text-sm text-rose-600 flex items-center gap-2 mb-2">
+                    <span>👥</span>
+                    <span id="header-teamB">相手チーム</span>
+                    <span class="text-[10px] text-gray-400 ml-auto font-normal">PTS / PF / AST</span>
+                </h2>
+                <div id="list-teamB" class="space-y-1 max-h-40 overflow-y-auto no-scrollbar">
+                </div>
+                <button id="add-teamB" onclick="addNewPlayer('B')" class="hidden w-full mt-2 py-1.5 border-2 border-dashed border-gray-300 hover:border-rose-400 text-gray-400 hover:text-rose-500 rounded-lg text-xs font-medium transition">
+                    + 選手を追加
+                </button>
+            </section>
+
+            <!-- Keyboard Shortcuts -->
+            <div class="bg-gray-50 rounded-lg p-2 text-[10px] text-gray-500">
+                <p class="font-bold mb-1">⌨️ ショートカット</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <span><kbd class="bg-gray-200 px-1 rounded">Space</kbd> 再生/停止</span>
+                    <span><kbd class="bg-gray-200 px-1 rounded">←→</kbd> 5秒移動</span>
+                    <span><kbd class="bg-gray-200 px-1 rounded">Ctrl+Z</kbd> 元に戻す</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Box Score Section -->
+    <section class="bg-white p-4 rounded-xl shadow-md border border-gray-100 mt-4">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                <span class="text-lg">📋</span>
+                <span class="font-display text-lg tracking-wide">BOX SCORE</span>
+            </h2>
+            <div class="flex gap-2">
+                <button onclick="generateImage()" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
+                    <span>📸</span> 画像生成
+                </button>
+                <button onclick="exportCSV()" class="text-xs bg-primary hover:bg-primary-dark text-white px-3 py-2 rounded-lg font-bold shadow-sm transition flex items-center gap-1">
+                    <span>📥</span> CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Info Section -->
+        <div class="bg-gray-50 rounded-lg p-3 mb-3 border border-gray-100">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">🏟️ 会場・大会名</label>
+                    <input type="text" id="game-event" placeholder="例: 〇〇体育館" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">📅 日付</label>
+                    <input type="date" id="game-date" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">🕐 時間</label>
+                    <input type="time" id="game-time" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Box Score Table -->
+        <div class="overflow-x-auto no-scrollbar border border-gray-100 rounded-lg">
+            <table class="w-full text-xs">
+                <thead class="bg-secondary text-white sticky top-0 z-10">
+                    <tr>
+                        <th class="p-2.5 text-left font-bold sticky left-0 bg-secondary shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] z-20">Player</th>
+                        <th class="p-2.5 font-bold" title="合計得点">PTS</th>
+                        <th class="p-2.5" title="2ポイント 成功-試投">2P</th>
+                        <th class="p-2.5" title="2ポイント 成功率">2P%</th>
+                        <th class="p-2.5" title="3ポイント 成功-試投">3P</th>
+                        <th class="p-2.5" title="3ポイント 成功率">3P%</th>
+                        <th class="p-2.5" title="フリースロー 成功-試投">FT</th>
+                        <th class="p-2.5" title="フリースロー 成功率">FT%</th>
+                        <th class="p-2.5" title="オフェンス-ディフェンスリバウンド">REB</th>
+                        <th class="p-2.5" title="アシスト">AST</th>
+                        <th class="p-2.5" title="スティール">STL</th>
+                        <th class="p-2.5" title="ブロック">BLK</th>
+                        <th class="p-2.5" title="ターンオーバー">TO</th>
+                        <th class="p-2.5 font-bold" title="エフィシエンシー">EFF</th>
+                    </tr>
+                </thead>
+                <tbody id="boxScoreBody" class="text-xs">
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Controller Panel -->
+<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
+    <div class="max-w-4xl mx-auto px-3 py-3">
+        
+        <!-- Time & Selected Info -->
+        <div class="flex justify-between items-center mb-2 pb-2 border-b border-gray-100">
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-bold text-gray-500">再生位置:</span>
+                <span id="controllerTime" class="text-sm font-bold text-primary bg-primary/10 px-2 py-0.5 rounded font-mono">0:00</span>
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center mb-2">
+            <div id="controller-player-name" class="text-sm font-bold text-secondary"></div>
+            <div class="flex gap-2">
+                <button id="controller-undo-btn" onclick="undoLast()" class="text-[10px] text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed font-medium">
+                    <span>↩</span>
+                    <span>元に戻す</span>
+                </button>
+                <button onclick="deselectPlayer()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium">
+                    選択解除
+                </button>
+            </div>
+        </div>
+
+        <!-- Scoring Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="recordStat('p2m')" class="btn-press bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                2P成功 +2
+            </button>
+            <button onclick="recordStat('p3m')" class="btn-press bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                3P成功 +3
+            </button>
+            <button onclick="recordStat('ftm')" class="btn-press bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 rounded-lg transition text-sm shadow-md">
+                FT成功 +1
+            </button>
+        </div>
+
+        <!-- Miss Buttons -->
+        <div class="grid grid-cols-3 gap-2 mb-2">
+            <button onclick="recordStat('p2a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                2P ミス
+            </button>
+            <button onclick="recordStat('p3a')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                3P ミス
+            </button>
+            <button onclick="recordStat('fta')" class="btn-press bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 rounded-lg text-xs transition font-medium">
+                FT ミス
+            </button>
+        </div>
+
+        <!-- Other Stats Buttons -->
+        <div class="grid grid-cols-4 gap-2 mb-2">
+            <button onclick="recordStat('orb')" class="btn-press bg-primary/10 hover:bg-primary/20 text-primary-dark py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                OR
+            </button>
+            <button onclick="recordStat('drb')" class="btn-press bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                DR
+            </button>
+            <button onclick="recordStat('ast')" class="btn-press bg-green-100 hover:bg-green-200 text-green-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                AST
+            </button>
+            <button onclick="recordStat('pf')" class="btn-press bg-rose-100 hover:bg-rose-200 text-rose-700 py-2 rounded-lg text-xs transition shadow-sm font-bold">
+                PF
+            </button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="recordStat('stl')" class="btn-press bg-cyan-100 hover:bg-cyan-200 text-cyan-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                STL
+            </button>
+            <button onclick="recordStat('blk')" class="btn-press bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                BLK
+            </button>
+            <button onclick="recordStat('to')" class="btn-press bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg text-xs transition shadow-sm font-medium">
+                TO
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div id="image-modal" class="video-modal-overlay">
+    <div class="video-modal-content p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                <span>📸</span> Box Score 画像
+            </h3>
+            <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+        </div>
+        
+        <div id="image-loading" class="flex flex-col items-center justify-center py-8">
+            <div class="video-spinner mb-4"></div>
+            <p class="text-gray-500 text-sm">画像を生成中...</p>
+        </div>
+        
+        <div id="image-preview-wrapper" class="hidden">
+            <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden bg-gray-50 max-h-[50vh] overflow-auto">
+                <img id="generated-image" class="w-full" alt="Box Score">
+            </div>
+            
+            <div class="space-y-2">
+                <button id="share-btn" onclick="shareImage()" class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                    SNSでシェア
+                </button>
+                <button onclick="downloadImage()" class="w-full bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    画像をダウンロード
+                </button>
+                <button id="copy-btn" onclick="copyImageToClipboard()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    クリップボードにコピー
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="video-toast" id="video-toast"></div>
+
+<script>
+// =============================
+// 🔊 効果音システム
+// =============================
+class SoundManager {
+    constructor() { this.audioContext = null; this.initialized = false; }
+    init() {
+        if (this.initialized) return;
+        try { this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); this.initialized = true; } catch (e) { console.warn('Web Audio API not supported:', e); }
+    }
+    playClickSound() { if (!this.audioContext) return; const o = this.audioContext.createOscillator(); const g = this.audioContext.createGain(); o.connect(g); g.connect(this.audioContext.destination); o.frequency.value = 800; o.type = 'sine'; g.gain.setValueAtTime(0.1, this.audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1); o.start(this.audioContext.currentTime); o.stop(this.audioContext.currentTime + 0.1); }
+    playSuccessSound() { if (!this.audioContext) return; const ctx = this.audioContext; const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(880, ctx.currentTime); o.type = 'sine'; g.gain.setValueAtTime(0.3, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.15); }
+    playMissSound() { if (!this.audioContext) return; const ctx = this.audioContext; const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(330, ctx.currentTime); o.type = 'sine'; g.gain.setValueAtTime(0.2, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.1); }
+    playNeutralSound() { if (!this.audioContext) return; const ctx = this.audioContext; const o = ctx.createOscillator(); const g = ctx.createGain(); o.connect(g); g.connect(ctx.destination); o.frequency.setValueAtTime(523, ctx.currentTime); o.type = 'sine'; g.gain.setValueAtTime(0.25, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1); o.start(ctx.currentTime); o.stop(ctx.currentTime + 0.1); }
+}
+const soundManager = new SoundManager();
+
+// State
+const state = { teams: { A: { name: '味方チーム', players: createDefaultPlayers('A') }, B: { name: '相手チーム', players: createDefaultPlayers('B') } }, selectedPlayer: null, editMode: false, history: [] };
+function createDefaultPlayers(team) { const names = team === 'A' ? ['PG #1', 'SG #2', 'SF #3', 'PF #4', 'C #5'] : ['相手 #1', '相手 #2', '相手 #3', '相手 #4', '相手 #5']; return names.map((name, i) => ({ id: `${team}-${Date.now()}-${i}`, name, team, isOnCourt: true, stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 } })); }
+function createEmptyStats() { return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 }; }
+
+let player = null, isPlayerReady = false, timeUpdateInterval = null, generatedImageBlob = null, generatedImageDataUrl = null;
+
+document.addEventListener('DOMContentLoaded', () => { render(); setupKeyboardShortcuts(); document.getElementById('game-date').value = new Date().toISOString().slice(0, 10); });
+
+// YouTube API
+const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
+function onYouTubeIframeAPIReady() { console.log('YouTube API Ready'); }
+function loadVideo() { soundManager.init(); const url = document.getElementById('youtubeUrl').value.trim(); const videoId = extractVideoId(url); if (!videoId) { showToast('有効なYouTube URLを入力してください'); return; } if (player) player.destroy(); player = new YT.Player('player', { width: '100%', height: '100%', videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } }); showToast('動画を読み込みました！'); }
+function extractVideoId(url) { const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/); return m ? m[1] : null; }
+function onPlayerReady() { isPlayerReady = true; startTimeUpdate(); }
+function onPlayerStateChange(e) { document.getElementById('playPauseBtn').textContent = e.data === YT.PlayerState.PLAYING ? '⏸️ 停止' : '▶️ 再生'; }
+function startTimeUpdate() { if (timeUpdateInterval) clearInterval(timeUpdateInterval); timeUpdateInterval = setInterval(() => { if (player && isPlayerReady && typeof player.getCurrentTime === 'function') { const f = formatTime(player.getCurrentTime()); document.getElementById('currentTime').textContent = f; document.getElementById('controllerTime').textContent = f; } }, 100); }
+function formatTime(s) { return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`; }
+function togglePlayPause() { soundManager.init(); if (!player || !isPlayerReady) return; player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo(); }
+function seekBackward() { if (player && isPlayerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 5), true); }
+function seekForward() { if (player && isPlayerReady) player.seekTo(player.getCurrentTime() + 5, true); }
+function changeSpeed() { if (player && isPlayerReady) player.setPlaybackRate(parseFloat(document.getElementById('speedSelect').value)); }
+
+// Team & Player
+function updateTeamName(t, n) { state.teams[t].name = n; document.getElementById(`header-team${t}`).textContent = n; }
+function selectPlayer(t, id) { soundManager.init(); soundManager.playClickSound(); state.selectedPlayer = (state.selectedPlayer && state.selectedPlayer.team === t && state.selectedPlayer.playerId === id) ? null : { team: t, playerId: id }; render(); updateController(); }
+function deselectPlayer() { state.selectedPlayer = null; render(); updateController(); }
+function updateController() { const c = document.getElementById('controller'), el = document.getElementById('controller-player-name'); if (state.selectedPlayer) { const { team, playerId } = state.selectedPlayer; const p = state.teams[team].players.find(p => p.id === playerId); el.innerHTML = `<span class="${team === 'A' ? 'text-indigo-600' : 'text-rose-600'}">📍 ${p.name}</span> を選択中`; c.classList.remove('slide-down'); c.classList.add('slide-up'); } else { el.textContent = ''; c.classList.remove('slide-up'); c.classList.add('slide-down'); } }
+function toggleEditMode() { state.editMode = !state.editMode; document.getElementById('status-bar').classList.toggle('hidden', !state.editMode); document.getElementById('btn-edit-mode').classList.toggle('bg-primary', state.editMode); document.getElementById('btn-edit-mode').classList.toggle('text-white', state.editMode); document.getElementById('add-teamA').classList.toggle('hidden', !state.editMode); document.getElementById('add-teamB').classList.toggle('hidden', !state.editMode); render(); }
+function addNewPlayer(t) { const ps = state.teams[t].players; ps.push({ id: `${t}-${Date.now()}`, name: t === 'A' ? `Player #${ps.length + 1}` : `相手 #${ps.length + 1}`, team: t, isOnCourt: false, stats: createEmptyStats() }); render(); }
+function updatePlayerName(t, id, n) { const p = state.teams[t].players.find(p => p.id === id); if (p) p.name = n; renderBoxScore(); }
+function toggleOnCourt(t, id) { const p = state.teams[t].players.find(p => p.id === id); if (p) p.isOnCourt = !p.isOnCourt; render(); }
+function resetGame() { if (!confirm('スタッツをリセットしますか？')) return; state.teams.A.players = createDefaultPlayers('A'); state.teams.B.players = createDefaultPlayers('B'); state.teams.A.name = '味方チーム'; state.teams.B.name = '相手チーム'; ['name-teamA', 'name-teamB'].forEach((id, i) => document.getElementById(id).value = i === 0 ? '味方チーム' : '相手チーム'); ['header-teamA', 'header-teamB'].forEach((id, i) => document.getElementById(id).textContent = i === 0 ? '味方チーム' : '相手チーム'); document.getElementById('game-event').value = ''; document.getElementById('game-date').value = new Date().toISOString().slice(0, 10); document.getElementById('game-time').value = ''; state.history = []; deselectPlayer(); render(); }
+
+// Stats
+function recordStat(k) { soundManager.init(); if (!state.selectedPlayer) { showToast('選手を選択してください'); return; } const { team, playerId } = state.selectedPlayer; const p = state.teams[team].players.find(p => p.id === playerId); if (!p) return; ['p2m', 'p3m', 'ftm'].includes(k) ? soundManager.playSuccessSound() : ['p2a', 'p3a', 'fta', 'to'].includes(k) ? soundManager.playMissSound() : soundManager.playNeutralSound(); state.history.push({ team, playerId, playerName: p.name, statKey: k, value: 1 }); p.stats[k] += 1; if (k === 'p2m') p.stats.p2a += 1; if (k === 'p3m') p.stats.p3a += 1; if (k === 'ftm') p.stats.fta += 1; render(); showToast(`${p.name}: ${getStatLabel(k)}`); }
+function getStatLabel(k) { return { p2m: '2P成功 +2', p2a: '2Pミス', p3m: '3P成功 +3', p3a: '3Pミス', ftm: 'FT成功 +1', fta: 'FTミス', orb: 'OR', drb: 'DR', ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF' }[k] || k; }
+function undoLast() { if (state.history.length === 0) return; const l = state.history.pop(); const p = state.teams[l.team].players.find(p => p.id === l.playerId); if (!p) return; p.stats[l.statKey] -= l.value; if (l.statKey === 'p2m') p.stats.p2a -= 1; if (l.statKey === 'p3m') p.stats.p3a -= 1; if (l.statKey === 'ftm') p.stats.fta -= 1; render(); showToast(`取り消し: ${l.playerName} - ${getStatLabel(l.statKey)}`); }
+function calculatePTS(s) { return s.p2m * 2 + s.p3m * 3 + s.ftm; }
+function calculateTeamScore(t) { return state.teams[t].players.reduce((sum, p) => sum + calculatePTS(p.stats), 0); }
+
+// Render
+function render() { renderTeamList('A'); renderTeamList('B'); renderBoxScore(); renderStatsLog(); updateScoreboard(); updateUndoButton(); }
+function renderTeamList(t) { const el = document.getElementById(`list-team${t}`); el.innerHTML = ''; state.teams[t].players.forEach(p => { const isSel = state.selectedPlayer && state.selectedPlayer.playerId === p.id; const pts = calculatePTS(p.stats); const div = document.createElement('div'); div.className = `player-row flex items-center justify-between px-2 py-1.5 cursor-pointer hover:bg-gray-50 transition rounded ${isSel ? (t === 'A' ? 'selected-ally' : 'selected-enemy') : ''} ${!p.isOnCourt ? 'opacity-50' : ''}`; div.onclick = () => selectPlayer(t, p.id); div.innerHTML = state.editMode ? `<div class="flex items-center gap-2 flex-1"><input type="checkbox" class="custom-checkbox" ${p.isOnCourt ? 'checked' : ''} onclick="event.stopPropagation(); toggleOnCourt('${t}', '${p.id}')"><input type="text" value="${p.name}" class="edit-input flex-1" onclick="event.stopPropagation()" onchange="updatePlayerName('${t}', '${p.id}', this.value)"></div>` : `<span class="font-bold text-xs text-secondary truncate">${p.name} ${!p.isOnCourt ? '<span class="text-[9px] text-gray-400">(B)</span>' : ''}</span><span class="text-[10px] text-gray-400 font-mono whitespace-nowrap">${pts} / ${p.stats.pf} / ${p.stats.ast}</span>`; el.appendChild(div); }); }
+function renderBoxScore() { const tbody = document.getElementById('boxScoreBody'); const all = [...state.teams.A.players, ...state.teams.B.players]; tbody.innerHTML = all.map((p, idx) => { const s = p.stats; const pts = calculatePTS(s); const p2pct = s.p2a > 0 ? (s.p2m/s.p2a*100).toFixed(0)+'%' : '-'; const p3pct = s.p3a > 0 ? (s.p3m/s.p3a*100).toFixed(0)+'%' : '-'; const ftpct = s.fta > 0 ? (s.ftm/s.fta*100).toFixed(0)+'%' : '-'; const reb = s.orb + s.drb; const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m); const ftMiss = s.fta - s.ftm; const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to; const effClass = eff > 0 ? 'text-green-600' : eff < 0 ? 'text-red-500' : 'text-gray-500'; const teamColorClass = p.team === 'A' ? 'text-indigo-600' : 'text-rose-600'; const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'; return `<tr class="${rowBg}"><td class="p-2.5 font-bold text-xs sticky left-0 ${rowBg} shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] border-r border-gray-100 z-10"><span class="${teamColorClass}">${p.name}</span>${!p.isOnCourt ? '<span class="text-[9px] text-gray-400 ml-1">(B)</span>' : ''}</td><td class="p-2.5 text-center font-bold text-secondary">${pts}</td><td class="p-2.5 text-center text-gray-500 bg-gray-50/50">${s.p2m}-${s.p2a}</td><td class="p-2.5 text-center text-xs font-mono">${p2pct}</td><td class="p-2.5 text-center text-gray-500">${s.p3m}-${s.p3a}</td><td class="p-2.5 text-center text-xs font-mono">${p3pct}</td><td class="p-2.5 text-center text-gray-500 bg-gray-50/50">${s.ftm}-${s.fta}</td><td class="p-2.5 text-center text-xs font-mono bg-gray-50/50">${ftpct}</td><td class="p-2.5 text-center text-gray-500">${s.orb}-${s.drb}</td><td class="p-2.5 text-center text-gray-500">${s.ast}</td><td class="p-2.5 text-center text-gray-500">${s.stl}</td><td class="p-2.5 text-center text-gray-500">${s.blk}</td><td class="p-2.5 text-center text-gray-500">${s.to}</td><td class="p-2.5 text-center font-bold ${effClass}">${eff >= 0 ? '+' : ''}${eff}</td></tr>`; }).join(''); }
+function renderStatsLog() { const el = document.getElementById('statsLog'); if (state.history.length === 0) { el.innerHTML = '<p class="text-center text-gray-400 text-xs py-3">まだ記録がありません</p>'; return; } el.innerHTML = [...state.history].reverse().slice(0, 30).map(e => { const isSuc = ['p2m', 'p3m', 'ftm'].includes(e.statKey); const isMiss = ['p2a', 'p3a', 'fta', 'to'].includes(e.statKey); return `<div class="flex items-center gap-2 p-1.5 border-b border-gray-100 last:border-b-0 text-[10px]"><span class="${e.team === 'A' ? 'text-indigo-600' : 'text-rose-600'} font-medium truncate max-w-[80px]">${e.playerName}</span><span class="${isSuc ? 'text-green-600' : isMiss ? 'text-red-500' : 'text-gray-600'} font-medium">${getStatLabel(e.statKey)}</span></div>`; }).join(''); }
+function updateScoreboard() { document.getElementById('score-teamA').textContent = calculateTeamScore('A'); document.getElementById('score-teamB').textContent = calculateTeamScore('B'); }
+function updateUndoButton() { const d = state.history.length === 0; document.getElementById('undoBtn').disabled = d; document.getElementById('controller-undo-btn').disabled = d; }
+
+// Image
+async function generateImage() { const modal = document.getElementById('image-modal'), loading = document.getElementById('image-loading'), preview = document.getElementById('image-preview-wrapper'); modal.classList.add('active'); loading.classList.remove('hidden'); preview.classList.add('hidden'); try { const el = createImageElement(); document.body.appendChild(el); const canvas = await html2canvas(el, { backgroundColor: '#ffffff', scale: 2, useCORS: true, logging: false }); document.body.removeChild(el); generatedImageDataUrl = canvas.toDataURL('image/png'); generatedImageBlob = await new Promise(r => canvas.toBlob(r, 'image/png')); document.getElementById('generated-image').src = generatedImageDataUrl; loading.classList.add('hidden'); preview.classList.remove('hidden'); } catch (e) { console.error(e); alert('画像の生成に失敗しました'); modal.classList.remove('active'); } }
+function createImageElement() { const c = document.createElement('div'); c.style.cssText = `position: absolute; left: -9999px; top: 0; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 16px; font-family: 'Noto Sans JP', sans-serif; min-width: 650px;`; const gE = document.getElementById('game-event').value, gD = document.getElementById('game-date').value, gT = document.getElementById('game-time').value; let dts = ''; if (gD) { const d = new Date(gD); dts = d.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' }); if (gT) dts += ' ' + gT; } const sA = calculateTeamScore('A'), sB = calculateTeamScore('B'); const h = document.createElement('div'); h.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;"><span style="font-size: 20px; margin-right: 6px;">🏀</span><span style="font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: white; letter-spacing: 2px;">StatsToo</span></div>${gE || dts ? `<div style="text-align: center; margin-bottom: 8px; padding: 6px 10px; background: rgba(255,255,255,0.05); border-radius: 6px;">${gE ? `<div style="color: rgba(255,255,255,0.9); font-size: 11px; font-weight: bold;">${gE}</div>` : ''}${dts ? `<div style="color: rgba(255,255,255,0.6); font-size: 10px; margin-top: 2px;">📅 ${dts}</div>` : ''}</div>` : ''}<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px; margin-bottom: 12px;"><div style="flex: 1; text-align: center;"><div style="color: #818cf8; font-weight: bold; font-size: 11px;">${state.teams.A.name}</div><div style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white;">${sA}</div></div><div style="color: rgba(255,255,255,0.3); font-family: 'Bebas Neue', sans-serif; font-size: 18px; padding: 0 12px;">VS</div><div style="flex: 1; text-align: center;"><div style="color: #fb7185; font-weight: bold; font-size: 11px;">${state.teams.B.name}</div><div style="font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: white;">${sB}</div></div></div>`; c.appendChild(h); const tc = document.createElement('div'); tc.style.cssText = `background: white; border-radius: 12px; overflow: hidden;`; const all = [...state.teams.A.players, ...state.teams.B.players]; let t = `<table style="width: 100%; border-collapse: collapse; font-size: 10px;"><thead><tr style="background: #1e293b; color: white;"><th style="padding: 8px 6px; text-align: left; font-weight: bold;">Player</th><th style="padding: 8px 4px; text-align: center; font-weight: bold;">PTS</th><th style="padding: 8px 4px; text-align: center;">2P</th><th style="padding: 8px 4px; text-align: center;">2P%</th><th style="padding: 8px 4px; text-align: center;">3P</th><th style="padding: 8px 4px; text-align: center;">3P%</th><th style="padding: 8px 4px; text-align: center;">FT</th><th style="padding: 8px 4px; text-align: center;">REB</th><th style="padding: 8px 4px; text-align: center;">AST</th><th style="padding: 8px 4px; text-align: center;">STL</th><th style="padding: 8px 4px; text-align: center;">BLK</th><th style="padding: 8px 4px; text-align: center;">TO</th><th style="padding: 8px 4px; text-align: center; font-weight: bold;">EFF</th></tr></thead><tbody>`; all.forEach((p, idx) => { const s = p.stats; const pts = calculatePTS(s); const teamColor = p.team === 'A' ? '#4f46e5' : '#e11d48'; const bgColor = idx % 2 === 0 ? '#ffffff' : '#f9fafb'; const p2Pct = s.p2a > 0 ? (s.p2m / s.p2a * 100).toFixed(0) : '-'; const p3Pct = s.p3a > 0 ? (s.p3m / s.p3a * 100).toFixed(0) : '-'; const reb = s.orb + s.drb; const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m); const ftMiss = s.fta - s.ftm; const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to; const effColor = eff > 0 ? '#16a34a' : eff < 0 ? '#dc2626' : '#6b7280'; t += `<tr style="background: ${bgColor};"><td style="padding: 6px; font-weight: bold; color: ${teamColor}; font-size: 10px;">${p.name}</td><td style="padding: 6px; text-align: center; font-weight: bold;">${pts}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.p2m}-${s.p2a}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${p2Pct}${p2Pct !== '-' ? '%' : ''}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.p3m}-${s.p3a}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${p3Pct}${p3Pct !== '-' ? '%' : ''}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.ftm}-${s.fta}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.orb}-${s.drb}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.ast}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.stl}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.blk}</td><td style="padding: 6px; text-align: center; color: #6b7280;">${s.to}</td><td style="padding: 6px; text-align: center; font-weight: bold; color: ${effColor};">${eff >= 0 ? '+' : ''}${eff}</td></tr>`; }); t += '</tbody></table>'; tc.innerHTML = t; c.appendChild(tc); const fD = gD ? new Date(gD).toLocaleDateString('ja-JP') : new Date().toLocaleDateString('ja-JP'); const f = document.createElement('div'); f.innerHTML = `<div style="text-align: center; margin-top: 10px; color: rgba(255,255,255,0.5); font-size: 10px;">${fD} | statstoo.com</div>`; c.appendChild(f); return c; }
+async function shareImage() { if (!generatedImageBlob) return; const sA = calculateTeamScore('A'), sB = calculateTeamScore('B'); const shareText = `🏀 ${state.teams.A.name} ${sA} - ${sB} ${state.teams.B.name}\n\n#StatsToo #バスケ`; try { if (navigator.canShare && navigator.canShare({ files: [new File([generatedImageBlob], 'boxscore.png', { type: 'image/png' })] })) { await navigator.share({ title: 'Box Score - StatsToo', text: shareText, files: [new File([generatedImageBlob], 'boxscore.png', { type: 'image/png' })] }); } else if (navigator.share) { await navigator.share({ title: 'Box Score - StatsToo', text: shareText, url: window.location.href }); } } catch (e) { if (e.name !== 'AbortError') downloadImage(); } }
+function downloadImage() { if (!generatedImageDataUrl) return; const l = document.createElement('a'); l.href = generatedImageDataUrl; l.download = `boxscore_${new Date().toISOString().slice(0, 10)}.png`; document.body.appendChild(l); l.click(); document.body.removeChild(l); }
+async function copyImageToClipboard() { if (!generatedImageBlob) return; try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': generatedImageBlob })]); showToast('クリップボードにコピーしました'); } catch (e) { alert('クリップボードへのコピーに失敗しました'); } }
+function closeImageModal() { document.getElementById('image-modal').classList.remove('active'); }
+
+// CSV
+function exportCSV() { const gD = document.getElementById('game-date').value; const all = [...state.teams.A.players, ...state.teams.B.players]; const esc = v => { const s = String(v); return s.includes(',') || s.includes('\n') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s; }; let csv = "=== 試合情報 ===\n"; if (gD) { const d = new Date(gD); csv += `日付,${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}\n`; } csv += `${state.teams.A.name},${calculateTeamScore('A')}\n${state.teams.B.name},${calculateTeamScore('B')}\n\n=== 総合スタッツ ===\n`; csv += ["Stat Category", ...all.map(p => esc(p.name))].join(",") + "\n"; [{ l: "合計得点", g: p => calculatePTS(p.stats) }, { l: "2P 成功数", g: p => p.stats.p2m }, { l: "2P 試投数", g: p => p.stats.p2a }, { l: "2P %", g: p => p.stats.p2a > 0 ? (p.stats.p2m/p.stats.p2a*100).toFixed(1)+"%" : "-" }, { l: "3P 成功数", g: p => p.stats.p3m }, { l: "3P 試投数", g: p => p.stats.p3a }, { l: "3P %", g: p => p.stats.p3a > 0 ? (p.stats.p3m/p.stats.p3a*100).toFixed(1)+"%" : "-" }, { l: "FT 成功数", g: p => p.stats.ftm }, { l: "FT 試投数", g: p => p.stats.fta }, { l: "FT %", g: p => p.stats.fta > 0 ? (p.stats.ftm/p.stats.fta*100).toFixed(1)+"%" : "-" }, { l: "OR", g: p => p.stats.orb }, { l: "DR", g: p => p.stats.drb }, { l: "Total Rebound", g: p => p.stats.orb + p.stats.drb }, { l: "AST", g: p => p.stats.ast }, { l: "Steal", g: p => p.stats.stl }, { l: "Block", g: p => p.stats.blk }, { l: "Turnover", g: p => p.stats.to }, { l: "EFF", g: p => { const pts = calculatePTS(p.stats); const reb = p.stats.orb + p.stats.drb; const fgMiss = (p.stats.p2a - p.stats.p2m) + (p.stats.p3a - p.stats.p3m); const ftMiss = p.stats.fta - p.stats.ftm; return pts + reb + p.stats.ast + p.stats.stl + p.stats.blk - fgMiss - ftMiss - p.stats.to; } }].forEach(r => { csv += [esc(r.l), ...all.map(p => esc(r.g(p)))].join(",") + "\n"; }); csv += "\n"; const bom = new Uint8Array([0xEF, 0xBB, 0xBF]); const blob = new Blob([bom, csv], { type: "text/csv;charset=utf-8" }); const url = URL.createObjectURL(blob); const l = document.createElement("a"); l.href = url; l.download = `game_stats_${gD || new Date().toISOString().slice(0, 10)}.csv`; document.body.appendChild(l); l.click(); document.body.removeChild(l); URL.revokeObjectURL(url); showToast('CSVをダウンロードしました'); }
+
+// Keyboard
+function setupKeyboardShortcuts() { document.addEventListener('keydown', e => { if (e.target.tagName === 'INPUT') return; if (e.code === 'Space') { e.preventDefault(); togglePlayPause(); } else if (e.code === 'ArrowLeft') { e.preventDefault(); seekBackward(); } else if (e.code === 'ArrowRight') { e.preventDefault(); seekForward(); } else if (e.ctrlKey && e.code === 'KeyZ') { e.preventDefault(); undoLast(); } }); }
+
+function showToast(m) { const t = document.getElementById('video-toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+</script>
