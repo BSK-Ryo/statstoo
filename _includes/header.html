@@ -67,6 +67,14 @@
                            {% endif %}">
                             <span>🏆</span> マルチゲームスタッツ
                         </a>
+                        <a href="/tools/video-stats-tracker/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/video-stats-tracker' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>📹</span> Youtube記録スタッツ
+                        </a>
                     </div>
                 </div>
                 
