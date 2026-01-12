@@ -129,6 +129,19 @@ description: YouTubeの試合動画を見ながらバスケットボールのス
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* YouTube iframe を親要素いっぱいに広げる */
+    #player {
+        width: 100% !important;
+        height: 100% !important;
+    }
+    #player iframe {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
 </style>
 
 <!-- Page Header -->
@@ -504,7 +517,7 @@ document.addEventListener('DOMContentLoaded', () => { render(); setupKeyboardSho
 // YouTube API
 const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
 function onYouTubeIframeAPIReady() { console.log('YouTube API Ready'); }
-function loadVideo() { soundManager.init(); const url = document.getElementById('youtubeUrl').value.trim(); const videoId = extractVideoId(url); if (!videoId) { showToast('有効なYouTube URLを入力してください'); return; } if (player) player.destroy(); player = new YT.Player('player', { videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } }); showToast('動画を読み込みました！'); }
+function loadVideo() { soundManager.init(); const url = document.getElementById('youtubeUrl').value.trim(); const videoId = extractVideoId(url); if (!videoId) { showToast('有効なYouTube URLを入力してください'); return; } if (player) player.destroy(); player = new YT.Player('player', { width: '100%', height: '100%', videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } }); showToast('動画を読み込みました！'); }
 function extractVideoId(url) { const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/); return m ? m[1] : null; }
 function onPlayerReady() { isPlayerReady = true; startTimeUpdate(); }
 function onPlayerStateChange(e) { document.getElementById('playPauseBtn').textContent = e.data === YT.PlayerState.PLAYING ? '⏸️ 停止' : '▶️ 再生'; }
