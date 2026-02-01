@@ -12,7 +12,7 @@ tags:
   - アプリ
   - 無料ツール
   - データ分析
-thumbnail: /image/column/basketball-stats-apps-thumbnail.jpg
+thumbnail: /image/basketball-stats-apps-image.png
 excerpt: "バスケのスタッツ記録アプリ・ツールを徹底比較。無料で使えるおすすめ8選と選び方を詳しく解説します。"
 toc: true
 permalink: /column/basketball-stats-apps/
