@@ -14,6 +14,7 @@ thumbnail: /image/column/sample-thumbnail.jpg
 excerpt: "記事の冒頭要約文。一覧ページに表示されます。50〜100文字程度で記事の内容を簡潔にまとめましょう。"
 toc: true
 permalink: /column/sample-article/
+sitemap: false
 ---
 
 ここに**導入文（リード文）**を書きます。この記事を読むことで何がわかるのか、どんな悩みが解決するのかを簡潔に伝えましょう。
