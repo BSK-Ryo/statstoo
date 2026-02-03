@@ -256,6 +256,30 @@ Google AdSense 設定手順
         .tool-card-desc { font-size: 0.75rem; line-height: 1.5; }
         .tool-card-game .tool-card-desc { color: #4338ca; }
         .tool-card-shot .tool-card-desc { color: #059669; }
+
+        /* History Modal Styles */
+        .history-item {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid #d1d5db;
+        }
+        .history-item.team-A {
+            border-left-color: #4f46e5;
+        }
+        .history-item.team-B {
+            border-left-color: #e11d48;
+        }
+        .history-list {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .history-empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 2rem;
+        }
     </style>
 
     <!-- Tool Header -->
@@ -1042,6 +1066,59 @@ Google AdSense 設定手順
         </div>
     </div>
 
+    <!-- History Modal -->
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>📋</span> 記録履歴
+                </h3>
+                <button onclick="app.closeHistoryModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <!-- Filter -->
+            <div class="mb-3">
+                <select id="history-filter" onchange="app.renderHistoryList()" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg">
+                    <option value="all">全ての記録</option>
+                    <option value="A">味方チームのみ</option>
+                    <option value="B">相手チームのみ</option>
+                </select>
+            </div>
+
+            <!-- History List -->
+            <div id="history-list" class="history-list">
+                <!-- Rendered by JavaScript -->
+            </div>
+
+            <button onclick="app.closeHistoryModal()" class="w-full mt-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition">
+                閉じる
+            </button>
+        </div>
+    </div>
+
+    <!-- Edit History Item Modal -->
+    <div id="edit-history-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-secondary">記録を修正</h3>
+                <button onclick="app.closeEditHistoryModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <div id="edit-history-content">
+                <!-- Rendered by JavaScript -->
+            </div>
+
+            <div class="flex gap-2 mt-4">
+                <button onclick="app.closeEditHistoryModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 px-4 rounded-xl transition">
+                    キャンセル
+                </button>
+                <button onclick="app.saveHistoryEdit()" class="flex-1 bg-primary hover:bg-primary-dark text-white font-bold py-3 px-4 rounded-xl transition">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Controller Panel -->
     <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
         <div class="max-w-4xl mx-auto px-3 py-3">
@@ -1063,6 +1140,10 @@ Google AdSense 設定手順
                     <button id="undo-btn" onclick="app.undoLastAction()" class="text-[10px] text-primary hover:text-primary-dark px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed font-medium">
                         <span>↩</span>
                         <span id="undo-label">元に戻す</span>
+                    </button>
+                    <button onclick="app.openHistoryModal()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium flex items-center gap-1">
+                        <span>📋</span>
+                        <span>履歴</span>
                     </button>
                     <button onclick="app.deselectPlayer()" class="text-[10px] text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-medium">
                         選択解除
@@ -1208,6 +1289,25 @@ Google AdSense 設定手順
                 oscillator.stop(ctx.currentTime + 0.1);
             }
         }
+
+        // =============================
+        // 📋 スタッツ種別ラベル
+        // =============================
+        const STAT_LABELS = {
+            p2m: '2P成功',
+            p2a: '2Pミス',
+            p3m: '3P成功',
+            p3a: '3Pミス',
+            ftm: 'FT成功',
+            fta: 'FTミス',
+            orb: 'OR',
+            drb: 'DR',
+            ast: 'AST',
+            stl: 'STL',
+            blk: 'BLK',
+            to: 'TO',
+            pf: 'PF'
+        };
 
         // =============================
         // 🏀 メインアプリ
@@ -2044,10 +2144,12 @@ Google AdSense 設定手順
                 if (!player) return;
 
                 // Save history (クォーター情報も保存)
-                this.state.history.push({ 
-                    team, 
-                    playerId, 
-                    statKey, 
+                this.state.history.push({
+                    id: `h-${Date.now()}-${this.state.history.length}`,
+                    timestamp: Date.now(),
+                    team,
+                    playerId,
+                    statKey,
                     value: 1,
                     recordMode: this.state.recordMode,
                     quarter: this.state.currentQuarter
@@ -2104,6 +2206,225 @@ Google AdSense 設定手順
                 this.render();
                 this.updateCharts();
                 this.saveToLocalStorage();
+            }
+
+            // =============================
+            // 📋 履歴管理機能
+            // =============================
+
+            // 編集中の履歴ID
+            editingHistoryId = null;
+
+            openHistoryModal() {
+                document.getElementById('history-modal').classList.add('active');
+                this.renderHistoryList();
+            }
+
+            closeHistoryModal() {
+                document.getElementById('history-modal').classList.remove('active');
+            }
+
+            renderHistoryList() {
+                const listEl = document.getElementById('history-list');
+                const filter = document.getElementById('history-filter').value;
+
+                // フィルタリング
+                let items = [...this.state.history].reverse();
+                if (filter !== 'all') {
+                    items = items.filter(h => h.team === filter);
+                }
+
+                if (items.length === 0) {
+                    listEl.innerHTML = '<div class="history-empty">記録がありません</div>';
+                    return;
+                }
+
+                listEl.innerHTML = items.map((h, idx) => {
+                    const player = this.state.teams[h.team].players.find(p => p.id === h.playerId);
+                    const playerName = player ? player.name : '(削除済み)';
+                    const teamLabel = h.team === 'A' ? '味方' : '相手';
+                    const teamClass = h.team === 'A' ? 'team-A' : 'team-B';
+                    const statLabel = STAT_LABELS[h.statKey] || h.statKey.toUpperCase();
+                    const time = h.timestamp ? new Date(h.timestamp).toLocaleTimeString('ja-JP') : '--:--:--';
+                    const quarterLabel = h.recordMode === 'quarter' ? h.quarter : '';
+                    // 既存データ用のフォールバックID
+                    const historyId = h.id || `legacy-${this.state.history.length - 1 - idx}`;
+
+                    return `
+                        <div class="history-item ${teamClass}">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="text-xs text-gray-500">${time} ${quarterLabel}</div>
+                            </div>
+                            <div class="font-bold text-sm text-secondary mb-2">
+                                ${playerName} (${teamLabel}) - ${statLabel}
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="app.openEditHistoryModal('${historyId}')" class="text-xs px-3 py-1.5 border border-gray-300 rounded hover:bg-gray-100 transition">
+                                    修正
+                                </button>
+                                <button onclick="app.deleteHistoryItem('${historyId}')" class="text-xs px-3 py-1.5 border border-red-300 text-red-600 rounded hover:bg-red-50 transition">
+                                    削除
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            findHistoryIndex(historyId) {
+                // 新しいID形式
+                let idx = this.state.history.findIndex(h => h.id === historyId);
+                if (idx !== -1) return idx;
+
+                // 既存データ用のフォールバック (legacy-X形式)
+                if (historyId.startsWith('legacy-')) {
+                    const legacyIdx = parseInt(historyId.replace('legacy-', ''), 10);
+                    if (!isNaN(legacyIdx) && legacyIdx >= 0 && legacyIdx < this.state.history.length) {
+                        return legacyIdx;
+                    }
+                }
+                return -1;
+            }
+
+            deleteHistoryItem(historyId) {
+                const idx = this.findHistoryIndex(historyId);
+                if (idx === -1) return;
+
+                if (!confirm('この記録を削除しますか？')) return;
+
+                const item = this.state.history[idx];
+                const player = this.state.teams[item.team].players.find(p => p.id === item.playerId);
+
+                if (player) {
+                    // スタッツを減算
+                    if (item.recordMode === 'simple' || !item.recordMode) {
+                        player.stats[item.statKey] -= item.value;
+                        if (item.statKey === 'p2m') player.stats.p2a -= 1;
+                        if (item.statKey === 'p3m') player.stats.p3a -= 1;
+                        if (item.statKey === 'ftm') player.stats.fta -= 1;
+                    } else {
+                        const q = item.quarter;
+                        if (player.quarterStats[q]) {
+                            player.quarterStats[q][item.statKey] -= item.value;
+                            if (item.statKey === 'p2m') player.quarterStats[q].p2a -= 1;
+                            if (item.statKey === 'p3m') player.quarterStats[q].p3a -= 1;
+                            if (item.statKey === 'ftm') player.quarterStats[q].fta -= 1;
+                        }
+                    }
+                }
+
+                // 履歴から削除
+                this.state.history.splice(idx, 1);
+
+                this.render();
+                this.updateCharts();
+                this.saveToLocalStorage();
+                this.renderHistoryList();
+            }
+
+            openEditHistoryModal(historyId) {
+                const idx = this.findHistoryIndex(historyId);
+                if (idx === -1) return;
+
+                this.editingHistoryId = historyId;
+                const item = this.state.history[idx];
+                const players = this.state.teams[item.team].players;
+
+                const contentEl = document.getElementById('edit-history-content');
+                contentEl.innerHTML = `
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">選手</label>
+                            <select id="edit-player" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg">
+                                ${players.map(p => `
+                                    <option value="${p.id}" ${p.id === item.playerId ? 'selected' : ''}>${p.name}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1">スタッツ種別</label>
+                            <select id="edit-stat" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg">
+                                ${Object.entries(STAT_LABELS).map(([key, label]) => `
+                                    <option value="${key}" ${key === item.statKey ? 'selected' : ''}>${label}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('edit-history-modal').classList.add('active');
+            }
+
+            closeEditHistoryModal() {
+                document.getElementById('edit-history-modal').classList.remove('active');
+                this.editingHistoryId = null;
+            }
+
+            saveHistoryEdit() {
+                if (!this.editingHistoryId) return;
+
+                const idx = this.findHistoryIndex(this.editingHistoryId);
+                if (idx === -1) return;
+
+                const item = this.state.history[idx];
+                const newPlayerId = document.getElementById('edit-player').value;
+                const newStatKey = document.getElementById('edit-stat').value;
+
+                // 変更がない場合は何もしない
+                if (newPlayerId === item.playerId && newStatKey === item.statKey) {
+                    this.closeEditHistoryModal();
+                    return;
+                }
+
+                const oldPlayer = this.state.teams[item.team].players.find(p => p.id === item.playerId);
+                const newPlayer = this.state.teams[item.team].players.find(p => p.id === newPlayerId);
+
+                // 元のスタッツを減算
+                if (oldPlayer) {
+                    if (item.recordMode === 'simple' || !item.recordMode) {
+                        oldPlayer.stats[item.statKey] -= item.value;
+                        if (item.statKey === 'p2m') oldPlayer.stats.p2a -= 1;
+                        if (item.statKey === 'p3m') oldPlayer.stats.p3a -= 1;
+                        if (item.statKey === 'ftm') oldPlayer.stats.fta -= 1;
+                    } else {
+                        const q = item.quarter;
+                        if (oldPlayer.quarterStats[q]) {
+                            oldPlayer.quarterStats[q][item.statKey] -= item.value;
+                            if (item.statKey === 'p2m') oldPlayer.quarterStats[q].p2a -= 1;
+                            if (item.statKey === 'p3m') oldPlayer.quarterStats[q].p3a -= 1;
+                            if (item.statKey === 'ftm') oldPlayer.quarterStats[q].fta -= 1;
+                        }
+                    }
+                }
+
+                // 新しいスタッツを加算
+                if (newPlayer) {
+                    if (item.recordMode === 'simple' || !item.recordMode) {
+                        newPlayer.stats[newStatKey] += item.value;
+                        if (newStatKey === 'p2m') newPlayer.stats.p2a += 1;
+                        if (newStatKey === 'p3m') newPlayer.stats.p3a += 1;
+                        if (newStatKey === 'ftm') newPlayer.stats.fta += 1;
+                    } else {
+                        const q = item.quarter;
+                        if (!newPlayer.quarterStats[q]) {
+                            newPlayer.quarterStats[q] = this.createEmptyStats();
+                        }
+                        newPlayer.quarterStats[q][newStatKey] += item.value;
+                        if (newStatKey === 'p2m') newPlayer.quarterStats[q].p2a += 1;
+                        if (newStatKey === 'p3m') newPlayer.quarterStats[q].p3a += 1;
+                        if (newStatKey === 'ftm') newPlayer.quarterStats[q].fta += 1;
+                    }
+                }
+
+                // 履歴を更新
+                item.playerId = newPlayerId;
+                item.statKey = newStatKey;
+
+                this.closeEditHistoryModal();
+                this.render();
+                this.updateCharts();
+                this.saveToLocalStorage();
+                this.renderHistoryList();
             }
 
             calculatePTS(stats) {
