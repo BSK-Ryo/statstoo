@@ -1343,79 +1343,94 @@ Google AdSense 設定手順
         class SoundManager {
             constructor() {
                 this.audioContext = null;
-                this.initialized = false;
             }
 
             init() {
-                if (this.initialized) return;
-                try {
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    this.initialized = true;
-                } catch (e) {
-                    console.warn('Web Audio API not supported:', e);
+                if (!this.audioContext) {
+                    try {
+                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) {
+                        console.warn('Web Audio API not supported:', e);
+                        return;
+                    }
+                }
+                if (this.audioContext.state === 'suspended') {
+                    this.audioContext.resume();
                 }
             }
 
             playClickSound() {
-                if (!this.audioContext) return;
-                const oscillator = this.audioContext.createOscillator();
-                const gainNode = this.audioContext.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(this.audioContext.destination);
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
-                oscillator.start(this.audioContext.currentTime);
-                oscillator.stop(this.audioContext.currentTime + 0.1);
+                try {
+                    this.init();
+                    if (!this.audioContext) return;
+                    const oscillator = this.audioContext.createOscillator();
+                    const gainNode = this.audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    oscillator.frequency.value = 800;
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+                    oscillator.start(this.audioContext.currentTime);
+                    oscillator.stop(this.audioContext.currentTime + 0.1);
+                } catch (e) { /* 音が出なくても操作は止めない */ }
             }
 
             // 成功音: 高めの明るいトーン (得点成功時)
             playSuccessSound() {
-                if (!this.audioContext) return;
-                const ctx = this.audioContext;
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.15);
+                try {
+                    this.init();
+                    if (!this.audioContext) return;
+                    const ctx = this.audioContext;
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.15);
+                } catch (e) { /* 音が出なくても操作は止めない */ }
             }
 
             // ミス音: 低めの短いトーン (シュートミス、TO時)
             playMissSound() {
-                if (!this.audioContext) return;
-                const ctx = this.audioContext;
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.1);
+                try {
+                    this.init();
+                    if (!this.audioContext) return;
+                    const ctx = this.audioContext;
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    oscillator.frequency.setValueAtTime(330, ctx.currentTime); // E4
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.1);
+                } catch (e) { /* 音が出なくても操作は止めない */ }
             }
 
             // 通常音: 中間のトーン (リバウンド、アシスト等)
             playNeutralSound() {
-                if (!this.audioContext) return;
-                const ctx = this.audioContext;
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
-                oscillator.type = 'sine';
-                gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                oscillator.start(ctx.currentTime);
-                oscillator.stop(ctx.currentTime + 0.1);
+                try {
+                    this.init();
+                    if (!this.audioContext) return;
+                    const ctx = this.audioContext;
+                    const oscillator = ctx.createOscillator();
+                    const gainNode = ctx.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(ctx.destination);
+                    oscillator.frequency.setValueAtTime(523, ctx.currentTime); // C5
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.25, ctx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+                    oscillator.start(ctx.currentTime);
+                    oscillator.stop(ctx.currentTime + 0.1);
+                } catch (e) { /* 音が出なくても操作は止めない */ }
             }
         }
 
