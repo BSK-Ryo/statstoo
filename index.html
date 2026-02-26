@@ -3189,28 +3189,73 @@ Google AdSense 設定手順
                     });
                 });
 
-                const rows = [...aggMap.values()].map(agg => {
-                    const pts = agg.p2m * 2 + agg.p3m * 3 + agg.ftm;
-                    const reb = agg.orb + agg.drb;
-                    const fga = agg.p2a + agg.p3a;
-                    const fgm = agg.p2m + agg.p3m;
-                    const fgMiss = (agg.p2a - agg.p2m) + (agg.p3a - agg.p3m);
-                    const ftMiss = agg.fta - agg.ftm;
-                    const eff = pts + reb + agg.ast + agg.stl + agg.blk - fgMiss - ftMiss - agg.to;
-                    const gp = agg.gp;
-                    return {
-                        name: agg.displayName, gp, pts,
-                        ptsAvg: (pts / gp).toFixed(1),
-                        fgPct: fga > 0 ? (fgm / fga * 100).toFixed(1) + '%' : '-',
-                        p3Pct: agg.p3a > 0 ? (agg.p3m / agg.p3a * 100).toFixed(1) + '%' : '-',
-                        ftPct: agg.fta > 0 ? (agg.ftm / agg.fta * 100).toFixed(1) + '%' : '-',
-                        reb, rebAvg: (reb / gp).toFixed(1),
-                        ast: agg.ast, astAvg: (agg.ast / gp).toFixed(1),
-                        stl: agg.stl, blk: agg.blk,
-                        to: agg.to, pf: agg.pf,
-                        eff, effAvg: (eff / gp).toFixed(1)
-                    };
-                }).sort((a, b) => b.pts - a.pts);
+                // 集計データを配列化（BOX SCORE CSV と同じ縦=スタッツ/横=選手の形式で出力するため）
+                const players = [...aggMap.values()].sort((a, b) => {
+                    const ptsA = a.p2m * 2 + a.p3m * 3 + a.ftm;
+                    const ptsB = b.p2m * 2 + b.p3m * 3 + b.ftm;
+                    return ptsB - ptsA;
+                });
+
+                // BOX SCORE CSV と同じ addStatsSection パターン
+                const addStatsSection = (title, statRows) => {
+                    let section = `=== ${title} ===\n`;
+                    const headerRow = ["Stat Category", ...players.map(p => escapeCsv(p.displayName))];
+                    section += headerRow.join(",") + "\n";
+                    statRows.forEach(rowDef => {
+                        const rowData = [escapeCsv(rowDef.label)];
+                        players.forEach(p => { rowData.push(escapeCsv(rowDef.getter(p))); });
+                        section += rowData.join(",") + "\n";
+                    });
+                    return section + "\n";
+                };
+
+                // 合計スタッツ行の定義
+                const totalStatRows = [
+                    { label: "GP", getter: p => p.gp },
+                    { label: "合計得点", getter: p => p.p2m * 2 + p.p3m * 3 + p.ftm },
+                    { label: "2P 成功数", getter: p => p.p2m },
+                    { label: "2P 試投数", getter: p => p.p2a },
+                    { label: "2P %", getter: p => p.p2a ? (p.p2m / p.p2a * 100).toFixed(1) + "%" : "-" },
+                    { label: "3P 成功数", getter: p => p.p3m },
+                    { label: "3P 試投数", getter: p => p.p3a },
+                    { label: "3P %", getter: p => p.p3a ? (p.p3m / p.p3a * 100).toFixed(1) + "%" : "-" },
+                    { label: "FT 成功数", getter: p => p.ftm },
+                    { label: "FT 試投数", getter: p => p.fta },
+                    { label: "FT %", getter: p => p.fta ? (p.ftm / p.fta * 100).toFixed(1) + "%" : "-" },
+                    { label: "OR", getter: p => p.orb },
+                    { label: "DR", getter: p => p.drb },
+                    { label: "Total Rebound", getter: p => p.orb + p.drb },
+                    { label: "AST", getter: p => p.ast },
+                    { label: "Steal", getter: p => p.stl },
+                    { label: "Block", getter: p => p.blk },
+                    { label: "Turnover", getter: p => p.to },
+                    { label: "PF", getter: p => p.pf },
+                    { label: "EFF", getter: p => {
+                        const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
+                        const reb = p.orb + p.drb;
+                        const fgMiss = (p.p2a - p.p2m) + (p.p3a - p.p3m);
+                        const ftMiss = p.fta - p.ftm;
+                        return pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
+                    }}
+                ];
+
+                // 1試合平均行の定義
+                const avgStatRows = [
+                    { label: "PTS/G", getter: p => ((p.p2m * 2 + p.p3m * 3 + p.ftm) / p.gp).toFixed(1) },
+                    { label: "REB/G", getter: p => ((p.orb + p.drb) / p.gp).toFixed(1) },
+                    { label: "AST/G", getter: p => (p.ast / p.gp).toFixed(1) },
+                    { label: "STL/G", getter: p => (p.stl / p.gp).toFixed(1) },
+                    { label: "BLK/G", getter: p => (p.blk / p.gp).toFixed(1) },
+                    { label: "TO/G", getter: p => (p.to / p.gp).toFixed(1) },
+                    { label: "EFF/G", getter: p => {
+                        const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
+                        const reb = p.orb + p.drb;
+                        const fgMiss = (p.p2a - p.p2m) + (p.p3a - p.p3m);
+                        const ftMiss = p.fta - p.ftm;
+                        const eff = pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
+                        return (eff / p.gp).toFixed(1);
+                    }}
+                ];
 
                 let csv = '';
 
@@ -3228,17 +3273,11 @@ Google AdSense 設定手順
                 });
                 csv += '\n';
 
-                // 個人スタッツ集計
-                csv += `=== 個人スタッツ集計 ===\n`;
-                csv += `選手,GP,PTS,PTS/G,FG%,3P%,FT%,REB,REB/G,AST,AST/G,STL,BLK,TO,PF,EFF,EFF/G\n`;
-                rows.forEach(r => {
-                    csv += [
-                        escapeCsv(r.name), r.gp, r.pts, r.ptsAvg,
-                        r.fgPct, r.p3Pct, r.ftPct,
-                        r.reb, r.rebAvg, r.ast, r.astAvg,
-                        r.stl, r.blk, r.to, r.pf, r.eff, r.effAvg
-                    ].join(',') + '\n';
-                });
+                // 月間集計（合計）
+                csv += addStatsSection("月間集計（合計）", totalStatRows);
+
+                // 月間集計（1試合平均）
+                csv += addStatsSection("月間集計（1試合平均）", avgStatRows);
 
                 const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
                 const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8' });
