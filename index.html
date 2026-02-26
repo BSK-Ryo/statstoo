@@ -1806,8 +1806,8 @@ Google AdSense 設定手順
                     
                     // Calculate EFF
                     const reb = s.orb + s.drb;
-                    const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
-                    const ftMiss = s.fta - s.ftm;
+                    const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
+                    const ftMiss = Math.max(0, s.fta - s.ftm);
                     const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
                     const effColor = eff > 0 ? '#16a34a' : eff < 0 ? '#dc2626' : '#6b7280';
                     
@@ -3071,23 +3071,23 @@ Google AdSense 設定手順
                 const rows = [...aggMap.values()].map(agg => {
                     const pts = agg.p2m * 2 + agg.p3m * 3 + agg.ftm;
                     const reb = agg.orb + agg.drb;
-                    const fgMiss = (agg.p2a - agg.p2m) + (agg.p3a - agg.p3m);
-                    const ftMiss = agg.fta - agg.ftm;
+                    const fgMiss = Math.max(0, agg.p2a - agg.p2m) + Math.max(0, agg.p3a - agg.p3m);
+                    const ftMiss = Math.max(0, agg.fta - agg.ftm);
                     const eff    = pts + reb + agg.ast + agg.stl + agg.blk - fgMiss - ftMiss - agg.to;
                     const gp     = agg.gp;
                     return {
                         name:    agg.displayName,
                         gp,
-                        pts,     ptsAvg: pts  / gp,
+                        pts,     ptsAvg: gp > 0 ? pts  / gp : 0,
                         fgPct:   (agg.p2a + agg.p3a) > 0
                                     ? (agg.p2m + agg.p3m) / (agg.p2a + agg.p3a) * 100 : null,
                         p3Pct:   agg.p3a > 0 ? agg.p3m / agg.p3a * 100 : null,
                         ftPct:   agg.fta > 0 ? agg.ftm / agg.fta * 100 : null,
-                        reb,     rebAvg: reb  / gp,
-                        ast: agg.ast, astAvg: agg.ast / gp,
+                        reb,     rebAvg: gp > 0 ? reb  / gp : 0,
+                        ast: agg.ast, astAvg: gp > 0 ? agg.ast / gp : 0,
                         stl: agg.stl, blk: agg.blk,
                         to:  agg.to,  pf:  agg.pf,
-                        eff,     effAvg: eff  / gp
+                        eff,     effAvg: gp > 0 ? eff  / gp : 0
                     };
                 });
 
@@ -3248,25 +3248,26 @@ Google AdSense 設定手順
                     { label: "EFF", getter: p => {
                         const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
                         const reb = p.orb + p.drb;
-                        const fgMiss = (p.p2a - p.p2m) + (p.p3a - p.p3m);
-                        const ftMiss = p.fta - p.ftm;
+                        const fgMiss = Math.max(0, p.p2a - p.p2m) + Math.max(0, p.p3a - p.p3m);
+                        const ftMiss = Math.max(0, p.fta - p.ftm);
                         return pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
                     }}
                 ];
 
                 // 1試合平均行の定義
                 const avgStatRows = [
-                    { label: "PTS/G", getter: p => ((p.p2m * 2 + p.p3m * 3 + p.ftm) / p.gp).toFixed(1) },
-                    { label: "REB/G", getter: p => ((p.orb + p.drb) / p.gp).toFixed(1) },
-                    { label: "AST/G", getter: p => (p.ast / p.gp).toFixed(1) },
-                    { label: "STL/G", getter: p => (p.stl / p.gp).toFixed(1) },
-                    { label: "BLK/G", getter: p => (p.blk / p.gp).toFixed(1) },
-                    { label: "TO/G", getter: p => (p.to / p.gp).toFixed(1) },
+                    { label: "PTS/G", getter: p => p.gp > 0 ? ((p.p2m * 2 + p.p3m * 3 + p.ftm) / p.gp).toFixed(1) : "0.0" },
+                    { label: "REB/G", getter: p => p.gp > 0 ? ((p.orb + p.drb) / p.gp).toFixed(1) : "0.0" },
+                    { label: "AST/G", getter: p => p.gp > 0 ? (p.ast / p.gp).toFixed(1) : "0.0" },
+                    { label: "STL/G", getter: p => p.gp > 0 ? (p.stl / p.gp).toFixed(1) : "0.0" },
+                    { label: "BLK/G", getter: p => p.gp > 0 ? (p.blk / p.gp).toFixed(1) : "0.0" },
+                    { label: "TO/G", getter: p => p.gp > 0 ? (p.to / p.gp).toFixed(1) : "0.0" },
                     { label: "EFF/G", getter: p => {
+                        if (p.gp === 0) return "0.0";
                         const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
                         const reb = p.orb + p.drb;
-                        const fgMiss = (p.p2a - p.p2m) + (p.p3a - p.p3m);
-                        const ftMiss = p.fta - p.ftm;
+                        const fgMiss = Math.max(0, p.p2a - p.p2m) + Math.max(0, p.p3a - p.p3m);
+                        const ftMiss = Math.max(0, p.fta - p.ftm);
                         const eff = pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
                         return (eff / p.gp).toFixed(1);
                     }}
@@ -3448,8 +3449,8 @@ Google AdSense 設定手順
                     
                     // Calculate EFF: (PTS + REB + AST + STL + BLK) - (FGミス + FTミス + TO)
                     const reb = s.orb + s.drb;
-                    const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
-                    const ftMiss = s.fta - s.ftm;
+                    const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
+                    const ftMiss = Math.max(0, s.fta - s.ftm);
                     const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
                     const effClass = eff > 0 ? 'text-green-600' : eff < 0 ? 'text-red-500' : 'text-gray-500';
                     
@@ -3602,8 +3603,8 @@ Google AdSense 設定手順
                         const s = getStats(p);
                         const pts = this.calculatePTS(s);
                         const reb = s.orb + s.drb;
-                        const fgMiss = (s.p2a - s.p2m) + (s.p3a - s.p3m);
-                        const ftMiss = s.fta - s.ftm;
+                        const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
+                        const ftMiss = Math.max(0, s.fta - s.ftm);
                         return pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
                     }}
                 ];

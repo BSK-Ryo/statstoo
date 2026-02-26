@@ -1075,7 +1075,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             const date = document.getElementById('game-date').value;
             const time = document.getElementById('game-time').value;
             let preview = '';
-            if (date) { const [y, m, d] = date.split('-'); preview = `${parseInt(m)}/${parseInt(d)}`; }
+            if (date) { const [y, m, d] = date.split('-'); preview = `${parseInt(m, 10)}/${parseInt(d, 10)}`; }
             if (time) preview += (preview ? ' ' : '') + time;
             if (venue) preview += (preview ? ' ' : '') + venue;
             document.getElementById('game-info-preview').textContent = preview || '未設定';
@@ -1090,7 +1090,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             // 日付の表示
             if (date) {
                 const [y, m, d] = date.split('-');
-                document.getElementById('spot-info-date').textContent = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                document.getElementById('spot-info-date').textContent = `${y}/${parseInt(m, 10)}/${parseInt(d, 10)}`;
             } else {
                 document.getElementById('spot-info-date').textContent = '-';
             }
@@ -1221,7 +1221,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             sortedHistory.forEach(entry => {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
                 const [y, m, d] = dateStr.split('-');
-                const displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                const displayDate = `${y}/${parseInt(m, 10)}/${parseInt(d, 10)}`;
                 const venueStr = entry.venue || '-';
                 const timeStr = entry.time || '-';
                 
@@ -1354,8 +1354,8 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
         
         applyDirectInput() {
             if (!this.selectedSpot) return;
-            const madeInput = parseInt(document.getElementById('input-made').value) || 0;
-            const totalInput = parseInt(document.getElementById('input-total').value) || 0;
+            const madeInput = parseInt(document.getElementById('input-made').value, 10) || 0;
+            const totalInput = parseInt(document.getElementById('input-total').value, 10) || 0;
             
             if (madeInput < 0 || totalInput < 0) {
                 this.showToast('0以上の値を入力してください');
@@ -1450,7 +1450,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             if (entry) {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
                 const [y, m, d] = dateStr.split('-');
-                document.getElementById('delete-history-text').textContent = `${parseInt(m)}/${parseInt(d)} の記録を削除しますか？`;
+                document.getElementById('delete-history-text').textContent = `${parseInt(m, 10)}/${parseInt(d, 10)} の記録を削除しますか？`;
             }
             document.getElementById('delete-history-modal').classList.add('active');
         }
@@ -1546,7 +1546,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             sortedHistory.slice(0, 20).forEach((entry, idx) => {
                 const dateStr = entry.date || entry.createdAt.slice(0, 10);
                 const [y, m, d] = dateStr.split('-');
-                const displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                const displayDate = `${y}/${parseInt(m, 10)}/${parseInt(d, 10)}`;
                 const venue = entry.venue || '-';
                 const time = entry.time || '-';
                 
@@ -1710,7 +1710,7 @@ description: 3Pシュートのスポット別成功率を記録・分析。個�
             let displayDate = '-';
             if (date) {
                 const [y, m, d] = date.split('-');
-                displayDate = `${y}/${parseInt(m)}/${parseInt(d)}`;
+                displayDate = `${y}/${parseInt(m, 10)}/${parseInt(d, 10)}`;
             }
             
             // Build HTML for export
