@@ -4,6 +4,11 @@ description: バスケットボールのスタッツ記録・分析ツール。�
 url: "https://statstoo.com"
 baseurl: ""
 
+# SEO settings
+image: /ogp.png
+twitter:
+  card: summary_large_image
+
 # Build settings
 markdown: kramdown
 permalink: pretty
