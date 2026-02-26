@@ -190,6 +190,37 @@ Google AdSense 設定手順
             overflow: auto;
         }
 
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+        .toast-notification.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Saved Game Item */
+        .saved-game-item {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 10px 12px;
+            border-left: 3px solid #EA580C;
+        }
+
         /* Loading spinner */
         .spinner {
             width: 40px;
@@ -294,6 +325,9 @@ Google AdSense 設定手順
                 <div class="flex gap-2">
                     <button id="btn-edit-mode" onclick="app.toggleEditMode()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
                         <span>✎ メンバー編集</span>
+                    </button>
+                    <button onclick="app.openSaveGameModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
+                        💾 保存
                     </button>
                     <button onclick="app.resetGame()" class="text-xs bg-white/10 hover:bg-red-500 text-white/80 hover:text-white px-3 py-1.5 rounded transition font-medium">
                         リセット
@@ -560,6 +594,71 @@ Google AdSense 設定手順
                 (adsbygoogle = window.adsbygoogle || []).push({});
             </script>
         </div>
+
+        <!-- Monthly Stats Section -->
+        <section id="monthly-stats-section" class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                    <span class="text-lg">📅</span>
+                    <span class="font-display text-lg tracking-wide">MONTHLY STATS</span>
+                    <span class="text-xs font-normal text-gray-400 ml-2">- 月間スタッツ -</span>
+                </h2>
+                <select id="monthly-month-select"
+                        onchange="app.renderMonthlyStats()"
+                        class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                    <option value="">保存済みゲームなし</option>
+                </select>
+            </div>
+
+            <!-- Saved Games List -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide">保存済みゲーム</h3>
+                    <button onclick="app.deleteAllGames()"
+                            class="text-xs text-red-400 hover:text-red-600 transition">全件削除</button>
+                </div>
+                <div id="saved-games-list" class="space-y-2 max-h-48 overflow-y-auto">
+                    <p class="text-xs text-gray-400 text-center py-3">なし</p>
+                </div>
+            </div>
+
+            <!-- Aggregation Table -->
+            <div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                    個人スタッツ集計（<span id="monthly-team-name">味方チーム</span>）
+                </h3>
+                <div class="overflow-x-auto border border-gray-100 rounded-lg">
+                    <table id="monthly-stats-table" class="w-full text-xs" style="min-width: 800px;">
+                        <thead class="bg-secondary text-white sticky top-0 z-10">
+                            <tr>
+                                <th class="p-2 text-left sticky left-0 bg-secondary z-20 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('name')">Player</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('gp')">GP</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('pts')">PTS</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('ptsAvg')">PTS/G</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('fgPct')">FG%</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('p3Pct')">3P%</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('ftPct')">FT%</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('reb')">REB</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('rebAvg')">REB/G</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('ast')">AST</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('astAvg')">AST/G</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('stl')">STL</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('blk')">BLK</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('to')">TO</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('pf')">PF</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('eff')">EFF</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('effAvg')">EFF/G</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthly-stats-body">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="monthly-stats-empty" class="text-center text-gray-400 text-sm py-6">
+                    この月の保存済みゲームはありません
+                </p>
+            </div>
+        </section>
 
         <!-- Stats Glossary Section -->
         <section class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
@@ -1066,6 +1165,28 @@ Google AdSense 設定手順
         </div>
     </div>
 
+    <!-- Save Game Confirmation Modal -->
+    <div id="save-game-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-sm">
+            <h3 class="font-bold text-lg text-secondary mb-3 flex items-center gap-2">
+                💾 ゲームを保存
+            </h3>
+            <div id="save-game-preview" class="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
+            </div>
+            <p class="text-xs text-gray-500 mb-4">保存すると月間スタッツ集計で参照できます。</p>
+            <div class="flex gap-2">
+                <button onclick="app.closeSaveGameModal()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition">
+                    キャンセル
+                </button>
+                <button onclick="app.confirmSaveGame()"
+                        class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition">
+                    保存する
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- History Modal -->
     <div id="history-modal" class="modal-overlay">
         <div class="modal-content p-4 w-full max-w-md">
@@ -1118,6 +1239,9 @@ Google AdSense 設定手順
             </div>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast-notification">ゲームを保存しました</div>
 
     <!-- Controller Panel -->
     <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40 overflow-hidden">
@@ -1502,6 +1626,7 @@ Google AdSense 設定手順
                 this.initCharts();
                 this.updateCharts(); // 初期チャートデータを描画
                 this.updateQuarterUI(); // クォーターUI初期化
+                this.refreshMonthlySectionUI(); // 月間スタッツ初期化
             }
 
             // =============================
@@ -2705,12 +2830,333 @@ Google AdSense 設定手順
                 this.saveToLocalStorage();
             }
 
+            // =============================
+            // 💾 ゲーム履歴（月間スタッツ用）
+            // =============================
+
+            loadGameHistory() {
+                try {
+                    const raw = localStorage.getItem('statstoo_game_history');
+                    return raw ? JSON.parse(raw) : [];
+                } catch (e) {
+                    console.warn('ゲーム履歴の読み込みに失敗:', e);
+                    return [];
+                }
+            }
+
+            saveGameHistory(history) {
+                try {
+                    localStorage.setItem('statstoo_game_history', JSON.stringify(history));
+                } catch (e) {
+                    alert('ストレージの容量が不足しています。古いゲームを削除してから再試行してください。');
+                    console.warn('ゲーム履歴の保存に失敗:', e);
+                }
+            }
+
+            openSaveGameModal() {
+                const event = document.getElementById('game-event').value;
+                const date  = document.getElementById('game-date').value;
+                const time  = document.getElementById('game-time').value;
+                const scoreA = this.calculateTeamScore('A');
+                const scoreB = this.calculateTeamScore('B');
+                const teamA  = this.state.teams.A.name;
+                const teamB  = this.state.teams.B.name;
+
+                const preview = document.getElementById('save-game-preview');
+                preview.innerHTML = `
+                    <div class="font-bold text-secondary mb-1">${this.escapeHtml(teamA)} ${scoreA} — ${scoreB} ${this.escapeHtml(teamB)}</div>
+                    <div class="text-gray-500">${this.escapeHtml(date)} ${this.escapeHtml(time)}</div>
+                    ${event ? `<div class="text-gray-500">${this.escapeHtml(event)}</div>` : ''}
+                `;
+                document.getElementById('save-game-modal').classList.add('active');
+            }
+
+            closeSaveGameModal() {
+                document.getElementById('save-game-modal').classList.remove('active');
+            }
+
+            confirmSaveGame() {
+                this._doSaveGame();
+                this.closeSaveGameModal();
+                this.showToast('ゲームを保存しました');
+                this.refreshMonthlySectionUI();
+            }
+
+            _doSaveGame() {
+                const event  = document.getElementById('game-event').value;
+                const date   = document.getElementById('game-date').value;
+                const time   = document.getElementById('game-time').value;
+                const scoreA = this.calculateTeamScore('A');
+                const scoreB = this.calculateTeamScore('B');
+
+                const snapPlayers = (teamKey) =>
+                    this.state.teams[teamKey].players.map(p => ({
+                        name:  p.name,
+                        stats: this.getTotalStats(p)
+                    }));
+
+                const entry = {
+                    id:      `game-${Date.now()}`,
+                    savedAt: new Date().toISOString(),
+                    gameInfo: { event, date, time },
+                    teams: {
+                        A: { name: this.state.teams.A.name, score: scoreA, players: snapPlayers('A') },
+                        B: { name: this.state.teams.B.name, score: scoreB, players: snapPlayers('B') }
+                    }
+                };
+
+                const history = this.loadGameHistory();
+                history.unshift(entry);
+                this.saveGameHistory(history);
+            }
+
+            escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            showToast(message) {
+                const el = document.getElementById('toast-notification');
+                el.textContent = message;
+                el.classList.add('show');
+                clearTimeout(this._toastTimer);
+                this._toastTimer = setTimeout(() => {
+                    el.classList.remove('show');
+                }, 2500);
+            }
+
+            // =============================
+            // 📅 月間スタッツ
+            // =============================
+
+            refreshMonthlySectionUI() {
+                this.updateMonthSelector();
+                this.renderMonthlyStats();
+            }
+
+            updateMonthSelector() {
+                const history = this.loadGameHistory();
+                const months  = [...new Set(
+                    history
+                        .map(g => g.gameInfo.date ? g.gameInfo.date.slice(0, 7) : null)
+                        .filter(Boolean)
+                )].sort().reverse();
+
+                const sel = document.getElementById('monthly-month-select');
+                const current = sel.value;
+
+                if (months.length === 0) {
+                    sel.innerHTML = '<option value="">保存済みゲームなし</option>';
+                    return;
+                }
+
+                sel.innerHTML = months.map(m => {
+                    const [y, mo] = m.split('-');
+                    return `<option value="${m}" ${m === current ? 'selected' : ''}>${y}年${parseInt(mo)}月</option>`;
+                }).join('');
+
+                // 初回: 最新月を選択
+                if (!current || !months.includes(current)) {
+                    sel.value = months[0];
+                }
+            }
+
+            renderSavedGamesList(games) {
+                const container = document.getElementById('saved-games-list');
+                if (games.length === 0) {
+                    container.innerHTML = '<p class="text-xs text-gray-400 text-center py-3">なし</p>';
+                    return;
+                }
+                container.innerHTML = games.map(g => {
+                    const label  = g.gameInfo.event || '試合';
+                    const date   = g.gameInfo.date  || '---';
+                    return `
+                        <div class="saved-game-item">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="text-xs font-bold text-secondary">
+                                        ${this.escapeHtml(g.teams.A.name)} ${g.teams.A.score} — ${g.teams.B.score} ${this.escapeHtml(g.teams.B.name)}
+                                    </div>
+                                    <div class="text-[10px] text-gray-400">${this.escapeHtml(date)} ${this.escapeHtml(label)}</div>
+                                </div>
+                                <button onclick="app.deleteSavedGame('${g.id}')"
+                                        class="text-xs text-red-400 hover:text-red-600 px-2 py-1 border border-red-200 rounded transition">
+                                    削除
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderMonthlyStats() {
+                const sel     = document.getElementById('monthly-month-select');
+                const month   = sel.value;
+                const history = this.loadGameHistory();
+
+                const games = month
+                    ? history.filter(g => g.gameInfo.date && g.gameInfo.date.startsWith(month))
+                    : [];
+
+                this.renderSavedGamesList(games);
+
+                // チーム名表示を更新
+                if (games.length > 0) {
+                    document.getElementById('monthly-team-name').textContent = games[0].teams.A.name;
+                }
+
+                const tbody = document.getElementById('monthly-stats-body');
+                const emptyEl = document.getElementById('monthly-stats-empty');
+                const tableEl = document.getElementById('monthly-stats-table');
+
+                if (games.length === 0) {
+                    tbody.innerHTML = '';
+                    emptyEl.style.display = '';
+                    tableEl.style.display = 'none';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+                tableEl.style.display = '';
+
+                // 選手名で集計
+                const aggMap = new Map();
+
+                games.forEach(game => {
+                    game.teams.A.players.forEach(player => {
+                        const key = player.name.trim().toLowerCase();
+                        if (!aggMap.has(key)) {
+                            aggMap.set(key, {
+                                displayName: player.name,
+                                gp: 0,
+                                p2m: 0, p2a: 0, p3m: 0, p3a: 0,
+                                ftm: 0, fta: 0,
+                                orb: 0, drb: 0,
+                                ast: 0, stl: 0, blk: 0, to: 0, pf: 0
+                            });
+                        }
+                        const agg = aggMap.get(key);
+                        agg.displayName = player.name;
+                        agg.gp++;
+                        const s = player.stats;
+                        ['p2m','p2a','p3m','p3a','ftm','fta','orb','drb','ast','stl','blk','to','pf']
+                            .forEach(k => { agg[k] += (s[k] || 0); });
+                    });
+                });
+
+                // 派生値を計算
+                const rows = [...aggMap.values()].map(agg => {
+                    const pts = agg.p2m * 2 + agg.p3m * 3 + agg.ftm;
+                    const reb = agg.orb + agg.drb;
+                    const fgMiss = (agg.p2a - agg.p2m) + (agg.p3a - agg.p3m);
+                    const ftMiss = agg.fta - agg.ftm;
+                    const eff    = pts + reb + agg.ast + agg.stl + agg.blk - fgMiss - ftMiss - agg.to;
+                    const gp     = agg.gp;
+                    return {
+                        name:    agg.displayName,
+                        gp,
+                        pts,     ptsAvg: pts  / gp,
+                        fgPct:   (agg.p2a + agg.p3a) > 0
+                                    ? (agg.p2m + agg.p3m) / (agg.p2a + agg.p3a) * 100 : null,
+                        p3Pct:   agg.p3a > 0 ? agg.p3m / agg.p3a * 100 : null,
+                        ftPct:   agg.fta > 0 ? agg.ftm / agg.fta * 100 : null,
+                        reb,     rebAvg: reb  / gp,
+                        ast: agg.ast, astAvg: agg.ast / gp,
+                        stl: agg.stl, blk: agg.blk,
+                        to:  agg.to,  pf:  agg.pf,
+                        eff,     effAvg: eff  / gp
+                    };
+                });
+
+                // ソート
+                const key = this._monthlySortKey || 'pts';
+                const asc = this._monthlySortAsc || false;
+                if (key === 'name') {
+                    rows.sort((a, b) => asc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+                } else {
+                    rows.sort((a, b) => {
+                        const av = a[key] ?? -Infinity;
+                        const bv = b[key] ?? -Infinity;
+                        return asc ? av - bv : bv - av;
+                    });
+                }
+
+                // テーブル描画
+                const fmt1 = v => v !== null && v !== undefined ? v.toFixed(1) : '-';
+                const fmtPct = v => v !== null && v !== undefined ? v.toFixed(1) + '%' : '-';
+                const fmtInt = v => v !== null && v !== undefined ? Math.round(v) : '-';
+
+                tbody.innerHTML = rows.map((r, idx) => {
+                    const bg     = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                    const effCls = r.eff > 0 ? 'text-green-600' : r.eff < 0 ? 'text-red-500' : 'text-gray-500';
+                    return `
+                        <tr class="${bg}">
+                            <td class="p-2 font-bold text-xs sticky left-0 ${bg} border-r border-gray-100 z-10 text-indigo-600 whitespace-nowrap">
+                                ${this.escapeHtml(r.name)}
+                            </td>
+                            <td class="p-2 text-center text-gray-500">${r.gp}</td>
+                            <td class="p-2 text-center font-bold text-secondary">${fmtInt(r.pts)}</td>
+                            <td class="p-2 text-center text-gray-400">${fmt1(r.ptsAvg)}</td>
+                            <td class="p-2 text-center font-mono">${fmtPct(r.fgPct)}</td>
+                            <td class="p-2 text-center font-mono">${fmtPct(r.p3Pct)}</td>
+                            <td class="p-2 text-center font-mono">${fmtPct(r.ftPct)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.reb)}</td>
+                            <td class="p-2 text-center text-gray-400">${fmt1(r.rebAvg)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.ast)}</td>
+                            <td class="p-2 text-center text-gray-400">${fmt1(r.astAvg)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.stl)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.blk)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.to)}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.pf)}</td>
+                            <td class="p-2 text-center font-bold ${effCls}">${r.eff >= 0 ? '+' : ''}${fmtInt(r.eff)}</td>
+                            <td class="p-2 text-center text-gray-400">${fmt1(r.effAvg)}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            sortMonthlyStats(key) {
+                if (this._monthlySortKey === key) {
+                    this._monthlySortAsc = !this._monthlySortAsc;
+                } else {
+                    this._monthlySortKey = key;
+                    this._monthlySortAsc = false;
+                }
+                this.renderMonthlyStats();
+            }
+
+            deleteSavedGame(gameId) {
+                if (!confirm('このゲームを削除しますか？')) return;
+                let history = this.loadGameHistory();
+                history = history.filter(g => g.id !== gameId);
+                this.saveGameHistory(history);
+                this.refreshMonthlySectionUI();
+            }
+
+            deleteAllGames() {
+                if (!confirm('保存済みゲームをすべて削除しますか？この操作は元に戻せません。')) return;
+                this.saveGameHistory([]);
+                this.refreshMonthlySectionUI();
+            }
+
             resetGame() {
                 console.log('resetGame called');
                 if (!confirm('スタッツをリセットしますか？')) {
                     console.log('Reset cancelled');
                     return;
                 }
+
+                // スタッツデータがある場合のみ保存を提案
+                const hasData = this.state.teams.A.players.some(p => {
+                    const s = this.getTotalStats(p);
+                    return Object.values(s).some(v => v > 0);
+                });
+                if (hasData && confirm('現在のゲームを履歴に保存しますか？')) {
+                    this._doSaveGame();
+                    this.showToast('ゲームを保存しました');
+                    this.refreshMonthlySectionUI();
+                }
+
                 console.log('Resetting...');
                 this.state.teams.A.players = this.createDefaultPlayers('A');
                 this.state.teams.B.players = this.createDefaultPlayers('B');
