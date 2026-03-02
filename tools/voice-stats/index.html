@@ -1,0 +1,1497 @@
+---
+layout: default
+title: 音声スタッツ記録 - 声で試合スタッツを記録
+description: 「田中 スリー」と声に出すだけでバスケットボールのスタッツを記録。Web Speech APIを活用した音声入力対応のスタッツ記録ツールです。
+---
+
+<style>
+    body {
+        font-family: 'Noto Sans JP', sans-serif;
+        background-color: #faf8f5;
+        color: #1e293b;
+    }
+
+    /* セットアップ画面 */
+    .setup-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    .player-row-edit {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        background: white;
+        margin-bottom: 0.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    .player-row-edit input {
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.875rem;
+        outline: none;
+    }
+    .player-row-edit input:focus {
+        border-color: #EA580C;
+        box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
+    }
+
+    /* 記録画面 */
+    .recording-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0.5rem;
+    }
+
+    /* 音声コントロールバー */
+    .voice-bar {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 1rem;
+        padding: 1rem;
+        color: white;
+        margin-bottom: 0.75rem;
+        position: relative;
+        overflow: hidden;
+    }
+    .voice-bar.listening::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 2px solid #22c55e;
+        border-radius: 1rem;
+        animation: pulse-border 2s ease-in-out infinite;
+    }
+    @keyframes pulse-border {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 1; }
+    }
+
+    .mic-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    .mic-btn.off {
+        background: #64748b;
+        color: white;
+    }
+    .mic-btn.on {
+        background: #22c55e;
+        color: white;
+        animation: mic-pulse 1.5s ease-in-out infinite;
+    }
+    .mic-btn.unsupported {
+        background: #ef4444;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    @keyframes mic-pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+        50% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+    }
+
+    /* 認識結果表示 */
+    .transcript-display {
+        min-height: 2.5rem;
+        display: flex;
+        align-items: center;
+    }
+    .transcript-interim {
+        color: rgba(255,255,255,0.5);
+        font-style: italic;
+    }
+    .transcript-final {
+        color: white;
+        font-weight: 600;
+    }
+
+    /* トースト */
+    .toast-container {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        width: 90%;
+        max-width: 420px;
+        pointer-events: none;
+    }
+    .toast {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 1.7s forwards;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        pointer-events: auto;
+    }
+    .toast.success { background: linear-gradient(135deg, #16a34a, #22c55e); }
+    .toast.miss { background: linear-gradient(135deg, #64748b, #94a3b8); }
+    .toast.neutral { background: linear-gradient(135deg, #EA580C, #f97316); }
+    .toast.error { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .toast .toast-sub {
+        font-size: 0.75rem;
+        font-weight: 400;
+        opacity: 0.85;
+        margin-top: 0.125rem;
+    }
+    @keyframes toast-in {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toast-out {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+
+    /* スコアボード */
+    .scoreboard {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        margin-bottom: 0.75rem;
+    }
+    .score-team {
+        text-align: center;
+        flex: 1;
+    }
+    .score-team .team-name {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+    .score-team .score-value {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 2.5rem;
+        line-height: 1;
+        color: #1e293b;
+    }
+    .score-vs {
+        font-family: 'Bebas Neue', cursive;
+        font-size: 1.25rem;
+        color: #94a3b8;
+    }
+
+    /* アクションログ */
+    .action-log {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .log-entry {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.375rem 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.8125rem;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry .log-time {
+        color: #94a3b8;
+        font-size: 0.6875rem;
+        min-width: 3rem;
+    }
+    .log-entry .log-source {
+        font-size: 0.625rem;
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+        margin-right: 0.5rem;
+    }
+    .log-source.voice { background: #dcfce7; color: #16a34a; }
+    .log-source.manual { background: #e0e7ff; color: #4f46e5; }
+    .log-entry .log-text {
+        flex: 1;
+        font-weight: 500;
+    }
+    .log-entry .log-undo {
+        color: #ef4444;
+        font-size: 0.6875rem;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        border: none;
+        background: #fef2f2;
+    }
+    .log-entry .log-undo:hover { background: #fee2e2; }
+
+    /* 手動入力パネル */
+    .manual-panel {
+        background: white;
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .manual-panel-header {
+        padding: 0.625rem 0.75rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fafc;
+        border-bottom: 1px solid #e5e7eb;
+        user-select: none;
+    }
+    .manual-panel-body {
+        padding: 0.75rem;
+        display: none;
+    }
+    .manual-panel-body.open { display: block; }
+
+    .player-select-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.375rem;
+        margin-bottom: 0.75rem;
+    }
+    .player-chip {
+        padding: 0.375rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.15s;
+    }
+    .player-chip.team-a {
+        background: #eef2ff;
+        color: #4338ca;
+    }
+    .player-chip.team-a.selected {
+        background: #4338ca;
+        color: white;
+        border-color: #4338ca;
+    }
+    .player-chip.team-b {
+        background: #fff1f2;
+        color: #be123c;
+    }
+    .player-chip.team-b.selected {
+        background: #be123c;
+        color: white;
+        border-color: #be123c;
+    }
+
+    /* スタッツボタン */
+    .stat-btn {
+        font-weight: 700;
+        border-radius: 0.5rem;
+        transition: all 0.1s;
+        border: none;
+        cursor: pointer;
+    }
+    .stat-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* ボックススコア */
+    .boxscore-container {
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+    }
+    .boxscore-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.6875rem;
+        overflow-x: auto;
+        display: block;
+    }
+    .boxscore-table thead {
+        background: #1e293b;
+        color: white;
+        position: sticky;
+        top: 0;
+    }
+    .boxscore-table th,
+    .boxscore-table td {
+        padding: 0.375rem 0.5rem;
+        text-align: center;
+        white-space: nowrap;
+    }
+    .boxscore-table th:first-child,
+    .boxscore-table td:first-child {
+        text-align: left;
+        position: sticky;
+        left: 0;
+        z-index: 1;
+    }
+    .boxscore-table thead th:first-child {
+        z-index: 2;
+    }
+    .boxscore-table td:first-child {
+        background: white;
+        font-weight: 600;
+    }
+    .boxscore-table tbody tr:nth-child(even) td:first-child {
+        background: #f9fafb;
+    }
+    .boxscore-table tbody tr:nth-child(even) {
+        background: #f9fafb;
+    }
+    .boxscore-table .team-total {
+        background: #f1f5f9 !important;
+        font-weight: 700;
+    }
+    .boxscore-table .team-total td:first-child {
+        background: #f1f5f9 !important;
+    }
+
+    /* ブラウザ非対応メッセージ */
+    .unsupported-msg {
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+        color: #92400e;
+        margin-bottom: 0.75rem;
+    }
+
+    /* セクション見出し */
+    .section-label {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.375rem;
+    }
+
+    /* ボタン共通 */
+    .btn-primary {
+        background: #EA580C;
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 100%;
+    }
+    .btn-primary:hover { background: #c2410c; }
+    .btn-secondary {
+        background: white;
+        color: #1e293b;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: #f8fafc; border-color: #9ca3af; }
+
+    /* Footer actions */
+    .footer-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+    .footer-actions button {
+        flex: 1;
+        min-width: 120px;
+    }
+</style>
+
+<!-- トースト表示エリア -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ============================= -->
+<!-- セットアップ画面 -->
+<!-- ============================= -->
+<div id="setup-screen" class="setup-container">
+    <div class="text-center mb-6 pt-4">
+        <h1 class="font-display text-3xl tracking-wide text-secondary mb-1">VOICE <span class="text-primary">STATS</span></h1>
+        <p class="text-sm text-gray-500">音声でバスケのスタッツを記録</p>
+    </div>
+
+    <!-- ロスター読み込み -->
+    <div id="roster-load-area" class="hidden mb-4">
+        <button onclick="app.loadRoster()" class="w-full py-2.5 px-4 border-2 border-dashed border-primary/40 rounded-xl text-sm font-semibold text-primary hover:bg-primary/5 transition">
+            前回のロスターを読み込む
+        </button>
+    </div>
+
+    <!-- チームA -->
+    <div class="mb-6">
+        <div class="flex items-center gap-2 mb-3">
+            <div class="w-3 h-3 rounded-full bg-indigo-500"></div>
+            <input type="text" id="setup-teamA-name" value="味方チーム" class="text-sm font-bold border-b border-gray-300 focus:border-primary outline-none px-1 py-0.5 bg-transparent" placeholder="チーム名">
+        </div>
+        <div id="setup-teamA-players"></div>
+        <button onclick="app.addSetupPlayer('A')" class="mt-1 text-xs font-semibold text-primary hover:text-primary-dark transition px-2 py-1">+ 選手を追加</button>
+    </div>
+
+    <!-- チームB -->
+    <div class="mb-6">
+        <div class="flex items-center gap-2 mb-3">
+            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+            <input type="text" id="setup-teamB-name" value="相手チーム" class="text-sm font-bold border-b border-gray-300 focus:border-primary outline-none px-1 py-0.5 bg-transparent" placeholder="チーム名">
+        </div>
+        <div id="setup-teamB-players"></div>
+        <button onclick="app.addSetupPlayer('B')" class="mt-1 text-xs font-semibold text-primary hover:text-primary-dark transition px-2 py-1">+ 選手を追加</button>
+    </div>
+
+    <!-- ゲーム開始ボタン -->
+    <button onclick="app.startGame()" class="btn-primary mb-4">ゲームを開始する</button>
+    <p class="text-center text-xs text-gray-400">Chrome / Edge / Safari 対応（Firefox 非対応）</p>
+</div>
+
+<!-- ============================= -->
+<!-- 記録画面 -->
+<!-- ============================= -->
+<div id="recording-screen" class="recording-container hidden">
+
+    <!-- スコアボード -->
+    <div class="scoreboard">
+        <div class="score-team">
+            <div class="team-name" id="rec-teamA-name">味方チーム</div>
+            <div class="score-value" id="rec-scoreA">0</div>
+        </div>
+        <div class="score-vs">VS</div>
+        <div class="score-team">
+            <div class="team-name" id="rec-teamB-name">相手チーム</div>
+            <div class="score-value" id="rec-scoreB">0</div>
+        </div>
+    </div>
+
+    <!-- 音声コントロールバー -->
+    <div class="voice-bar" id="voice-bar">
+        <div class="flex items-center gap-3">
+            <button class="mic-btn off" id="mic-btn" onclick="app.toggleMic()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+            </button>
+            <div class="flex-1 min-w-0">
+                <div class="text-xs font-semibold mb-0.5" id="voice-status">マイク OFF</div>
+                <div class="transcript-display" id="transcript-display">
+                    <span class="text-xs text-white/40">マイクをONにして話しかけてください</span>
+                </div>
+                <div class="text-xs text-white/40 mt-0.5" id="sticky-player-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ブラウザ非対応メッセージ -->
+    <div class="unsupported-msg hidden" id="unsupported-msg">
+        お使いのブラウザは音声認識に対応していません。<br>
+        <strong>Google Chrome</strong> をご利用ください。<br>
+        下の手動入力パネルでスタッツを記録できます。
+    </div>
+
+    <!-- アクションログ -->
+    <div class="section-label">記録ログ</div>
+    <div class="action-log" id="action-log">
+        <div class="text-center text-xs text-gray-400 py-4">記録はまだありません</div>
+    </div>
+
+    <!-- 手動入力パネル -->
+    <div class="manual-panel">
+        <div class="manual-panel-header" onclick="app.toggleManualPanel()">
+            <span class="text-sm font-bold text-gray-700">手動入力</span>
+            <svg class="w-4 h-4 text-gray-400 transition-transform" id="manual-panel-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+        <div class="manual-panel-body" id="manual-panel-body">
+            <!-- 選手選択 -->
+            <div class="section-label">選手を選択</div>
+            <div class="player-select-grid" id="player-chips"></div>
+
+            <!-- スタッツボタン -->
+            <div id="stat-buttons-area">
+                <!-- 得点 -->
+                <div class="grid grid-cols-3 gap-2 mb-2">
+                    <button onclick="app.manualStat('p2m')" class="stat-btn bg-blue-500 hover:bg-blue-600 text-white py-3 text-sm shadow-md">2P成功 +2</button>
+                    <button onclick="app.manualStat('p3m')" class="stat-btn bg-purple-500 hover:bg-purple-600 text-white py-3 text-sm shadow-md">3P成功 +3</button>
+                    <button onclick="app.manualStat('ftm')" class="stat-btn bg-teal-500 hover:bg-teal-600 text-white py-3 text-sm shadow-md">FT成功 +1</button>
+                </div>
+                <!-- ミス -->
+                <div class="grid grid-cols-3 gap-2 mb-2">
+                    <button onclick="app.manualStat('p2a')" class="stat-btn bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 text-xs">2P ミス</button>
+                    <button onclick="app.manualStat('p3a')" class="stat-btn bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 text-xs">3P ミス</button>
+                    <button onclick="app.manualStat('fta')" class="stat-btn bg-gray-100 hover:bg-gray-200 text-gray-600 py-2 text-xs">FT ミス</button>
+                </div>
+                <!-- その他 -->
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <button onclick="app.manualStat('orb')" class="stat-btn bg-primary/10 hover:bg-primary/20 text-primary-dark py-2 text-xs">OR</button>
+                    <button onclick="app.manualStat('drb')" class="stat-btn bg-amber-100 hover:bg-amber-200 text-amber-700 py-2 text-xs">DR</button>
+                    <button onclick="app.manualStat('ast')" class="stat-btn bg-green-100 hover:bg-green-200 text-green-700 py-2 text-xs">AST</button>
+                    <button onclick="app.manualStat('pf')" class="stat-btn bg-rose-100 hover:bg-rose-200 text-rose-700 py-2 text-xs">PF</button>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="app.manualStat('stl')" class="stat-btn bg-cyan-100 hover:bg-cyan-200 text-cyan-700 py-2 text-xs">STL</button>
+                    <button onclick="app.manualStat('blk')" class="stat-btn bg-indigo-100 hover:bg-indigo-200 text-indigo-700 py-2 text-xs">BLK</button>
+                    <button onclick="app.manualStat('to')" class="stat-btn bg-red-100 hover:bg-red-200 text-red-700 py-2 text-xs">TO</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ボックススコア -->
+    <div class="section-label">ボックススコア</div>
+    <div class="boxscore-container">
+        <div style="overflow-x:auto;" id="boxscore-wrapper"></div>
+    </div>
+
+    <!-- アクションボタン -->
+    <div class="footer-actions">
+        <button onclick="app.exportCSV()" class="btn-secondary">CSV出力</button>
+        <button onclick="app.backToSetup()" class="btn-secondary">セットアップに戻る</button>
+        <button onclick="app.resetGame()" class="btn-secondary text-red-500 border-red-200 hover:bg-red-50">リセット</button>
+    </div>
+</div>
+
+<script>
+// =============================
+// 効果音
+// =============================
+class SoundManager {
+    constructor() { this.audioContext = null; }
+
+    init() {
+        if (!this.audioContext) {
+            try { this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); }
+            catch (e) { return; }
+        }
+        if (this.audioContext.state === 'suspended') this.audioContext.resume();
+    }
+
+    _tone(freq, dur, vol) {
+        try {
+            this.init();
+            if (!this.audioContext) return;
+            const ctx = this.audioContext;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(vol, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + dur);
+        } catch (e) {}
+    }
+
+    playSuccess() { this._tone(880, 0.15, 0.3); }
+    playMiss() { this._tone(330, 0.1, 0.2); }
+    playNeutral() { this._tone(523, 0.1, 0.25); }
+    playClick() { this._tone(800, 0.1, 0.1); }
+
+    playVoiceConfirm() {
+        try {
+            this.init();
+            if (!this.audioContext) return;
+            const ctx = this.audioContext;
+            [600, 900].forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                const t = ctx.currentTime + i * 0.08;
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.01, t + 0.06);
+                osc.start(t);
+                osc.stop(t + 0.06);
+            });
+        } catch (e) {}
+    }
+}
+
+// =============================
+// スタッツラベル・カテゴリ
+// =============================
+const STAT_LABELS = {
+    p2m: '2P成功', p2a: '2Pミス', p3m: '3P成功', p3a: '3Pミス',
+    ftm: 'FT成功', fta: 'FTミス', orb: 'OR', drb: 'DR',
+    ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF'
+};
+
+const STAT_POINTS = { p2m: 2, p3m: 3, ftm: 1 };
+
+// =============================
+// 音声コマンドキーワード
+// =============================
+const ACTION_KEYWORDS = [
+    // 2P成功（長いキーワードを先に）
+    { keys: ['2ポイント成功', 'ツーポイント成功', '2点成功'], stat: 'p2m' },
+    // 2Pミス
+    { keys: ['2ポイントミス', 'ツーポイントミス', '2ポイント外れ', '2点ミス'], stat: 'p2a' },
+    // 3P成功
+    { keys: ['3ポイント成功', 'スリーポイント成功', 'スリー成功'], stat: 'p3m' },
+    // 3Pミス
+    { keys: ['3ポイントミス', 'スリーポイントミス', 'スリーミス', '3ポイント外れ'], stat: 'p3a' },
+    // FT成功
+    { keys: ['フリースロー成功'], stat: 'ftm' },
+    // FTミス
+    { keys: ['フリースローミス'], stat: 'fta' },
+    // オフェンスリバウンド
+    { keys: ['オフェンスリバウンド', 'オフェンスリバ'], stat: 'orb' },
+    // ディフェンスリバウンド
+    { keys: ['ディフェンスリバウンド', 'ディフェンスリバ'], stat: 'drb' },
+    // アシスト
+    { keys: ['アシスト'], stat: 'ast' },
+    // スティール
+    { keys: ['スティール', 'スチール'], stat: 'stl' },
+    // ブロック (ブロックショットも)
+    { keys: ['ブロックショット', 'ブロック'], stat: 'blk' },
+    // ターンオーバー
+    { keys: ['ターンオーバー'], stat: 'to' },
+    // ファウル
+    { keys: ['パーソナルファウル', 'ファウル', 'ファール'], stat: 'pf' },
+    // 短縮キーワード（最後に判定）
+    { keys: ['ツーポイント', '2ポイント', '2点'], stat: 'p2m' },
+    { keys: ['スリーポイント', 'スリー', '3ポイント'], stat: 'p3m' },
+    { keys: ['フリースロー'], stat: 'ftm' },
+];
+
+// 全キーワードを長さ順にソートして生成
+const SORTED_KEYWORDS = ACTION_KEYWORDS.flatMap(a =>
+    a.keys.map(k => ({ key: k, stat: a.stat }))
+).sort((a, b) => b.key.length - a.key.length);
+
+// 取消コマンド
+const UNDO_KEYWORDS = ['取り消し', '元に戻す', '取消', '戻す'];
+
+// 背番号の日本語読みマップ
+const NUMBER_WORDS = {
+    'いちばん': 1, 'いち': 1,
+    'にばん': 2, 'に': 2,
+    'さんばん': 3, 'さん': 3,
+    'よんばん': 4, 'よん': 4,
+    'ごばん': 5, 'ご': 5,
+    'ろくばん': 6, 'ろく': 6,
+    'ななばん': 7, 'なな': 7, 'しちばん': 7,
+    'はちばん': 8, 'はち': 8,
+    'きゅうばん': 9, 'きゅう': 9, 'く': 9,
+    'じゅうばん': 10, 'じゅう': 10,
+    'じゅういちばん': 11, 'じゅういち': 11,
+    'じゅうにばん': 12, 'じゅうに': 12,
+    'じゅうさんばん': 13, 'じゅうさん': 13,
+    'じゅうよんばん': 14, 'じゅうよん': 14,
+    'じゅうごばん': 15, 'じゅうご': 15,
+};
+
+// =============================
+// カタカナ→ひらがな変換
+// =============================
+function katakanaToHiragana(str) {
+    return str.replace(/[\u30A1-\u30F6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60));
+}
+
+function normalize(str) {
+    // 全角数字→半角、カタカナ→ひらがな、小文字化
+    return katakanaToHiragana(
+        str.replace(/[０-９]/g, m => String.fromCharCode(m.charCodeAt(0) - 0xFEE0))
+    ).toLowerCase().trim();
+}
+
+// =============================
+// メインアプリ
+// =============================
+class VoiceStatsApp {
+    constructor() {
+        this.sound = new SoundManager();
+        this.recognition = null;
+        this.isListening = false;
+        this.wakeLock = null;
+        this.stickyPlayer = null; // 直前に認識した選手
+
+        // セットアップ状態
+        this.setupPlayers = {
+            A: [{ name: '', number: '' }],
+            B: [{ name: '', number: '' }]
+        };
+
+        // ゲーム状態
+        this.state = {
+            phase: 'setup',
+            teams: {
+                A: { name: '味方チーム', players: [] },
+                B: { name: '相手チーム', players: [] }
+            },
+            history: [],
+            selectedPlayerId: null
+        };
+
+        this.initSetup();
+    }
+
+    // ===== セットアップ =====
+
+    initSetup() {
+        // 保存済みロスターがあるか確認
+        const saved = localStorage.getItem('statstoo_voice_roster');
+        if (saved) {
+            document.getElementById('roster-load-area').classList.remove('hidden');
+        }
+
+        // 保存済みゲームがあるか確認
+        const gameData = localStorage.getItem('statstoo_voice_game_data');
+        if (gameData) {
+            try {
+                const data = JSON.parse(gameData);
+                if (data.teams && data.history && data.history.length > 0) {
+                    if (confirm('前回の記録データがあります。続きから再開しますか？')) {
+                        this.state = { phase: 'recording', ...data };
+                        this.showRecordingScreen();
+                        return;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        this.renderSetupPlayers('A');
+        this.renderSetupPlayers('B');
+    }
+
+    loadRoster() {
+        try {
+            const data = JSON.parse(localStorage.getItem('statstoo_voice_roster'));
+            if (data) {
+                this.setupPlayers = data.players;
+                document.getElementById('setup-teamA-name').value = data.teamNames.A;
+                document.getElementById('setup-teamB-name').value = data.teamNames.B;
+                this.renderSetupPlayers('A');
+                this.renderSetupPlayers('B');
+            }
+        } catch (e) {}
+    }
+
+    renderSetupPlayers(team) {
+        const container = document.getElementById(`setup-team${team}-players`);
+        const players = this.setupPlayers[team];
+        container.innerHTML = players.map((p, i) => `
+            <div class="player-row-edit">
+                <input type="text" value="${this.escapeHtml(p.name)}" placeholder="名前"
+                    style="flex:1;" oninput="app.updateSetupPlayer('${team}',${i},'name',this.value)">
+                <input type="text" value="${this.escapeHtml(String(p.number || ''))}" placeholder="#"
+                    style="width:3rem;text-align:center;" oninput="app.updateSetupPlayer('${team}',${i},'number',this.value)">
+                <button onclick="app.removeSetupPlayer('${team}',${i})" class="text-red-400 hover:text-red-600 text-lg px-1" title="削除">&times;</button>
+            </div>
+        `).join('');
+    }
+
+    updateSetupPlayer(team, index, field, value) {
+        this.setupPlayers[team][index][field] = value;
+    }
+
+    addSetupPlayer(team) {
+        this.setupPlayers[team].push({ name: '', number: '' });
+        this.renderSetupPlayers(team);
+    }
+
+    removeSetupPlayer(team, index) {
+        if (this.setupPlayers[team].length <= 1) return;
+        this.setupPlayers[team].splice(index, 1);
+        this.renderSetupPlayers(team);
+    }
+
+    startGame() {
+        // バリデーション: 最低1人は名前を入力
+        const hasA = this.setupPlayers.A.some(p => p.name.trim());
+        const hasB = this.setupPlayers.B.some(p => p.name.trim());
+        if (!hasA && !hasB) {
+            alert('少なくとも1チームに選手を登録してください。');
+            return;
+        }
+
+        const teamAName = document.getElementById('setup-teamA-name').value || '味方チーム';
+        const teamBName = document.getElementById('setup-teamB-name').value || '相手チーム';
+
+        const createPlayers = (team, list) =>
+            list.filter(p => p.name.trim()).map((p, i) => ({
+                id: `${team}-${Date.now()}-${i}`,
+                name: p.name.trim(),
+                number: p.number ? parseInt(p.number) || null : null,
+                team,
+                stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 }
+            }));
+
+        this.state = {
+            phase: 'recording',
+            teams: {
+                A: { name: teamAName, players: createPlayers('A', this.setupPlayers.A) },
+                B: { name: teamBName, players: createPlayers('B', this.setupPlayers.B) }
+            },
+            history: [],
+            selectedPlayerId: null
+        };
+
+        // ロスター保存
+        localStorage.setItem('statstoo_voice_roster', JSON.stringify({
+            teamNames: { A: teamAName, B: teamBName },
+            players: this.setupPlayers
+        }));
+
+        this.showRecordingScreen();
+    }
+
+    showRecordingScreen() {
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('recording-screen').classList.remove('hidden');
+
+        document.getElementById('rec-teamA-name').textContent = this.state.teams.A.name;
+        document.getElementById('rec-teamB-name').textContent = this.state.teams.B.name;
+
+        this.initVoiceRecognition();
+        this.renderAll();
+    }
+
+    backToSetup() {
+        if (this.state.history.length > 0) {
+            if (!confirm('セットアップ画面に戻ると現在の記録は保持されます。戻りますか？')) return;
+        }
+        this.stopListening();
+        document.getElementById('recording-screen').classList.add('hidden');
+        document.getElementById('setup-screen').classList.remove('hidden');
+    }
+
+    // ===== 音声認識 =====
+
+    initVoiceRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            document.getElementById('unsupported-msg').classList.remove('hidden');
+            document.getElementById('mic-btn').classList.add('unsupported');
+            document.getElementById('voice-status').textContent = '音声認識非対応';
+            // 手動パネルを自動展開
+            document.getElementById('manual-panel-body').classList.add('open');
+            document.getElementById('manual-panel-arrow').style.transform = 'rotate(180deg)';
+            return;
+        }
+
+        this.recognition = new SpeechRecognition();
+        this.recognition.lang = 'ja-JP';
+        this.recognition.continuous = true;
+        this.recognition.interimResults = true;
+        this.recognition.maxAlternatives = 3;
+
+        this.recognition.onresult = (event) => this.handleVoiceResult(event);
+        this.recognition.onerror = (event) => this.handleVoiceError(event);
+        this.recognition.onend = () => {
+            // 自動再起動（ユーザーが停止していなければ）
+            if (this.isListening) {
+                setTimeout(() => {
+                    if (this.isListening) {
+                        try { this.recognition.start(); }
+                        catch (e) {}
+                    }
+                }, 300);
+            }
+        };
+    }
+
+    toggleMic() {
+        if (!this.recognition) return;
+        if (this.isListening) {
+            this.stopListening();
+        } else {
+            this.startListening();
+        }
+    }
+
+    startListening() {
+        if (!this.recognition) return;
+        this.isListening = true;
+        try { this.recognition.start(); } catch (e) {}
+
+        const btn = document.getElementById('mic-btn');
+        btn.classList.remove('off');
+        btn.classList.add('on');
+        document.getElementById('voice-bar').classList.add('listening');
+        document.getElementById('voice-status').textContent = '認識中...';
+        document.getElementById('transcript-display').innerHTML =
+            '<span class="text-xs text-white/40">話しかけてください...</span>';
+
+        this.acquireWakeLock();
+        this.sound.init(); // AudioContext を起動
+    }
+
+    stopListening() {
+        this.isListening = false;
+        try { this.recognition?.stop(); } catch (e) {}
+
+        const btn = document.getElementById('mic-btn');
+        btn.classList.remove('on');
+        btn.classList.add('off');
+        document.getElementById('voice-bar').classList.remove('listening');
+        document.getElementById('voice-status').textContent = 'マイク OFF';
+
+        this.releaseWakeLock();
+    }
+
+    handleVoiceResult(event) {
+        let interim = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            if (result.isFinal) {
+                // 全候補を試す
+                for (let j = 0; j < result.length; j++) {
+                    const transcript = result[j].transcript.trim();
+                    if (transcript) {
+                        const parsed = this.parseCommand(transcript);
+                        if (parsed) {
+                            finalTranscript = transcript;
+                            this.executeCommand(parsed, transcript);
+                            break;
+                        }
+                    }
+                }
+                // どの候補もパースできなかった場合
+                if (!finalTranscript) {
+                    finalTranscript = result[0].transcript.trim();
+                    if (finalTranscript) {
+                        this.showTranscript(finalTranscript, false);
+                    }
+                }
+            } else {
+                interim = result[0].transcript;
+            }
+        }
+
+        if (interim) {
+            document.getElementById('transcript-display').innerHTML =
+                `<span class="transcript-interim text-sm">${this.escapeHtml(interim)}</span>`;
+        }
+    }
+
+    handleVoiceError(event) {
+        if (event.error === 'no-speech' || event.error === 'aborted') return;
+        if (event.error === 'not-allowed') {
+            this.stopListening();
+            document.getElementById('voice-status').textContent = 'マイク許可が必要です';
+        }
+    }
+
+    showTranscript(text, matched) {
+        const el = document.getElementById('transcript-display');
+        if (matched) {
+            el.innerHTML = `<span class="transcript-final text-sm">${this.escapeHtml(text)}</span>`;
+        } else {
+            el.innerHTML = `<span class="text-sm text-white/60">${this.escapeHtml(text)} <span class="text-red-300 text-xs">(?)</span></span>`;
+        }
+    }
+
+    // ===== コマンド解析 =====
+
+    parseCommand(transcript) {
+        const normalized = normalize(transcript);
+
+        // 取消コマンドチェック
+        for (const keyword of UNDO_KEYWORDS) {
+            if (normalized.includes(normalize(keyword))) {
+                return { type: 'undo' };
+            }
+        }
+
+        // アクションを先に探す（長いキーワードから）
+        let matchedStat = null;
+        let matchedKeyword = '';
+        for (const { key, stat } of SORTED_KEYWORDS) {
+            const nKey = normalize(key);
+            if (normalized.includes(nKey)) {
+                matchedStat = stat;
+                matchedKeyword = nKey;
+                break;
+            }
+        }
+
+        if (!matchedStat) return null;
+
+        // アクション部分を取り除いて選手名部分を抽出
+        const playerPart = normalized.replace(matchedKeyword, '').trim();
+
+        // 選手を検索
+        let player = null;
+        if (playerPart) {
+            player = this.findPlayer(playerPart);
+        }
+
+        // 選手が見つからない場合、スティッキープレイヤーを使用
+        if (!player && this.stickyPlayer) {
+            player = this.stickyPlayer;
+        }
+
+        if (!player) return null;
+
+        return { type: 'stat', player, stat: matchedStat };
+    }
+
+    findPlayer(text) {
+        const allPlayers = [
+            ...this.state.teams.A.players,
+            ...this.state.teams.B.players
+        ];
+
+        const normalized_text = normalize(text);
+
+        // 1. 背番号マッチ（「7番」「7」形式）
+        const numMatch = normalized_text.match(/(\d+)\s*番?/);
+        if (numMatch) {
+            const num = parseInt(numMatch[1]);
+            const byNumber = allPlayers.find(p => p.number === num);
+            if (byNumber) return byNumber;
+        }
+
+        // 2. 日本語読みの背番号（「ななばん」等）
+        for (const [word, num] of Object.entries(NUMBER_WORDS)) {
+            if (normalized_text.includes(word)) {
+                const byNumber = allPlayers.find(p => p.number === num);
+                if (byNumber) return byNumber;
+            }
+        }
+
+        // 3. 完全一致
+        const exact = allPlayers.find(p => normalize(p.name) === normalized_text);
+        if (exact) return exact;
+
+        // 4. 部分一致（選手名がテキストに含まれる or テキストが選手名に含まれる）
+        // 長い名前からマッチさせる
+        const byPartial = allPlayers
+            .filter(p => {
+                const pName = normalize(p.name);
+                return pName.length >= 2 && (normalized_text.includes(pName) || pName.includes(normalized_text));
+            })
+            .sort((a, b) => normalize(b.name).length - normalize(a.name).length);
+        if (byPartial.length > 0) return byPartial[0];
+
+        return null;
+    }
+
+    executeCommand(cmd, transcript) {
+        if (cmd.type === 'undo') {
+            this.undoLastAction();
+            this.sound.playVoiceConfirm();
+            this.showTranscript(transcript, true);
+            this.showToast('取り消しました', '', 'neutral');
+            return;
+        }
+
+        if (cmd.type === 'stat') {
+            this.stickyPlayer = cmd.player;
+            this.updateStickyDisplay();
+            this.addStat(cmd.player, cmd.stat, 'voice');
+            this.sound.playVoiceConfirm();
+            this.showTranscript(transcript, true);
+        }
+    }
+
+    updateStickyDisplay() {
+        const el = document.getElementById('sticky-player-display');
+        if (this.stickyPlayer) {
+            const numStr = this.stickyPlayer.number ? ` #${this.stickyPlayer.number}` : '';
+            el.textContent = `次の対象: ${this.stickyPlayer.name}${numStr}（名前省略OK）`;
+        } else {
+            el.textContent = '';
+        }
+    }
+
+    // ===== スタッツ記録 =====
+
+    addStat(player, statKey, source) {
+        // 効果音
+        if (['p2m', 'p3m', 'ftm'].includes(statKey)) {
+            this.sound.playSuccess();
+        } else if (['p2a', 'p3a', 'fta', 'to'].includes(statKey)) {
+            this.sound.playMiss();
+        } else {
+            this.sound.playNeutral();
+        }
+
+        // スタッツ更新
+        player.stats[statKey] += 1;
+        if (statKey === 'p2m') player.stats.p2a += 1;
+        if (statKey === 'p3m') player.stats.p3a += 1;
+        if (statKey === 'ftm') player.stats.fta += 1;
+
+        // 履歴
+        this.state.history.push({
+            id: `h-${Date.now()}-${this.state.history.length}`,
+            timestamp: Date.now(),
+            team: player.team,
+            playerId: player.id,
+            playerName: player.name,
+            playerNumber: player.number,
+            statKey,
+            value: 1,
+            source
+        });
+
+        // トースト表示
+        const pts = STAT_POINTS[statKey];
+        const ptsStr = pts ? ` +${pts}` : '';
+        const numStr = player.number ? ` (#${player.number})` : '';
+        const toastType = ['p2m', 'p3m', 'ftm'].includes(statKey) ? 'success'
+            : ['p2a', 'p3a', 'fta', 'to'].includes(statKey) ? 'miss' : 'neutral';
+        this.showToast(
+            `${player.name}${numStr} → ${STAT_LABELS[statKey]}${ptsStr}`,
+            source === 'voice' ? '音声入力' : '手動入力',
+            toastType
+        );
+
+        this.renderAll();
+        this.saveGame();
+    }
+
+    undoLastAction() {
+        if (this.state.history.length === 0) return;
+        const last = this.state.history.pop();
+        const player = this.state.teams[last.team].players.find(p => p.id === last.playerId);
+        if (!player) return;
+
+        player.stats[last.statKey] -= last.value;
+        if (last.statKey === 'p2m') player.stats.p2a -= 1;
+        if (last.statKey === 'p3m') player.stats.p3a -= 1;
+        if (last.statKey === 'ftm') player.stats.fta -= 1;
+
+        this.renderAll();
+        this.saveGame();
+    }
+
+    // ===== 手動入力 =====
+
+    toggleManualPanel() {
+        const body = document.getElementById('manual-panel-body');
+        const arrow = document.getElementById('manual-panel-arrow');
+        body.classList.toggle('open');
+        arrow.style.transform = body.classList.contains('open') ? 'rotate(180deg)' : '';
+    }
+
+    selectManualPlayer(playerId) {
+        this.state.selectedPlayerId = playerId;
+        this.renderPlayerChips();
+    }
+
+    manualStat(statKey) {
+        if (!this.state.selectedPlayerId) {
+            this.showToast('先に選手を選択してください', '', 'error');
+            return;
+        }
+        const allPlayers = [...this.state.teams.A.players, ...this.state.teams.B.players];
+        const player = allPlayers.find(p => p.id === this.state.selectedPlayerId);
+        if (!player) return;
+
+        this.stickyPlayer = player;
+        this.updateStickyDisplay();
+        this.addStat(player, statKey, 'manual');
+        this.sound.playClick();
+    }
+
+    // ===== レンダリング =====
+
+    renderAll() {
+        this.renderScoreboard();
+        this.renderActionLog();
+        this.renderPlayerChips();
+        this.renderBoxScore();
+    }
+
+    renderScoreboard() {
+        document.getElementById('rec-scoreA').textContent = this.calcTeamScore('A');
+        document.getElementById('rec-scoreB').textContent = this.calcTeamScore('B');
+    }
+
+    calcTeamScore(team) {
+        return this.state.teams[team].players.reduce((sum, p) => {
+            return sum + (p.stats.p2m * 2) + (p.stats.p3m * 3) + (p.stats.ftm * 1);
+        }, 0);
+    }
+
+    calcPTS(stats) {
+        return (stats.p2m * 2) + (stats.p3m * 3) + (stats.ftm * 1);
+    }
+
+    renderActionLog() {
+        const el = document.getElementById('action-log');
+        if (this.state.history.length === 0) {
+            el.innerHTML = '<div class="text-center text-xs text-gray-400 py-4">記録はまだありません</div>';
+            return;
+        }
+
+        // 直近10件を逆順で表示
+        const recent = this.state.history.slice(-10).reverse();
+        el.innerHTML = recent.map(h => {
+            const time = new Date(h.timestamp);
+            const timeStr = `${time.getHours()}:${String(time.getMinutes()).padStart(2, '0')}`;
+            const pts = STAT_POINTS[h.statKey];
+            const ptsStr = pts ? ` +${pts}` : '';
+            const numStr = h.playerNumber ? ` #${h.playerNumber}` : '';
+            return `
+                <div class="log-entry">
+                    <span class="log-time">${timeStr}</span>
+                    <span class="log-source ${h.source}">${h.source === 'voice' ? '音声' : '手動'}</span>
+                    <span class="log-text">${this.escapeHtml(h.playerName)}${numStr} ${STAT_LABELS[h.statKey]}${ptsStr}</span>
+                    <button class="log-undo" onclick="app.undoSpecific('${h.id}')">取消</button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    undoSpecific(historyId) {
+        const idx = this.state.history.findIndex(h => h.id === historyId);
+        if (idx === -1) return;
+        const h = this.state.history[idx];
+        const player = this.state.teams[h.team].players.find(p => p.id === h.playerId);
+        if (!player) return;
+
+        player.stats[h.statKey] -= h.value;
+        if (h.statKey === 'p2m') player.stats.p2a -= 1;
+        if (h.statKey === 'p3m') player.stats.p3a -= 1;
+        if (h.statKey === 'ftm') player.stats.fta -= 1;
+
+        this.state.history.splice(idx, 1);
+        this.renderAll();
+        this.saveGame();
+    }
+
+    renderPlayerChips() {
+        const el = document.getElementById('player-chips');
+        if (!el) return;
+        const html = ['A', 'B'].map(team => {
+            return this.state.teams[team].players.map(p => {
+                const selected = this.state.selectedPlayerId === p.id ? 'selected' : '';
+                const cls = team === 'A' ? 'team-a' : 'team-b';
+                const numStr = p.number ? ` #${p.number}` : '';
+                return `<button class="player-chip ${cls} ${selected}" onclick="app.selectManualPlayer('${p.id}')">${this.escapeHtml(p.name)}${numStr}</button>`;
+            }).join('');
+        }).join('');
+        el.innerHTML = html;
+    }
+
+    renderBoxScore() {
+        const wrapper = document.getElementById('boxscore-wrapper');
+        if (!wrapper) return;
+
+        const headers = ['選手', 'PTS', 'FG', 'FG%', '2P', '2P%', '3P', '3P%', 'FT', 'FT%', 'OR', 'DR', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'EFF'];
+
+        let html = '<table class="boxscore-table"><thead><tr>';
+        headers.forEach(h => { html += `<th>${h}</th>`; });
+        html += '</tr></thead><tbody>';
+
+        ['A', 'B'].forEach(team => {
+            const teamData = this.state.teams[team];
+            if (teamData.players.length === 0) return;
+
+            // チーム名ヘッダー
+            html += `<tr><td colspan="${headers.length}" style="background:#f1f5f9;font-weight:700;font-size:0.75rem;color:#475569;padding:0.5rem;">${this.escapeHtml(teamData.name)}</td></tr>`;
+
+            const teamTotals = { p2m:0, p2a:0, p3m:0, p3a:0, ftm:0, fta:0, orb:0, drb:0, ast:0, stl:0, blk:0, to:0, pf:0 };
+
+            teamData.players.forEach(p => {
+                const s = p.stats;
+                Object.keys(teamTotals).forEach(k => { teamTotals[k] += s[k]; });
+
+                const pts = this.calcPTS(s);
+                const fgm = s.p2m + s.p3m;
+                const fga = s.p2a + s.p3a;
+                const fgPct = fga > 0 ? (fgm / fga * 100).toFixed(1) : '-';
+                const p2Pct = s.p2a > 0 ? (s.p2m / s.p2a * 100).toFixed(1) : '-';
+                const p3Pct = s.p3a > 0 ? (s.p3m / s.p3a * 100).toFixed(1) : '-';
+                const ftPct = s.fta > 0 ? (s.ftm / s.fta * 100).toFixed(1) : '-';
+                const reb = s.orb + s.drb;
+                const eff = pts + reb + s.ast + s.stl + s.blk - Math.max(0, fga - fgm) - Math.max(0, s.fta - s.ftm) - s.to;
+                const numStr = p.number ? ` #${p.number}` : '';
+
+                html += `<tr>`;
+                html += `<td>${this.escapeHtml(p.name)}${numStr}</td>`;
+                html += `<td><strong>${pts}</strong></td>`;
+                html += `<td>${fgm}/${fga}</td><td>${fgPct}</td>`;
+                html += `<td>${s.p2m}/${s.p2a}</td><td>${p2Pct}</td>`;
+                html += `<td>${s.p3m}/${s.p3a}</td><td>${p3Pct}</td>`;
+                html += `<td>${s.ftm}/${s.fta}</td><td>${ftPct}</td>`;
+                html += `<td>${s.orb}</td><td>${s.drb}</td><td>${reb}</td>`;
+                html += `<td>${s.ast}</td><td>${s.stl}</td><td>${s.blk}</td><td>${s.to}</td><td>${s.pf}</td>`;
+                html += `<td>${eff}</td>`;
+                html += `</tr>`;
+            });
+
+            // チーム合計行
+            const t = teamTotals;
+            const tPts = this.calcPTS(t);
+            const tFgm = t.p2m + t.p3m;
+            const tFga = t.p2a + t.p3a;
+            const tFgPct = tFga > 0 ? (tFgm / tFga * 100).toFixed(1) : '-';
+            const tP2Pct = t.p2a > 0 ? (t.p2m / t.p2a * 100).toFixed(1) : '-';
+            const tP3Pct = t.p3a > 0 ? (t.p3m / t.p3a * 100).toFixed(1) : '-';
+            const tFtPct = t.fta > 0 ? (t.ftm / t.fta * 100).toFixed(1) : '-';
+            const tReb = t.orb + t.drb;
+            const tEff = tPts + tReb + t.ast + t.stl + t.blk - Math.max(0, tFga - tFgm) - Math.max(0, t.fta - t.ftm) - t.to;
+
+            html += `<tr class="team-total">`;
+            html += `<td>TOTAL</td>`;
+            html += `<td><strong>${tPts}</strong></td>`;
+            html += `<td>${tFgm}/${tFga}</td><td>${tFgPct}</td>`;
+            html += `<td>${t.p2m}/${t.p2a}</td><td>${tP2Pct}</td>`;
+            html += `<td>${t.p3m}/${t.p3a}</td><td>${tP3Pct}</td>`;
+            html += `<td>${t.ftm}/${t.fta}</td><td>${tFtPct}</td>`;
+            html += `<td>${t.orb}</td><td>${t.drb}</td><td>${tReb}</td>`;
+            html += `<td>${t.ast}</td><td>${t.stl}</td><td>${t.blk}</td><td>${t.to}</td><td>${t.pf}</td>`;
+            html += `<td>${tEff}</td>`;
+            html += `</tr>`;
+        });
+
+        html += '</tbody></table>';
+        wrapper.innerHTML = html;
+    }
+
+    // ===== トースト =====
+
+    showToast(message, sub, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.innerHTML = `<div>${this.escapeHtml(message)}</div>${sub ? `<div class="toast-sub">${this.escapeHtml(sub)}</div>` : ''}`;
+        container.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 2200);
+    }
+
+    // ===== Wake Lock =====
+
+    async acquireWakeLock() {
+        if ('wakeLock' in navigator) {
+            try { this.wakeLock = await navigator.wakeLock.request('screen'); }
+            catch (e) {}
+        }
+    }
+
+    releaseWakeLock() {
+        if (this.wakeLock) {
+            this.wakeLock.release();
+            this.wakeLock = null;
+        }
+    }
+
+    // ===== データ永続化 =====
+
+    saveGame() {
+        try {
+            localStorage.setItem('statstoo_voice_game_data', JSON.stringify({
+                teams: this.state.teams,
+                history: this.state.history,
+                selectedPlayerId: this.state.selectedPlayerId,
+                savedAt: new Date().toISOString()
+            }));
+        } catch (e) {}
+    }
+
+    resetGame() {
+        if (!confirm('すべてのデータをリセットしますか？この操作は元に戻せません。')) return;
+        localStorage.removeItem('statstoo_voice_game_data');
+        this.stopListening();
+        this.state.history = [];
+        this.state.selectedPlayerId = null;
+        this.stickyPlayer = null;
+        // スタッツをリセット
+        ['A', 'B'].forEach(team => {
+            this.state.teams[team].players.forEach(p => {
+                p.stats = { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
+            });
+        });
+        this.renderAll();
+        document.getElementById('sticky-player-display').textContent = '';
+    }
+
+    // ===== CSV エクスポート =====
+
+    exportCSV() {
+        const allPlayers = [
+            ...this.state.teams.A.players.map(p => ({ ...p, tName: this.state.teams.A.name })),
+            ...this.state.teams.B.players.map(p => ({ ...p, tName: this.state.teams.B.name }))
+        ];
+
+        const esc = (val) => {
+            const str = String(val);
+            return (str.includes(',') || str.includes('\n') || str.includes('"'))
+                ? `"${str.replace(/"/g, '""')}"` : str;
+        };
+
+        let csv = '=== 試合情報 ===\n';
+        csv += `${this.state.teams.A.name},${this.calcTeamScore('A')}\n`;
+        csv += `${this.state.teams.B.name},${this.calcTeamScore('B')}\n\n`;
+
+        csv += '=== スタッツ ===\n';
+        const header = ['チーム', '選手', '#', 'PTS', '2PM', '2PA', '2P%', '3PM', '3PA', '3P%', 'FTM', 'FTA', 'FT%', 'OR', 'DR', 'REB', 'AST', 'STL', 'BLK', 'TO', 'PF', 'EFF'];
+        csv += header.join(',') + '\n';
+
+        allPlayers.forEach(p => {
+            const s = p.stats;
+            const pts = this.calcPTS(s);
+            const fgm = s.p2m + s.p3m;
+            const fga = s.p2a + s.p3a;
+            const p2Pct = s.p2a > 0 ? (s.p2m / s.p2a * 100).toFixed(1) + '%' : '-';
+            const p3Pct = s.p3a > 0 ? (s.p3m / s.p3a * 100).toFixed(1) + '%' : '-';
+            const ftPct = s.fta > 0 ? (s.ftm / s.fta * 100).toFixed(1) + '%' : '-';
+            const reb = s.orb + s.drb;
+            const eff = pts + reb + s.ast + s.stl + s.blk - Math.max(0, fga - fgm) - Math.max(0, s.fta - s.ftm) - s.to;
+
+            csv += [esc(p.tName), esc(p.name), p.number || '', pts,
+                s.p2m, s.p2a, p2Pct, s.p3m, s.p3a, p3Pct,
+                s.ftm, s.fta, ftPct, s.orb, s.drb, reb,
+                s.ast, s.stl, s.blk, s.to, s.pf, eff
+            ].join(',') + '\n';
+        });
+
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `voice-stats-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // ===== ユーティリティ =====
+
+    escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+}
+
+// アプリ起動
+const app = new VoiceStatsApp();
+</script>

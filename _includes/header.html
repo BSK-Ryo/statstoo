@@ -75,6 +75,14 @@
                            {% endif %}">
                             <span>📹</span> Youtube記録スタッツ
                         </a>
+                        <a href="/tools/voice-stats/" class="block px-4 py-2.5 text-sm transition flex items-center gap-2
+                           {% if page.url contains '/tools/voice-stats/' %}
+                               bg-primary/20 text-primary-light
+                           {% else %}
+                               text-white/80 hover:text-white hover:bg-white/10
+                           {% endif %}">
+                            <span>🎤</span> 音声スタッツ記録
+                        </a>
                     </div>
                 </div>
                 
@@ -228,6 +236,14 @@
                            text-white/70 hover:text-white hover:bg-white/10
                        {% endif %}">
                         <span>📹</span> Youtube記録スタッツ
+                    </a>
+                    <a href="/tools/voice-stats/" class="block px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2
+                       {% if page.url contains '/tools/voice-stats/' %}
+                           bg-primary/30 text-primary-light
+                       {% else %}
+                           text-white/70 hover:text-white hover:bg-white/10
+                       {% endif %}">
+                        <span>🎤</span> 音声スタッツ記録
                     </a>
                 </div>
             </div>
