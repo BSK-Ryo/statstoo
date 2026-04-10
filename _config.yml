@@ -15,6 +15,7 @@ lang: ja_JP
 # Author
 author:
   name: StatsToo編集部
+  url: https://statstoo.com/about/
 
 # Plugins
 plugins:
