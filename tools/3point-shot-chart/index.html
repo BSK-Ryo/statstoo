@@ -48,7 +48,7 @@ tool_name: 3Pシュートチャート
     .spot-circle { transition: all 0.2s ease; }
     .shot-spot.selected .spot-circle { stroke: #EA580C; stroke-width: 4; filter: drop-shadow(0 0 8px rgba(234, 88, 12, 0.5)); }
     .spot-text { font-family: 'Bebas Neue', sans-serif; font-size: 14px; fill: white; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-    .spot-pct { font-family: 'Noto Sans JP', sans-serif; font-size: 9px; fill: white; text-anchor: middle; pointer-events: none; opacity: 0.9; }
+    .spot-pct { font-family: 'Noto Sans JP', sans-serif; font-size: 11px; fill: white; text-anchor: middle; pointer-events: none; opacity: 0.9; }
     
     .fixed-controller { position: fixed; bottom: 0; left: 0; right: 0; background: #FFFFFF; padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); z-index: 100; transform: translateY(100%); transition: transform 0.3s ease; }
     .fixed-controller.visible { transform: translateY(0); }
@@ -68,7 +68,7 @@ tool_name: 3Pシュートチャート
     .btn-missed { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
     .btn-missed:not(:disabled):active { transform: scale(0.97); }
     .undo-container { text-align: center; margin-top: 0.5rem; }
-    .btn-undo { background: transparent; border: none; color: #64748b; font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.75rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .btn-undo { background: transparent; border: none; color: #64748b; font-size: 0.8rem; font-weight: 500; padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s; font-family: inherit; }
     .btn-undo:not(:disabled):hover { color: #0f172a; }
     .btn-undo:disabled { opacity: 0.4; cursor: not-allowed; }
     /* 入力モード切替コンテナ */
@@ -150,8 +150,8 @@ tool_name: 3Pシュートチャート
     
     /* History Table */
     .history-table-wrapper { overflow-x: auto; }
-    .history-table { width: 100%; border-collapse: collapse; min-width: 700px; }
-    .history-table th { background: #faf8f5; padding: 0.625rem 0.5rem; font-size: 0.65rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; text-align: center; border-bottom: 2px solid #e5e5e5; white-space: nowrap; }
+    .history-table { width: 100%; border-collapse: collapse; min-width: 500px; }
+    .history-table th { background: #faf8f5; padding: 0.625rem 0.5rem; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.03em; text-align: center; border-bottom: 2px solid #e5e5e5; white-space: nowrap; }
     .history-table th:first-child { text-align: left; padding-left: 1rem; }
     .history-table td { padding: 0.625rem 0.5rem; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #f1f1f1; }
     .history-table td:first-child { text-align: left; padding-left: 1rem; }
