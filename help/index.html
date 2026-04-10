@@ -279,3 +279,69 @@ extra_js: |
         </div>
     </div>
 </div>
+
+<!-- FAQPage structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "データはどこに保存されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "データはお使いのブラウザのローカルストレージに保存されます。サーバーには送信されないため、プライバシーは保護されますが、ブラウザのキャッシュクリアや端末の変更でデータが消える場合があります。大切なデータはCSV出力でバックアップを取ることをおすすめします。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "スマートフォンでも使えますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "はい、スマートフォンやタブレットでも快適にお使いいただけます。試合中の記録はスマートフォンでの操作を想定して設計されています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "利用料金はかかりますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "StatsTooは完全無料でご利用いただけます。アカウント登録も不要です。ただし、インターネット接続に必要な通信料はお客様のご負担となります。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "選手は何人まで登録できますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "各チーム制限なく選手を追加できます。「メンバー編集」モードで「＋ 選手を追加」ボタンをタップして追加してください。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "間違えて記録した場合はどうすればいいですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "画面下部の「元に戻す」ボタンで直前の操作を取り消すことができます。何度でも戻すことが可能です。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "EFF（エフィシエンシー）とは何ですか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "EFFは選手の総合的な貢献度を示す指標です。計算式は「(得点 + リバウンド + アシスト + スティール + ブロック) - (シュートミス + フリースローミス + ターンオーバー)」です。プラスが大きいほど貢献度が高いことを示します。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "生成した画像はどこに保存されますか？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「画像をダウンロード」ボタンを押すと、お使いの端末のダウンロードフォルダに保存されます。スマートフォンの場合は「SNSでシェア」から直接LINEやX（Twitter）などに共有することもできます。"
+      }
+    }
+  ]
+}
+</script>

@@ -2,6 +2,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% seo %}
 
+<!-- Organization structured data (homepage only) -->
+{% if page.url == "/" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "StatsToo（スタッツー）",
+  "url": "https://statstoo.com",
+  "logo": "https://statstoo.com/image/favicon.png",
+  "description": "{{ site.description }}",
+  "sameAs": [
+    "https://www.instagram.com/statstoo_2026/"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "url": "https://statstoo.com/contact/"
+  }
+}
+</script>
+{% endif %}
+
+<!-- SoftwareApplication structured data (tool pages only) -->
+{% if page.is_tool %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "{{ page.tool_name }}",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "JPY"
+  },
+  "description": "{{ page.description }}",
+  "url": "{{ site.url }}{{ page.url }}"
+}
+</script>
+{% endif %}
+
 <!-- Favicon -->
 <link rel="icon" type="image/png" sizes="480x480" href="/image/favicon.png">
 <link rel="apple-touch-icon" href="/image/favicon.png">

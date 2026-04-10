@@ -600,6 +600,33 @@
                 <span class="current">{{ page.title }}</span>
             </nav>
 
+            <!-- BreadcrumbList structured data -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "ホーム",
+                  "item": "{{ site.url }}/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "コラム一覧",
+                  "item": "{{ site.url }}/column/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "{{ page.title }}"
+                }
+              ]
+            }
+            </script>
+
             <!-- 記事ヘッダー -->
             <header class="article-header">
                 {% if page.category %}

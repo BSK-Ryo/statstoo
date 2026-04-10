@@ -9,6 +9,18 @@ image: /ogp.png
 twitter:
   card: summary_large_image
 
+# Locale
+lang: ja_JP
+
+# Author
+author:
+  name: StatsToo編集部
+
+# Plugins
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
 # Build settings
 markdown: kramdown
 permalink: pretty
