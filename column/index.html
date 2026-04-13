@@ -31,6 +31,13 @@ extra_css: |
     .no-articles p { margin-bottom: 0.5rem; }
     .ad-space { background: #334155; border-radius: 8px; padding: 1rem; margin: 2rem 0; text-align: center; min-height: 100px; }
     .ad-label { font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.5rem; }
+    .results-info { text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .pagination { display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin-top: 2rem; flex-wrap: wrap; }
+    .page-btn { background: #334155; color: #f1f5f9; border: 1px solid #475569; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; min-width: 2.5rem; text-align: center; }
+    .page-btn:hover:not(:disabled) { background: #f97316; border-color: #f97316; color: white; }
+    .page-btn.active { background: #f97316; border-color: #f97316; color: white; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .page-ellipsis { color: #94a3b8; padding: 0.5rem 0.25rem; font-size: 0.9rem; }
     @media (max-width: 768px) { .column-list { grid-template-columns: 1fr; } }
 ---
 
@@ -50,6 +57,9 @@ extra_css: |
         <p class="ad-label">広告</p>
         <!-- Google AdSense 広告ユニット -->
     </div>
+
+    <!-- 件数表示 -->
+    <p id="results-info" class="results-info"></p>
 
     <!-- 記事一覧 -->
     <div class="column-list">
@@ -96,6 +106,9 @@ extra_css: |
         {% endfor %}
     </div>
 
+    <!-- ページネーション -->
+    <div id="pagination-controls" class="pagination"></div>
+
     <!-- 記事がない場合 -->
     {% assign column_count = site.pages | where: "layout", "column" | size %}
     {% if column_count == 0 %}
@@ -113,28 +126,152 @@ extra_css: |
 </div>
 
 <script>
-// カテゴリフィルター機能
 document.addEventListener('DOMContentLoaded', function() {
+    const ITEMS_PER_PAGE = 12;
+    const allCards = Array.from(document.querySelectorAll('.column-card'));
     const filterBtns = document.querySelectorAll('.filter-btn');
-    const columnCards = document.querySelectorAll('.column-card');
-    
-    filterBtns.forEach(btn => {
+    const resultsInfo = document.getElementById('results-info');
+    const paginationControls = document.getElementById('pagination-controls');
+
+    let currentCategory = 'all';
+    let currentPage = 1;
+
+    // URLパラメータから初期状態を復元
+    var params = new URLSearchParams(location.search);
+    if (params.get('cat')) currentCategory = params.get('cat');
+    if (params.get('page')) currentPage = parseInt(params.get('page')) || 1;
+
+    // 初期状態のフィルターボタンを反映
+    filterBtns.forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.category === currentCategory);
+    });
+
+    // メイン描画関数: フィルター → ページ切り出し → 表示
+    function render() {
+        var filteredCards = allCards.filter(function(card) {
+            return currentCategory === 'all' || card.dataset.category === currentCategory;
+        });
+
+        var totalItems = filteredCards.length;
+        var totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        var start = (currentPage - 1) * ITEMS_PER_PAGE;
+        var end = start + ITEMS_PER_PAGE;
+        var pageItems = filteredCards.slice(start, end);
+
+        // 全カード非表示 → 該当ページのみ表示
+        allCards.forEach(function(card) { card.style.display = 'none'; });
+        pageItems.forEach(function(card) { card.style.display = 'block'; });
+
+        // 件数表示
+        if (totalItems === 0) {
+            resultsInfo.textContent = '';
+        } else {
+            var label = currentCategory === 'all' ? '全' + totalItems + '件' : currentCategory + ' の記事 ' + totalItems + '件';
+            resultsInfo.textContent = label + '（' + (start + 1) + '〜' + Math.min(end, totalItems) + '件目を表示）';
+        }
+
+        renderPaginationControls(totalPages);
+        updateQueryParams();
+    }
+
+    // ページネーションコントロール描画
+    function renderPaginationControls(totalPages) {
+        paginationControls.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        // 前へボタン
+        var prevBtn = document.createElement('button');
+        prevBtn.className = 'page-btn';
+        prevBtn.textContent = '前へ';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', function() { changePage(currentPage - 1); });
+        paginationControls.appendChild(prevBtn);
+
+        // ページ番号を生成
+        var pages = getPageNumbers(currentPage, totalPages);
+        pages.forEach(function(p) {
+            if (p === '...') {
+                var ellipsis = document.createElement('span');
+                ellipsis.className = 'page-ellipsis';
+                ellipsis.textContent = '...';
+                paginationControls.appendChild(ellipsis);
+            } else {
+                var btn = document.createElement('button');
+                btn.className = 'page-btn' + (p === currentPage ? ' active' : '');
+                btn.textContent = p;
+                btn.addEventListener('click', function() { changePage(p); });
+                paginationControls.appendChild(btn);
+            }
+        });
+
+        // 次へボタン
+        var nextBtn = document.createElement('button');
+        nextBtn.className = 'page-btn';
+        nextBtn.textContent = '次へ';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', function() { changePage(currentPage + 1); });
+        paginationControls.appendChild(nextBtn);
+    }
+
+    // 表示するページ番号の配列を生成（省略あり）
+    function getPageNumbers(current, total) {
+        if (total <= 5) {
+            var arr = [];
+            for (var i = 1; i <= total; i++) arr.push(i);
+            return arr;
+        }
+        var pages = [];
+        pages.push(1);
+        if (current > 3) pages.push('...');
+        for (var i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+            pages.push(i);
+        }
+        if (current < total - 2) pages.push('...');
+        pages.push(total);
+        return pages;
+    }
+
+    // ページ変更
+    function changePage(page) {
+        currentPage = page;
+        render();
+        document.querySelector('.column-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // URLパラメータ更新
+    function updateQueryParams() {
+        var params = new URLSearchParams();
+        if (currentCategory !== 'all') params.set('cat', currentCategory);
+        if (currentPage > 1) params.set('page', String(currentPage));
+        var query = params.toString();
+        history.replaceState(null, '', query ? '?' + query : location.pathname);
+    }
+
+    // カテゴリフィルター
+    filterBtns.forEach(function(btn) {
         btn.addEventListener('click', function() {
-            const category = this.dataset.category;
-            
-            // ボタンのアクティブ状態を更新
-            filterBtns.forEach(b => b.classList.remove('active'));
+            currentCategory = this.dataset.category;
+            currentPage = 1;
+            filterBtns.forEach(function(b) { b.classList.remove('active'); });
             this.classList.add('active');
-            
-            // カードの表示/非表示を切り替え
-            columnCards.forEach(card => {
-                if (category === 'all' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+            render();
         });
     });
+
+    // ブラウザの戻る/進むに対応
+    window.addEventListener('popstate', function() {
+        var params = new URLSearchParams(location.search);
+        currentCategory = params.get('cat') || 'all';
+        currentPage = parseInt(params.get('page')) || 1;
+        filterBtns.forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.category === currentCategory);
+        });
+        render();
+    });
+
+    // 初回描画
+    render();
 });
 </script>
