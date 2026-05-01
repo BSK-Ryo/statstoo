@@ -12,7 +12,6 @@ tags:
   - 初心者
   - 練習方法
   - チームプレー
-thumbnail: /image/column/passing-techniques.jpg
 excerpt: "バスケのパスの種類と正しい出し方を初心者向けに解説。チェストパスからノールックパスまで、試合で活きるパス技術を身につけよう。"
 toc: true
 permalink: /column/passing-techniques/

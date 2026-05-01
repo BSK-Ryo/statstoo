@@ -12,7 +12,6 @@ tags:
   - オフボール
   - 初心者
   - 戦術
-thumbnail: /image/column/off-ball-defense.jpg
 excerpt: "ボールを持っていない相手への守り方を徹底解説。オフボールデフェンスの基本原則やポジショニングのコツ、よくあるミスと改善法を紹介します。"
 toc: true
 permalink: /column/off-ball-defense/

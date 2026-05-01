@@ -12,7 +12,6 @@ tags:
   - 3-2ゾーン
   - 戦術
   - ディフェンス
-thumbnail: /image/column/zone-defense-3-2.jpg
 excerpt: "3-2ゾーンデフェンスは前列3人・後列2人で守るゾーンディフェンスです。3ポイントラインを重点的にケアする守り方の基本と動き方を解説します。"
 toc: true
 permalink: /column/zone-defense-3-2/

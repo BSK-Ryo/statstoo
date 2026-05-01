@@ -12,7 +12,6 @@ tags:
   - オフェンス
   - パス
   - 戦術
-thumbnail: /image/column/pass-and-go.jpg
 excerpt: "パスをしたら止まらずに動く「パス&ゴー」の基本。ディフェンスを崩し、得点チャンスを広げるための動き方とコツをわかりやすく解説します。"
 toc: true
 permalink: /column/pass-and-go/

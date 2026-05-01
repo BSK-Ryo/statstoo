@@ -12,7 +12,6 @@ tags:
   - 戦術
   - チームオフェンス
   - 初心者
-thumbnail: /image/column/off-ball-screen.jpg
 excerpt: "オフボールスクリーンの基本から種類・使い方まで、初心者でもわかるように解説。チームオフェンスの幅を広げる必須戦術を身につけましょう。"
 toc: true
 permalink: /column/off-ball-screen/

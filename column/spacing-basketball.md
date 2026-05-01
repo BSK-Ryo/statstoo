@@ -12,7 +12,6 @@ tags:
   - オフェンス
   - 初心者
   - チーム戦術
-thumbnail: /image/column/spacing-thumbnail.jpg
 excerpt: "スペーシングとはオフェンス時の選手間の距離感のこと。良いスペーシングでドライブやパスが通りやすくなり、得点効率が大幅にアップします。基本から練習方法まで解説。"
 toc: true
 permalink: /column/spacing-basketball/

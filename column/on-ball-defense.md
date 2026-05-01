@@ -12,7 +12,6 @@ tags:
   - オンボール
   - 初心者
   - 守り方
-thumbnail: /image/column/on-ball-defense.jpg
 excerpt: "オンボールデフェンスの基本姿勢やフットワーク、間合いの取り方を初心者向けに解説。1対1で抜かれないための守り方のコツと練習方法を紹介します。"
 toc: true
 permalink: /column/on-ball-defense/

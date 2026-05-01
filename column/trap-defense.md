@@ -12,7 +12,6 @@ tags:
   - トラップ
   - 戦術
   - 初心者
-thumbnail: /image/column/trap-defense.jpg
 excerpt: "トラップディフェンスの基本から実践まで徹底解説。ダブルチームの仕掛け方やローテーション、チームで取り組む練習メニューを紹介します。"
 toc: true
 permalink: /column/trap-defense/

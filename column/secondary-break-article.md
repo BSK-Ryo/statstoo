@@ -12,7 +12,6 @@ tags:
   - トランジション
   - 速攻
   - 初心者
-thumbnail: /image/column/secondary-break-thumbnail.jpg
 excerpt: "セカンダリーブレイクとは速攻の二次攻撃のこと。ファストブレイクとの違いやトレーラーの役割、実践的な練習方法まで詳しく解説します。"
 toc: true
 permalink: /column/secondary-break/

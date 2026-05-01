@@ -11,7 +11,6 @@ tags:
   - ピック＆ロール
   - ボールスクリーン
   - 戦術
-thumbnail: /image/column/pick-and-roll.jpg
 excerpt: "ピック＆ロールはバスケ最も重要な戦術の一つ。ボールスクリーンの仕組み、ロールとポップの使い分け、ディフェンスの対応策を初心者向けに解説します。"
 toc: true
 permalink: /column/pick-and-roll/

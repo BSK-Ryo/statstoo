@@ -12,7 +12,6 @@ tags:
   - 4アウト1イン
   - 戦術
   - チーム戦術
-thumbnail: /image/column/4-out-1-in-thumbnail.jpg
 excerpt: "4アウト1インとは、アウトサイドに4人、インサイドに1人を配置するセットオフェンスです。インサイドに広いスペースが生まれ、ドライブやポストプレーがしやすくなります。"
 toc: true
 permalink: /column/4-out-1-in/

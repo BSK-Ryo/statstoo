@@ -12,7 +12,6 @@ tags:
   - オフェンス
   - 初心者
   - ドリブル
-thumbnail: /image/column/one-on-one-offense.jpg
 excerpt: "バスケの1対1で相手を抜くための基本テクニックとコツを解説。ドライブやフェイクの使い方、実戦的な練習方法まで初心者向けに紹介します。"
 toc: true
 permalink: /column/one-on-one-offense/

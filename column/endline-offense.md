@@ -12,7 +12,6 @@ tags:
   - スローイン
   - 戦術
   - 初心者
-thumbnail: /image/column/endline-offense.jpg
 excerpt: "エンドラインスローインからの攻め方を初心者向けに解説。基本ルールから代表的なフォーメーション、得点につなげるコツまで紹介します。"
 toc: true
 permalink: /column/endline-offense/

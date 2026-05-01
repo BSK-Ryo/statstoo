@@ -12,7 +12,6 @@ tags:
   - バイオレーション
   - 初心者
   - 審判
-thumbnail: /image/column/violation-types.jpg
 excerpt: "バスケのバイオレーションの種類と基本ルールを初心者向けにわかりやすく解説。試合中に起こりやすい反則を理解して、ミスを減らしましょう。"
 toc: true
 permalink: /column/violation-types/

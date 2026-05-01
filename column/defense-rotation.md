@@ -12,7 +12,6 @@ tags:
   - ローテーション
   - チームディフェンス
   - 初心者
-thumbnail: /image/column/defense-rotation.jpg
 excerpt: "ディフェンスローテーションの基本的な動き方やヘルプの考え方を、初心者にもわかりやすく解説。チームディフェンスを強化するための必須知識です。"
 toc: true
 permalink: /column/defense-rotation/

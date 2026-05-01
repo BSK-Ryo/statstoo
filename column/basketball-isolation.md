@@ -11,7 +11,6 @@ tags:
   - 戦術
   - オフェンス
   - 1対1
-thumbnail: /image/column/isolation-thumbnail.jpg
 excerpt: "アイソレーションはエースに1対1をさせるバスケ戦術。使い方・動き方・成功のコツをコーチ経験者が解説します。"
 toc: true
 permalink: /column/basketball-isolation/

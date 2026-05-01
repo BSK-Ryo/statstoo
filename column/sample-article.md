@@ -10,7 +10,6 @@ tags:
   - バスケットボール
   - 初心者
   - 上達法
-thumbnail: /image/column/sample-thumbnail.jpg
 excerpt: "記事の冒頭要約文。一覧ページに表示されます。50〜100文字程度で記事の内容を簡潔にまとめましょう。"
 toc: true
 permalink: /column/sample-article/

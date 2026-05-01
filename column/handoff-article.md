@@ -12,7 +12,6 @@ tags:
   - パス
   - オフェンス
   - 初心者
-thumbnail: /image/column/handoff-thumbnail.jpg
 excerpt: "バスケのハンドオフとは味方同士で手渡しするパス技術。ピック＆ロールより簡単で、ミニバスや中高生にもおすすめの戦術です。"
 toc: true
 permalink: /column/basketball-handoff/

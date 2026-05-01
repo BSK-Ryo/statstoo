@@ -12,7 +12,6 @@ tags:
   - シュート練習
   - 初心者
   - 上達法
-thumbnail: /image/column/three-point-shooting.jpg
 excerpt: "3ポイントシュートの成功率を上げるコツと段階的な練習方法を解説。フォームの基本から飛距離の伸ばし方、試合での活用法まで初心者にもわかりやすく紹介します。"
 toc: true
 permalink: /column/three-point-shooting/

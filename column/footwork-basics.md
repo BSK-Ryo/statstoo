@@ -12,7 +12,6 @@ tags:
   - 初心者
   - 練習方法
   - ディフェンス
-thumbnail: /image/column/footwork-basics.jpg
 excerpt: "バスケのフットワークの基本ステップと練習方法を解説。ディフェンスにもオフェンスにも活きる足の使い方を身につけましょう。"
 toc: true
 permalink: /column/footwork-basics/

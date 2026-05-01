@@ -12,7 +12,6 @@ tags:
   - ディフェンス
   - 戦術
   - 初心者
-thumbnail: /image/column/pick-and-roll-defense.jpg
 excerpt: "ピック＆ロールの守り方がわからない方へ。スイッチ・ドロップ・ファイトオーバーなど主要な対応方法を、初心者にもわかりやすく解説します。"
 toc: true
 permalink: /column/pick-and-roll-defense/

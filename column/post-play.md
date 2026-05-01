@@ -12,7 +12,6 @@ tags:
   - オフェンス
   - 戦術
   - 初心者
-thumbnail: /image/column/post-play.jpg
 excerpt: "ポストプレーの基本からローポスト・ハイポストの動き方、代表的な1対1の技術、チームでの活かし方までを初心者向けにわかりやすく解説します。"
 toc: true
 permalink: /column/post-play/

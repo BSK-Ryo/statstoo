@@ -12,7 +12,6 @@ tags:
   - ボールハンドリング
   - 初心者
   - 練習方法
-thumbnail: /image/column/dribble-ball-handling.jpg
 excerpt: "バスケのドリブル技術とボールハンドリングの基本を解説。初心者向けの練習方法から試合で使えるテクニックまで、上達のコツを紹介します。"
 toc: true
 permalink: /column/dribble-ball-handling/

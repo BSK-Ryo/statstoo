@@ -12,7 +12,6 @@ tags:
   - オフボール
   - 戦術
   - チームプレー
-thumbnail: /image/column/back-screen.jpg
 excerpt: "バックスクリーンの基本と使い方を解説。ディフェンスの死角を突くオフボール連携で得点チャンスを生み出す方法を紹介します。"
 toc: true
 permalink: /column/back-screen/

@@ -12,7 +12,6 @@ tags:
   - 初心者
   - ドリブル
   - トラベリング
-thumbnail: /image/column/double-dribble-walking.jpg
 excerpt: "ダブルドリブルとウォーキング（トラベリング）の違いと判定基準、初心者がやりがちなミスの防ぎ方を詳しく解説します。"
 toc: true
 permalink: /column/double-dribble-walking/

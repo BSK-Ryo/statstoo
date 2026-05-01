@@ -12,7 +12,6 @@ tags:
   - パス
   - 戦術
   - 3ポイント
-thumbnail: /image/column/kickout-pass.jpg
 excerpt: "キックアウトパスはドライブからアウトサイドにボールを展開し、フリーの3ポイントシュートを生み出す重要な戦術です。基本から実践方法まで解説します。"
 toc: true
 permalink: /column/kickout-pass/

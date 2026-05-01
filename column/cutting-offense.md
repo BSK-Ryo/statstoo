@@ -12,7 +12,6 @@ tags:
   - オフェンス戦術
   - 初心者
   - チームプレー
-thumbnail: /image/column/cutting-offense.jpg
 excerpt: "バスケのカッティング（カット）の種類と使い方を初心者向けに解説。ガードカットやベースラインカットなど、ボールを持っていない選手の動きでチームオフェンスを活性化させる方法を紹介します。"
 toc: true
 permalink: /column/cutting-offense/

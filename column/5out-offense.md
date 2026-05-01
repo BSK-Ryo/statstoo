@@ -12,7 +12,6 @@ tags:
   - 5アウト
   - 戦術
   - 初心者
-thumbnail: /image/column/5out-offense-thumbnail.jpg
 excerpt: "5アウト（ファイブアウト）は、5人全員が3ポイントライン外に広がる現代バスケの代表的なオフェンス戦術。日本代表も採用するこの戦術を初心者にもわかりやすく解説します。"
 toc: true
 permalink: /column/5out-offense/

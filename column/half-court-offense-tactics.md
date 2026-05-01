@@ -12,7 +12,6 @@ tags:
   - 戦術
   - セットプレー
   - ピック&ロール
-thumbnail: /image/column/half-court-offense-tactics.jpg
 excerpt: "ハーフコートオフェンスの戦術を徹底解説。セットオフェンスの種類、ピック&ロール、スペーシングなど、試合で勝つための実践的な知識を紹介します。"
 toc: true
 permalink: /column/half-court-offense-tactics/

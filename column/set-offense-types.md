@@ -11,7 +11,6 @@ tags:
   - セットオフェンス
   - 戦術
   - フォーメーション
-thumbnail: /image/column/set-offense-types-thumbnail.jpg
 excerpt: "セットオフェンスの種類を徹底解説。7つの基本陣形の特徴と、チームに合った選び方がわかります。"
 toc: true
 permalink: /column/set-offense-types/

@@ -12,7 +12,6 @@ tags:
   - 速攻
   - 戦術
   - 初心者
-thumbnail: /image/column/outnumber-attack-thumbnail.jpg
 excerpt: "アウトナンバーで確実に得点するための攻め方を解説。2対1・3対2の動き方からNGプレーまで、試合で使える実践的なテクニックを紹介します。"
 toc: true
 permalink: /column/outnumber-attack/

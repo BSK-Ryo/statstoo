@@ -12,7 +12,6 @@ tags:
   - シュート練習
   - 初心者
   - スキルアップ
-thumbnail: /image/column/jump-shot.jpg
 excerpt: "ジャンプシュートの基本フォームから練習法まで徹底解説。ミドルレンジでの得点力を伸ばしたい初心者・中級者必見の内容です。"
 toc: true
 permalink: /column/jump-shot/

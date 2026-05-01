@@ -12,7 +12,6 @@ tags:
   - シュート
   - 初心者
   - 練習法
-thumbnail: /image/column/layup-basics.jpg
 excerpt: "レイアップはバスケで最も基本的なシュート。正しいステップとフォームを身につければ、試合で確実に得点できるようになります。"
 toc: true
 permalink: /column/layup-basics/

@@ -11,7 +11,6 @@ tags:
   - ディフェンス
   - 初心者
   - 練習方法
-thumbnail: /image/column/man-to-man-defense.jpg
 excerpt: "バスケのマンツーマンディフェンスの基本を解説。1対1の守り方からフットワーク、練習方法まで初心者にもわかりやすく紹介します。"
 toc: true
 permalink: /column/man-to-man-defense/

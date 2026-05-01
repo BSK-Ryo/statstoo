@@ -12,7 +12,6 @@ tags:
   - 戦術
   - モーションオフェンス
   - 初心者
-thumbnail: /image/column/motion-offense-thumbnail.jpg
 excerpt: "モーションオフェンスの基本から実践まで解説。フリーとセットの「いいとこ取り」ができる戦術を、初心者にもわかりやすく紹介します。"
 toc: true
 permalink: /column/motion-offense/

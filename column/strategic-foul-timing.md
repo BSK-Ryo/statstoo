@@ -12,7 +12,6 @@ tags:
   - 戦術
   - 試合終盤
   - 初心者
-thumbnail: /image/column/strategic-foul-timing.jpg
 excerpt: "バスケの戦略的ファウルを徹底解説。試合終盤のファウルゲームや速攻阻止のタイミング、判断基準を具体例とともに紹介します。"
 toc: true
 permalink: /column/strategic-foul-timing/

@@ -12,7 +12,6 @@ tags:
   - ペイントエリア
   - 制限区域
   - 初心者
-thumbnail: /image/column/paint-area-rules.jpg
 excerpt: "バスケのペイントエリア（制限区域）のルールを初心者向けに解説。3秒ルールやノーチャージセミサークルなど、試合で役立つ知識をまとめました。"
 toc: true
 permalink: /column/paint-area-rules/

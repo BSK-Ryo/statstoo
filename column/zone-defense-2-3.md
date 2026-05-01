@@ -12,7 +12,6 @@ tags:
   - ゾーンディフェンス
   - 戦術
   - 初心者
-thumbnail: /image/column/zone-defense-2-3.jpg
 excerpt: "2-3ゾーンディフェンスの基本配置から各ポジションの動き方、メリット・デメリット、練習方法まで徹底解説。チームのディフェンス力を高めたい方必見です。"
 toc: true
 permalink: /column/zone-defense-2-3/

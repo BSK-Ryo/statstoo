@@ -12,7 +12,6 @@ tags:
   - 時間制限
   - 初心者
   - バイオレーション
-thumbnail: /image/column/time-limit-rules.jpg
 excerpt: "バスケットボールの時間制限ルール（ショットクロック・5秒・8秒・3秒など）を初心者向けにわかりやすく解説します。"
 toc: true
 permalink: /column/time-limit-rules/

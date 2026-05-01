@@ -12,7 +12,6 @@ tags:
   - 身体能力
   - 初心者
   - フィジカル
-thumbnail: /image/column/physical-training.jpg
 excerpt: "バスケットボールに必要な瞬発力・持久力・体幹の鍛え方を初心者向けに解説。自宅でもできるトレーニングメニューを紹介します。"
 toc: true
 permalink: /column/physical-training/

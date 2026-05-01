@@ -12,7 +12,6 @@ tags:
   - 戦術
   - 練習方法
   - ファストブレイク
-thumbnail: /image/column/fastbreak-tactics-thumbnail.jpg
 excerpt: "速攻（ファストブレイク）はバスケで最も得点効率の高い戦術のひとつ。この記事では速攻の基本から種類、成功させるコツ、練習方法まで詳しく解説します。"
 toc: true
 permalink: /column/fastbreak-tactics/

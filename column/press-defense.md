@@ -12,7 +12,6 @@ tags:
   - プレスディフェンス
   - 初心者
   - チーム戦術
-thumbnail: /image/column/press-defense.jpg
 excerpt: "プレスディフェンスの基本から、フルコートプレス・ハーフコートプレスの違い、仕掛け方と破り方までを初心者向けに徹底解説します。"
 toc: true
 permalink: /column/press-defense/

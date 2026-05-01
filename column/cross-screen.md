@@ -12,7 +12,6 @@ tags:
   - 戦術
   - スクリーン
   - オフェンス
-thumbnail: /image/column/cross-screen.jpg
 excerpt: "バスケの「クロススクリーン」を初心者向けに解説。横方向にかけるスクリーンの基本、種類、使い方のコツ、注意点までまとめてわかります。"
 toc: true
 permalink: /column/cross-screen/

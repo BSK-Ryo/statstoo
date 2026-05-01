@@ -12,7 +12,6 @@ tags:
   - ボックスアウト
   - ディフェンス
   - 初心者
-thumbnail: /image/column/rebound-tactics.jpg
 excerpt: "バスケにおけるリバウンドの基本と戦術を徹底解説。ボックスアウトのやり方やオフェンス・ディフェンスそれぞれのリバウンドのコツを紹介します。"
 toc: true
 permalink: /column/rebound-tactics/

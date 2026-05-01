@@ -12,7 +12,6 @@ tags:
   - スクリーン
   - ファウル
   - 初心者
-thumbnail: /image/column/off-ball-foul-screen.jpg
 excerpt: "スクリーンの反則（イリーガルスクリーン）やオフボールファウルの判定基準と、正しいスクリーンのかけ方を初心者向けに解説します。"
 toc: true
 permalink: /column/off-ball-foul-screen/

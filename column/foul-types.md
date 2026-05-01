@@ -12,7 +12,6 @@ tags:
   - ルール
   - 初心者
   - 審判
-thumbnail: /image/column/foul-types.jpg
 excerpt: "バスケのファウルを全種類解説。パーソナルファウルからテクニカルファウルまで、違いと対処法を初心者にもわかりやすく紹介します。"
 toc: true
 permalink: /column/foul-types/

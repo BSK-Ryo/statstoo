@@ -12,7 +12,6 @@ tags:
   - 戦術
   - トランジション
   - 速攻
-thumbnail: /image/column/breakout-offense.jpg
 excerpt: "ディフェンスからオフェンスへの切り替え「ブレイクアウト」を徹底解説。リバウンド後の第一歩からアウトレットパス、レーンの使い方までわかりやすく紹介します。"
 toc: true
 permalink: /column/breakout-offense/

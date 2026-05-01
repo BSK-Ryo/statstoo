@@ -12,7 +12,6 @@ tags:
   - 1-3-1ゾーン
   - ディフェンス戦術
   - 初心者
-thumbnail: /image/column/zone-defense-1-3-1.jpg
 excerpt: "1-3-1ゾーンデフェンスの基本配置から動き方、トラップの仕掛け方まで徹底解説。チームの守備力を高めたい方必見です。"
 toc: true
 permalink: /column/zone-defense-1-3-1/

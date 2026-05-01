@@ -12,7 +12,6 @@ tags:
   - 戦術
   - 初心者
   - チーム戦術
-thumbnail: /image/column/3out-2in-thumbnail.jpg
 excerpt: "バスケの3アウト2インとは、アウトサイドに3人・インサイドに2人を配置するセットオフェンスの基本形です。メリットや具体的な動き方を解説します。"
 toc: true
 permalink: /column/3out-2in-guide/

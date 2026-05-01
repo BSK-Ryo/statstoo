@@ -12,7 +12,6 @@ tags:
   - 初心者
   - 練習方法
   - シュートフォーム
-thumbnail: /image/column/shooting-form-basics.jpg
 excerpt: "バスケのシュートフォームの基本を初心者向けに解説。構え方・手の使い方・リリースのコツ・練習法まで、シュートが入るようになるための基礎をまとめました。"
 toc: true
 permalink: /column/shooting-form-basics/
