@@ -255,6 +255,7 @@ Google AdSense 設定手順
         .article-block:last-child { margin-bottom: 0; }
         .article-block h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fef3e7 0%, #fffaf5 100%); padding: 0.625rem 1rem; border-left: 4px solid #EA580C; border-radius: 0 8px 8px 0; }
         .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.25rem 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #e8f4f8 0%, #f5fafb 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #0891b2; border-radius: 0 6px 6px 0; }
+        .article-block h4 { font-size: 0.95rem; font-weight: 700; color: #1e293b; margin: 1rem 0 0.5rem 0; padding: 0.375rem 0.75rem; border-left: 3px solid #EA580C; background: #fff7ed; border-radius: 0 4px 4px 0; display: flex; align-items: center; gap: 0.4rem; }
         .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.75rem; }
         .article-block p:last-child { margin-bottom: 0; }
         .article-list-check { list-style: none; padding: 0; margin: 1rem 0; }
@@ -1090,20 +1091,131 @@ Google AdSense 設定手順
                     <section class="article-block">
                         <h2>📖 StatsTooの各ツールの使い方</h2>
                         <h3>試合スタッツ記録ツール</h3>
+                        <p>試合や練習の5対5を記録するメインツールです。基本記録に加えて、<strong>自チーム名簿の登録</strong>、<strong>★メンバー / ゲストの自動判別</strong>、<strong>出場時間の自動計測</strong>、<strong>月間スタッツの自動合算</strong>に対応しています。</p>
+
+                        <h4>① 基本の使い方</h4>
                         <div class="step-list">
                             <div class="step-item">
                                 <span class="step-number">1</span>
-                                <div class="step-text"><strong>メンバー登録</strong> — 「メンバー編集」から選手名と背番号を入力できます</div>
+                                <div class="step-text"><strong>メンバー編集</strong> — 画面右上の「✎ メンバー編集」ボタンから、選手名と背番号を入力します。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
-                                <div class="step-text"><strong>リアルタイム記録</strong> — 選手をタップしてシュート・リバウンド等を記録！</div>
+                                <div class="step-text"><strong>リアルタイム記録</strong> — 選手をタップ → 下部のコントローラーから 2P成功 / 3P成功 / FT / AST / REB などを記録します。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">3</span>
-                                <div class="step-text"><strong>結果を出力</strong> — Box Score画像やCSVでデータを保存・共有</div>
+                                <div class="step-text"><strong>結果を出力</strong> — 「📸 画像生成」「📥 CSV」ボタンで Box Score を画像・CSV形式で保存・共有できます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <div class="step-text"><strong>試合を保存</strong> — 「💾 保存」ボタンから当日の試合をブラウザに保存。月間集計の対象に含まれます。</div>
                             </div>
                         </div>
+
+                        <h4>② 名簿（ロスター）の登録</h4>
+                        <p>毎回メンバー名を入れ直さなくても済むように、<strong>自チームの登録メンバー一覧</strong>を保存しておけます。一度登録しておくと、試合で同じ名前を入力した時に自動で <span style="color:#ca8a04;font-weight:700;">★メンバー</span> 扱いになり、月間集計に含まれます。</p>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>「👥 名簿」をタップ</strong> — 画面右上の「👥 名簿」ボタンを押すと、登録モーダルが開きます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>チーム名を入力</strong> — 例:「千葉ジェッツ」など、自チームの名前を入力します。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>メンバーを追加</strong> — 「+ 追加」ボタンを押し、背番号と選手名を入力します。何人でも登録できます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <div class="step-text"><strong>編集・削除</strong> — 各行で名前/背番号を直接編集、右端の「×」で削除できます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">5</span>
+                                <div class="step-text"><strong>エクスポート / インポート</strong> — JSONファイルとして書き出し・読み込みが可能。機種変や、チーム内で同じ名簿を共有する時に使えます。</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; background: #f1f5f9; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #0891b2;">
+                            💡 <strong>名簿データはブラウザに保存されます。</strong>キャッシュをクリアすると消えてしまうので、心配な方は定期的にエクスポートしておくのがおすすめです。
+                        </p>
+
+                        <h4>③ 試合中のメンバー判定（★ / ゲスト）</h4>
+                        <p>名簿に登録した名前と一致する選手は <span style="color:#ca8a04;font-weight:700;">★</span> マークで表示され、月間集計の対象になります。一致しない選手は <span style="color:#94a3b8;background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:0.75rem;font-weight:500;">ゲスト</span> タグが付き、デフォルトでは月間集計から除外されます。</p>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>名前を入力</strong> — 「✎ メンバー編集」モードで選手名を入力すると、名簿の選手名がオートコンプリートで候補表示されます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>自動判定</strong> — 名簿と完全一致する名前は <span style="color:#ca8a04;font-weight:700;">★</span> 付きで表示。一致しない名前は <span style="color:#94a3b8;background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:0.75rem;font-weight:500;">ゲスト</span> 扱いになります。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>両チームで判定可能</strong> — 自チームを A/B に分けて紅白戦をする場合、A側でも B側でもメンバー判定が働くので、あとから月間で合算されます。</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; background: #fff7ed; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #EA580C;">
+                            ⚠️ <strong>名前の一致は完全一致（前後の空白は無視）</strong>です。「山田 太郎」と「山田太郎」は別人扱いになるので、名簿と試合中の表記を統一してください。
+                        </p>
+
+                        <h4>④ 出場時間タイマー（MIN）</h4>
+                        <p>スコアボード下のタイマーで、<strong>各選手がコートに出ていた時間を自動計測</strong>します。月末に「誰が何分出ていて、シュート確率がどうだったか」を確認したい時に使えます。</p>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>▶ 開始</strong> — 試合が始まったらタイマーを開始。コートに出ている選手（チェック☑）の MIN がカウントアップされます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>選手交代</strong> — 「✎ メンバー編集」モードでチェックをON/OFFすると、交代した瞬間に出場時間が確定し、入った選手のカウントが始まります。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>⏸ 中断</strong> — タイムアウトやハーフタイム時に押すとタイマー停止。「▶ 再開」で続きから再スタートできます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <div class="step-text"><strong>⏹ 終了</strong> — 試合終了時に押すと、すべての選手の出場時間が確定します。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">5</span>
+                                <div class="step-text"><strong>保存時に修正可能</strong> — 「💾 保存」を押すと、自動計測した出場時間（分単位）を一覧で確認・修正できます。タイマーの止め忘れがあった時の救済にもなります。</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; background: #f1f5f9; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #0891b2;">
+                            💡 タイマー稼働中は、コートにいる選手の MIN 表示が <span style="background:#dcfce7;color:#166534;padding:1px 5px;border-radius:3px;font-size:0.75rem;font-family:monospace;">緑色</span> になります。ベンチに下がっている選手のカウントは止まります。
+                        </p>
+
+                        <h4>⑤ 月間スタッツの合算と出力</h4>
+                        <p>保存したゲームを月単位で自動集計します。<strong>名簿に登録されたメンバーだけ</strong>がデフォルトで集計され、紅白戦で A/B 両チームに同じ選手が出ていた場合は名前で自動的に合算されます。</p>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>月を選択</strong> — 「MONTHLY STATS」セクションのプルダウンから集計したい月を選びます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>メンバーのみ表示</strong> — デフォルトで <span style="color:#ca8a04;font-weight:700;">★メンバー</span> のみが表示されます。スタメン選びや個人成績の比較に使えます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>「ゲストも表示」</strong> — チェックボックスを ON にすると、ゲスト参加した選手のスタッツも一覧に表示されます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">4</span>
+                                <div class="step-text"><strong>各列でソート</strong> — 列ヘッダー（GP, MIN, PTS, FG%, MIN/G など）をタップすると並び替えできます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">5</span>
+                                <div class="step-text"><strong>📥 CSV出力</strong> — 月間集計を CSV ファイルとしてダウンロード。チーム内での共有や Excel での分析に使えます。</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.8rem; color: #64748b; background: #fff7ed; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #EA580C;">
+                            ⚠️ <strong>名簿が未登録の場合</strong>は、A/B 両チームすべての選手が集計対象になります。先に名簿登録しておくと、ゲスト参加が多い練習でも自チームのスタッツだけをきれいに集計できます。
+                        </p>
                         <h3>3P・2Pショットチャート</h3>
                         <div class="step-list">
                             <div class="step-item">
