@@ -313,6 +313,158 @@ Google AdSense 設定手順
             color: #9ca3af;
             padding: 2rem;
         }
+
+        /* Roster Modal Styles */
+        .roster-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 3px solid #EA580C;
+        }
+        .roster-item input.roster-name {
+            flex: 1;
+            min-width: 0;
+            font-size: 13px;
+            padding: 6px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+        }
+        .roster-item input.roster-number {
+            width: 56px;
+            font-size: 13px;
+            padding: 6px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            text-align: center;
+        }
+        .roster-item input:focus {
+            outline: 2px solid #EA580C;
+            border-color: transparent;
+        }
+        .roster-item .roster-delete {
+            color: #ef4444;
+            font-size: 18px;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        .roster-item .roster-delete:hover {
+            background: #fee2e2;
+        }
+
+        /* Member Badge */
+        .member-badge {
+            display: inline-block;
+            font-size: 10px;
+            color: #ca8a04;
+            margin-right: 2px;
+        }
+        .guest-tag {
+            display: inline-block;
+            font-size: 9px;
+            color: #94a3b8;
+            background: #f1f5f9;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin-left: 4px;
+            font-weight: 500;
+        }
+
+        /* Game Timer Bar */
+        .game-timer-bar {
+            background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .game-timer-display {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 1px;
+            line-height: 1;
+            min-width: 90px;
+            text-align: center;
+        }
+        .game-timer-display.running { color: #4ade80; }
+        .game-timer-display.paused  { color: #fbbf24; }
+        .game-timer-display.idle    { color: #cbd5e1; }
+        .game-timer-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+        .game-timer-buttons button {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .game-timer-buttons .btn-start  { background: #16a34a; color: white; }
+        .game-timer-buttons .btn-start:hover { background: #15803d; }
+        .game-timer-buttons .btn-pause  { background: #f59e0b; color: white; }
+        .game-timer-buttons .btn-pause:hover { background: #d97706; }
+        .game-timer-buttons .btn-resume { background: #2563eb; color: white; }
+        .game-timer-buttons .btn-resume:hover { background: #1d4ed8; }
+        .game-timer-buttons .btn-end    { background: #dc2626; color: white; }
+        .game-timer-buttons .btn-end:hover { background: #b91c1c; }
+        .game-timer-buttons button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Player MIN display */
+        .player-min {
+            font-size: 10px;
+            color: #6b7280;
+            font-family: 'Courier New', monospace;
+            background: #f3f4f6;
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 4px;
+        }
+        .player-min.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* MIN edit table in save modal */
+        .min-edit-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .min-edit-table th {
+            background: #1e293b;
+            color: white;
+            padding: 6px 8px;
+            font-weight: 700;
+            text-align: left;
+        }
+        .min-edit-table td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .min-edit-table input.min-input {
+            width: 56px;
+            padding: 3px 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .min-edit-table input.min-input:focus {
+            outline: 2px solid #EA580C;
+            border-color: transparent;
+        }
     </style>
 
     <!-- Tool Header -->
@@ -324,7 +476,10 @@ Google AdSense 設定手順
                     <span class="text-xl">📊</span>
                     <h1 class="font-display text-xl tracking-wide text-white m-0"><span class="sr-only">バスケットボール試合スタッツ記録ツール - </span>GAME STATS <span class="text-primary-light">TRACKER</span></h1>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-wrap">
+                    <button id="btn-roster" onclick="app.openRosterModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
+                        <span>👥 名簿</span>
+                    </button>
                     <button id="btn-edit-mode" onclick="app.toggleEditMode()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
                         <span>✎ メンバー編集</span>
                     </button>
@@ -361,6 +516,23 @@ Google AdSense 設定手順
             <!-- Quarter Scores (クォーターモード時のみ表示) -->
             <div id="quarter-scores" class="hidden mt-2 text-center text-xs text-white/60">
                 <div id="quarter-scores-detail" class="flex justify-center gap-2 flex-wrap"></div>
+            </div>
+
+            <!-- Game Timer Bar -->
+            <div class="game-timer-bar mt-3">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">⏱</span>
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wide text-white/60 font-bold">出場時間タイマー</div>
+                        <div id="game-timer-display" class="game-timer-display idle">00:00</div>
+                    </div>
+                </div>
+                <div class="game-timer-buttons">
+                    <button id="timer-btn-start"  onclick="app.startGameTimer()"  class="btn-start">▶ 開始</button>
+                    <button id="timer-btn-pause"  onclick="app.pauseGameTimer()"  class="btn-pause" style="display:none">⏸ 中断</button>
+                    <button id="timer-btn-resume" onclick="app.resumeGameTimer()" class="btn-resume" style="display:none">▶ 再開</button>
+                    <button id="timer-btn-end"    onclick="app.endGameTimer()"    class="btn-end">⏹ 終了</button>
+                </div>
             </div>
         </div>
     </header>
@@ -610,20 +782,28 @@ Google AdSense 設定手順
 
             <!-- Aggregation Table -->
             <div>
-                <div class="flex justify-between items-center mb-2">
+                <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
                     <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                        個人スタッツ集計（<span id="monthly-team-name">味方チーム</span>）
+                        個人スタッツ集計（<span id="monthly-team-name">自チーム</span>）
                     </h3>
-                    <button onclick="app.exportMonthlyCSV()" id="monthly-csv-btn" class="text-xs bg-primary hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm transition flex items-center gap-1" style="display:none;">
-                        <span>📥</span> CSV
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <label class="text-[11px] text-gray-500 flex items-center gap-1 cursor-pointer">
+                            <input id="monthly-include-guests" type="checkbox" onchange="app.renderMonthlyStats()" class="custom-checkbox" style="width:14px;height:14px;">
+                            ゲストも表示
+                        </label>
+                        <button onclick="app.exportMonthlyCSV()" id="monthly-csv-btn" class="text-xs bg-primary hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg font-bold shadow-sm transition flex items-center gap-1" style="display:none;">
+                            <span>📥</span> CSV
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto border border-gray-100 rounded-lg">
-                    <table id="monthly-stats-table" class="w-full text-xs" style="min-width: 800px;">
+                    <table id="monthly-stats-table" class="w-full text-xs" style="min-width: 880px;">
                         <thead class="bg-secondary text-white sticky top-0 z-10">
                             <tr>
                                 <th class="p-2 text-left sticky left-0 bg-secondary z-20 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('name')">Player</th>
                                 <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('gp')">GP</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('min')">MIN</th>
+                                <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('minAvg')">MIN/G</th>
                                 <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('pts')">PTS</th>
                                 <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('ptsAvg')">PTS/G</th>
                                 <th class="p-2 cursor-pointer whitespace-nowrap" onclick="app.sortMonthlyStats('fgPct')">FG%</th>
@@ -1142,12 +1322,33 @@ Google AdSense 設定手順
 
     <!-- Save Game Confirmation Modal -->
     <div id="save-game-modal" class="modal-overlay">
-        <div class="modal-content p-4 w-full max-w-sm">
+        <div class="modal-content p-4 w-full max-w-md">
             <h3 class="font-bold text-lg text-secondary mb-3 flex items-center gap-2">
                 💾 ゲームを保存
             </h3>
-            <div id="save-game-preview" class="bg-gray-50 rounded-lg p-3 mb-4 text-sm">
+            <div id="save-game-preview" class="bg-gray-50 rounded-lg p-3 mb-3 text-sm">
             </div>
+
+            <!-- MIN edit area -->
+            <div id="save-min-edit-area" class="mb-3">
+                <div class="flex justify-between items-center mb-1">
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide">出場時間の確認・修正</h4>
+                    <span class="text-[10px] text-gray-400">単位: 分</span>
+                </div>
+                <p class="text-[10px] text-gray-400 mb-2">タイマーから自動算出された値です。実際とズレている場合は修正できます。</p>
+                <div class="overflow-y-auto max-h-[40vh] border border-gray-100 rounded-lg">
+                    <table class="min-edit-table">
+                        <thead class="sticky top-0">
+                            <tr>
+                                <th>選手</th>
+                                <th style="width: 80px; text-align: center;">出場(分)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="save-min-edit-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <p class="text-xs text-gray-500 mb-4">保存すると月間スタッツ集計で参照できます。</p>
             <div class="flex gap-2">
                 <button onclick="app.closeSaveGameModal()"
@@ -1161,6 +1362,52 @@ Google AdSense 設定手順
             </div>
         </div>
     </div>
+
+    <!-- Roster Modal -->
+    <div id="roster-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-md">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>👥</span> 名簿（自チームのメンバー）
+                </h3>
+                <button onclick="app.closeRosterModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <p class="text-xs text-gray-500 mb-3 leading-relaxed">
+                ここに登録した選手は、試合で名前が一致すると <span class="text-yellow-600 font-bold">★メンバー</span> 扱いになり、月間集計に自動で含まれます。<br>
+                ※ 一致しない名前は「ゲスト」扱いで集計から除外されます。
+            </p>
+
+            <div class="mb-3">
+                <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">チーム名</label>
+                <input id="roster-team-name" type="text" placeholder="例: Emperors" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+            </div>
+
+            <div class="flex justify-between items-center mb-2">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide">登録メンバー <span id="roster-count" class="text-gray-400 ml-1">(0人)</span></h4>
+                <button onclick="app.addRosterMember()" class="text-xs bg-primary hover:bg-orange-700 text-white px-3 py-1.5 rounded-lg font-bold transition">+ 追加</button>
+            </div>
+
+            <div id="roster-list" class="space-y-2 max-h-[40vh] overflow-y-auto pr-1 mb-4">
+            </div>
+
+            <div class="flex gap-2 pt-3 border-t border-gray-100">
+                <button onclick="app.exportRoster()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1">
+                    <span>📥</span> エクスポート
+                </button>
+                <button onclick="document.getElementById('roster-import-input').click()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-1">
+                    <span>📤</span> インポート
+                </button>
+                <input id="roster-import-input" type="file" accept="application/json" class="hidden" onchange="app.importRoster(event)">
+            </div>
+            <button onclick="app.closeRosterModal()" class="w-full mt-2 bg-secondary hover:bg-secondary/90 text-white font-bold py-2.5 rounded-lg transition text-sm">
+                閉じる
+            </button>
+        </div>
+    </div>
+
+    <!-- Player Names Datalist (for autocomplete) -->
+    <datalist id="roster-names-list"></datalist>
 
     <!-- History Modal -->
     <div id="history-modal" class="modal-overlay">
@@ -1441,12 +1688,21 @@ Google AdSense 設定手順
                     recordMode: 'simple', // 'simple' or 'quarter'
                     currentQuarter: 'Q1',
                     quarters: ['Q1', 'Q2', 'Q3', 'Q4'], // OTは動的に追加
-                    boxScoreView: 'total' // 'total', 'simple', 'Q1', 'Q2', etc.
+                    boxScoreView: 'total', // 'total', 'simple', 'Q1', 'Q2', etc.
+                    // 出場時間タイマー
+                    gameTimer: {
+                        status: 'idle',     // 'idle' | 'running' | 'paused'
+                        elapsedMs: 0,       // 累積稼働時間
+                        runningSince: null  // 最後に running になった時刻 (ms)
+                    }
                 };
+                // ロスター（自チームの登録メンバー）
+                this.roster = this.loadRoster();
                 this.chartComparison = null;
                 this.chartPercentage = null;
                 this.generatedImageBlob = null;
                 this.generatedImageDataUrl = null;
+                this._timerInterval = null;
 
                 // LocalStorageから復元
                 this.loadFromLocalStorage();
@@ -1466,6 +1722,7 @@ Google AdSense 設定手順
                         currentQuarter: this.state.currentQuarter,
                         quarters: this.state.quarters,
                         boxScoreView: this.state.boxScoreView,
+                        gameTimer: this.state.gameTimer,
                         gameInfo: {
                             event: document.getElementById('game-event')?.value || '',
                             date: document.getElementById('game-date')?.value || '',
@@ -1489,12 +1746,12 @@ Google AdSense 設定手順
                     // チームデータを復元
                     if (data.teams) {
                         this.state.teams = data.teams;
-                        // 古いデータの場合、quarterStatsを初期化
+                        // 古いデータの場合、quarterStats / minMs を初期化
                         ['A', 'B'].forEach(team => {
                             this.state.teams[team].players.forEach(p => {
-                                if (!p.quarterStats) {
-                                    p.quarterStats = {};
-                                }
+                                if (!p.quarterStats) p.quarterStats = {};
+                                if (typeof p.minMs !== 'number') p.minMs = 0;
+                                if (typeof p.onCourtSince === 'undefined') p.onCourtSince = null;
                             });
                         });
                     }
@@ -1516,6 +1773,25 @@ Google AdSense 設定手順
                     }
                     if (data.boxScoreView) {
                         this.state.boxScoreView = data.boxScoreView;
+                    }
+                    if (data.gameTimer) {
+                        // running 中だった場合、ブラウザリロード分は破棄して paused 扱いにする
+                        const t = data.gameTimer;
+                        if (t.status === 'running' && t.runningSince) {
+                            t.elapsedMs = (t.elapsedMs || 0) + (Date.now() - t.runningSince);
+                            t.status = 'paused';
+                            t.runningSince = null;
+                            // 復元時はオンコート選手の onCourtSince もリセット
+                            ['A', 'B'].forEach(team => {
+                                this.state.teams[team].players.forEach(p => {
+                                    if (p.onCourtSince) {
+                                        p.minMs = (p.minMs || 0) + (Date.now() - p.onCourtSince);
+                                        p.onCourtSince = null;
+                                    }
+                                });
+                            });
+                        }
+                        this.state.gameTimer = t;
                     }
 
                     // ゲーム情報を復元（init後にDOMが存在するので遅延実行）
@@ -1539,6 +1815,7 @@ Google AdSense 設定手順
                         
                         this.updateScoreboard();
                         this.updateQuarterUI();
+                        this.updateTimerUI();
                     }, 0);
 
                     console.log('スタッツを復元しました');
@@ -1565,7 +1842,9 @@ Google AdSense 設定手順
                     team,
                     isOnCourt: true,
                     stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
-                    quarterStats: {} // クォーター別スタッツ（動的に追加）
+                    quarterStats: {}, // クォーター別スタッツ（動的に追加）
+                    minMs: 0,         // 累積出場時間 (ms)
+                    onCourtSince: null // 現在オンコート＆タイマー稼働中の起点 (ms)
                 }));
             }
             
@@ -1617,6 +1896,8 @@ Google AdSense 設定手順
                 this.updateCharts(); // 初期チャートデータを描画
                 this.updateQuarterUI(); // クォーターUI初期化
                 this.refreshMonthlySectionUI(); // 月間スタッツ初期化
+                this.refreshNamesDatalist(); // 名簿のオートコンプリート初期化
+                this.updateTimerUI(); // タイマーUI初期化
             }
 
             // =============================
@@ -2800,7 +3081,9 @@ Google AdSense 設定手順
                     team,
                     isOnCourt: false,
                     stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
-                    quarterStats: {}
+                    quarterStats: {},
+                    minMs: 0,
+                    onCourtSince: null
                 });
                 this.render();
                 this.saveToLocalStorage();
@@ -2810,14 +3093,342 @@ Google AdSense 設定手順
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
                 if (player) player.name = newName;
                 this.renderStatsTable();
+                this.renderTeamList('A');
+                this.renderTeamList('B');
                 this.saveToLocalStorage();
             }
 
             toggleOnCourt(team, playerId) {
                 const player = this.state.teams[team].players.find(p => p.id === playerId);
-                if (player) player.isOnCourt = !player.isOnCourt;
+                if (!player) return;
+                const now = Date.now();
+                // タイマー稼働中なら、コート⇄ベンチ切替時に MIN を確定
+                if (this.state.gameTimer.status === 'running') {
+                    if (player.isOnCourt && player.onCourtSince) {
+                        player.minMs += now - player.onCourtSince;
+                        player.onCourtSince = null;
+                    }
+                    player.isOnCourt = !player.isOnCourt;
+                    if (player.isOnCourt) {
+                        player.onCourtSince = now;
+                    }
+                } else {
+                    player.isOnCourt = !player.isOnCourt;
+                }
                 this.render();
                 this.saveToLocalStorage();
+            }
+
+            // =============================
+            // 👥 ロスター（自チーム登録メンバー）
+            // =============================
+
+            loadRoster() {
+                try {
+                    const raw = localStorage.getItem('statstoo_roster');
+                    if (!raw) return { teamName: '', members: [] };
+                    const parsed = JSON.parse(raw);
+                    return {
+                        teamName: parsed.teamName || '',
+                        members: Array.isArray(parsed.members) ? parsed.members : []
+                    };
+                } catch (e) {
+                    console.warn('ロスター読み込み失敗:', e);
+                    return { teamName: '', members: [] };
+                }
+            }
+
+            saveRoster() {
+                try {
+                    localStorage.setItem('statstoo_roster', JSON.stringify(this.roster));
+                } catch (e) {
+                    console.warn('ロスター保存失敗:', e);
+                }
+            }
+
+            normalizeName(name) {
+                return (name || '').trim().toLowerCase();
+            }
+
+            isRosterMember(name) {
+                const key = this.normalizeName(name);
+                if (!key) return false;
+                return this.roster.members.some(m => this.normalizeName(m.name) === key);
+            }
+
+            openRosterModal() {
+                document.getElementById('roster-team-name').value = this.roster.teamName || '';
+                this.renderRosterModal();
+                document.getElementById('roster-modal').classList.add('active');
+            }
+
+            closeRosterModal() {
+                document.getElementById('roster-modal').classList.remove('active');
+                // 閉じる際にロスター由来の表示を一通り更新
+                this.renderTeamList('A');
+                this.renderTeamList('B');
+                this.renderStatsTable();
+                this.refreshMonthlySectionUI();
+                this.refreshNamesDatalist();
+            }
+
+            renderRosterModal() {
+                const list = document.getElementById('roster-list');
+                document.getElementById('roster-count').textContent = `(${this.roster.members.length}人)`;
+                if (this.roster.members.length === 0) {
+                    list.innerHTML = '<p class="text-xs text-gray-400 text-center py-6">まだメンバーが登録されていません。「+ 追加」ボタンから登録してください。</p>';
+                    return;
+                }
+                list.innerHTML = this.roster.members.map((m, idx) => `
+                    <div class="roster-item">
+                        <input class="roster-number" type="text" placeholder="#" value="${this.escapeHtml(m.number || '')}" oninput="app.updateRosterMember(${idx}, 'number', this.value)">
+                        <input class="roster-name" type="text" placeholder="選手名" value="${this.escapeHtml(m.name || '')}" oninput="app.updateRosterMember(${idx}, 'name', this.value)">
+                        <button class="roster-delete" onclick="app.deleteRosterMember(${idx})" title="削除">×</button>
+                    </div>
+                `).join('');
+                // チーム名の保存はリスナーで行う
+                const teamNameInput = document.getElementById('roster-team-name');
+                if (!teamNameInput._bound) {
+                    teamNameInput.addEventListener('input', e => {
+                        this.roster.teamName = e.target.value;
+                        this.saveRoster();
+                        this.refreshMonthlySectionUI();
+                    });
+                    teamNameInput._bound = true;
+                }
+            }
+
+            addRosterMember() {
+                this.roster.members.push({ id: `rm-${Date.now()}`, name: '', number: '' });
+                this.saveRoster();
+                this.renderRosterModal();
+            }
+
+            updateRosterMember(idx, field, value) {
+                if (!this.roster.members[idx]) return;
+                this.roster.members[idx][field] = value;
+                this.saveRoster();
+                document.getElementById('roster-count').textContent = `(${this.roster.members.length}人)`;
+            }
+
+            deleteRosterMember(idx) {
+                if (!confirm('このメンバーを名簿から削除しますか？')) return;
+                this.roster.members.splice(idx, 1);
+                this.saveRoster();
+                this.renderRosterModal();
+            }
+
+            exportRoster() {
+                const data = JSON.stringify(this.roster, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const safeName = (this.roster.teamName || 'roster').replace(/[^\w\-一-龥ぁ-んァ-ヶー]/g, '_');
+                a.download = `statstoo_roster_${safeName}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                this.showToast('名簿をエクスポートしました');
+            }
+
+            importRoster(event) {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const parsed = JSON.parse(e.target.result);
+                        if (!parsed || !Array.isArray(parsed.members)) {
+                            throw new Error('形式が不正です');
+                        }
+                        const overwrite = this.roster.members.length === 0
+                            || confirm('現在の名簿を読み込んだ内容で上書きしますか？「キャンセル」を選ぶと追記します。');
+                        if (overwrite) {
+                            this.roster.teamName = parsed.teamName || this.roster.teamName;
+                            this.roster.members = parsed.members.map(m => ({
+                                id: m.id || `rm-${Date.now()}-${Math.random()}`,
+                                name: m.name || '',
+                                number: m.number || ''
+                            }));
+                        } else {
+                            parsed.members.forEach(m => {
+                                this.roster.members.push({
+                                    id: m.id || `rm-${Date.now()}-${Math.random()}`,
+                                    name: m.name || '',
+                                    number: m.number || ''
+                                });
+                            });
+                        }
+                        this.saveRoster();
+                        this.renderRosterModal();
+                        this.showToast('名簿をインポートしました');
+                    } catch (err) {
+                        alert('インポートに失敗しました: ' + err.message);
+                    }
+                    event.target.value = '';
+                };
+                reader.readAsText(file);
+            }
+
+            refreshNamesDatalist() {
+                const dl = document.getElementById('roster-names-list');
+                if (!dl) return;
+                dl.innerHTML = this.roster.members
+                    .filter(m => m.name && m.name.trim())
+                    .map(m => `<option value="${this.escapeHtml(m.name)}"></option>`)
+                    .join('');
+            }
+
+            // =============================
+            // ⏱ 出場時間タイマー
+            // =============================
+
+            startGameTimer() {
+                if (this.state.gameTimer.status === 'running') return;
+                const now = Date.now();
+                this.state.gameTimer.status = 'running';
+                this.state.gameTimer.runningSince = now;
+                // オンコート選手の起点を設定
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        if (p.isOnCourt) p.onCourtSince = now;
+                    });
+                });
+                this._startTimerTick();
+                this.updateTimerUI();
+                this.render();
+                this.saveToLocalStorage();
+            }
+
+            pauseGameTimer() {
+                if (this.state.gameTimer.status !== 'running') return;
+                this._flushAllOnCourt();
+                this.state.gameTimer.status = 'paused';
+                this._stopTimerTick();
+                this.updateTimerUI();
+                this.render();
+                this.saveToLocalStorage();
+            }
+
+            resumeGameTimer() {
+                if (this.state.gameTimer.status !== 'paused') return;
+                const now = Date.now();
+                this.state.gameTimer.status = 'running';
+                this.state.gameTimer.runningSince = now;
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        if (p.isOnCourt) p.onCourtSince = now;
+                    });
+                });
+                this._startTimerTick();
+                this.updateTimerUI();
+                this.render();
+                this.saveToLocalStorage();
+            }
+
+            endGameTimer() {
+                if (this.state.gameTimer.status === 'idle' && this.state.gameTimer.elapsedMs === 0) return;
+                if (!confirm('タイマーを終了して出場時間を確定しますか？')) return;
+                this._flushAllOnCourt();
+                this.state.gameTimer.status = 'idle';
+                this._stopTimerTick();
+                this.updateTimerUI();
+                this.render();
+                this.saveToLocalStorage();
+            }
+
+            _flushAllOnCourt() {
+                const now = Date.now();
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        if (p.onCourtSince) {
+                            p.minMs += now - p.onCourtSince;
+                            p.onCourtSince = null;
+                        }
+                    });
+                });
+                if (this.state.gameTimer.runningSince) {
+                    this.state.gameTimer.elapsedMs += now - this.state.gameTimer.runningSince;
+                    this.state.gameTimer.runningSince = null;
+                }
+            }
+
+            _startTimerTick() {
+                if (this._timerInterval) return;
+                this._timerInterval = setInterval(() => this.updateTimerUI(), 1000);
+            }
+
+            _stopTimerTick() {
+                if (this._timerInterval) {
+                    clearInterval(this._timerInterval);
+                    this._timerInterval = null;
+                }
+            }
+
+            getCurrentElapsedMs() {
+                let ms = this.state.gameTimer.elapsedMs;
+                if (this.state.gameTimer.status === 'running' && this.state.gameTimer.runningSince) {
+                    ms += Date.now() - this.state.gameTimer.runningSince;
+                }
+                return ms;
+            }
+
+            getPlayerMinMs(player) {
+                let ms = player.minMs || 0;
+                if (this.state.gameTimer.status === 'running' && player.isOnCourt && player.onCourtSince) {
+                    ms += Date.now() - player.onCourtSince;
+                }
+                return ms;
+            }
+
+            formatMs(ms) {
+                const total = Math.max(0, Math.floor(ms / 1000));
+                const m = Math.floor(total / 60);
+                const s = total % 60;
+                return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+            }
+
+            updateTimerUI() {
+                const el = document.getElementById('game-timer-display');
+                if (!el) return;
+                el.textContent = this.formatMs(this.getCurrentElapsedMs());
+                el.classList.remove('idle', 'running', 'paused');
+                el.classList.add(this.state.gameTimer.status);
+
+                const btnStart  = document.getElementById('timer-btn-start');
+                const btnPause  = document.getElementById('timer-btn-pause');
+                const btnResume = document.getElementById('timer-btn-resume');
+                const btnEnd    = document.getElementById('timer-btn-end');
+                if (!btnStart) return;
+                const status = this.state.gameTimer.status;
+                btnStart.style.display  = (status === 'idle')    ? '' : 'none';
+                btnPause.style.display  = (status === 'running') ? '' : 'none';
+                btnResume.style.display = (status === 'paused')  ? '' : 'none';
+                btnEnd.style.display    = (status === 'idle' && this.state.gameTimer.elapsedMs === 0) ? 'none' : '';
+
+                // 選手リストの MIN 表示も更新（軽量に）
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        const minEl = document.getElementById(`min-${p.id}`);
+                        if (minEl) {
+                            minEl.textContent = this.formatMs(this.getPlayerMinMs(p));
+                            minEl.classList.toggle('active', this.state.gameTimer.status === 'running' && p.isOnCourt);
+                        }
+                    });
+                });
+            }
+
+            resetAllPlayerMin() {
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        p.minMs = 0;
+                        p.onCourtSince = null;
+                    });
+                });
+                this.state.gameTimer = { status: 'idle', elapsedMs: 0, runningSince: null };
+                this._stopTimerTick();
             }
 
             // =============================
@@ -2858,7 +3469,40 @@ Google AdSense 設定手順
                     <div class="text-gray-500">${this.escapeHtml(date)} ${this.escapeHtml(time)}</div>
                     ${event ? `<div class="text-gray-500">${this.escapeHtml(event)}</div>` : ''}
                 `;
+
+                // MIN 編集テーブルを描画
+                this.renderSaveMinEditTable();
+
                 document.getElementById('save-game-modal').classList.add('active');
+            }
+
+            renderSaveMinEditTable() {
+                const tbody = document.getElementById('save-min-edit-body');
+                if (!tbody) return;
+                const rows = [];
+                ['A', 'B'].forEach(team => {
+                    this.state.teams[team].players.forEach(p => {
+                        const isMember = this.isRosterMember(p.name);
+                        const minMs = this.getPlayerMinMs(p);
+                        const minMin = Math.round(minMs / 60000);
+                        const teamColor = team === 'A' ? '#4f46e5' : '#e11d48';
+                        const tagBadge = isMember
+                            ? '<span style="font-size:9px;color:#ca8a04;font-weight:700;">★メンバー</span>'
+                            : (this.roster.members.length > 0 ? '<span style="font-size:9px;color:#94a3b8;">ゲスト</span>' : '');
+                        rows.push(`
+                            <tr>
+                                <td>
+                                    <div style="font-weight:700;color:${teamColor};font-size:12px;">${this.escapeHtml(p.name)}</div>
+                                    <div>${tagBadge}</div>
+                                </td>
+                                <td style="text-align:center;">
+                                    <input type="number" min="0" step="1" class="min-input" data-team="${team}" data-pid="${p.id}" value="${minMin}">
+                                </td>
+                            </tr>
+                        `);
+                    });
+                });
+                tbody.innerHTML = rows.join('');
             }
 
             closeSaveGameModal() {
@@ -2866,24 +3510,52 @@ Google AdSense 設定手順
             }
 
             confirmSaveGame() {
-                this._doSaveGame();
+                // 保存モーダルで編集された MIN を読み取って反映（分単位）
+                const minEdits = {};
+                document.querySelectorAll('#save-min-edit-body input.min-input').forEach(inp => {
+                    const pid = inp.dataset.pid;
+                    const minutes = Math.max(0, parseInt(inp.value, 10) || 0);
+                    minEdits[pid] = minutes;
+                });
+                this._doSaveGame(minEdits);
                 this.closeSaveGameModal();
                 this.showToast('ゲームを保存しました');
                 this.refreshMonthlySectionUI();
             }
 
-            _doSaveGame() {
+            _doSaveGame(minEdits) {
                 const event  = document.getElementById('game-event').value;
                 const date   = document.getElementById('game-date').value;
                 const time   = document.getElementById('game-time').value;
                 const scoreA = this.calculateTeamScore('A');
                 const scoreB = this.calculateTeamScore('B');
 
+                // タイマーが running なら一旦 flush（精度確保）
+                if (this.state.gameTimer.status === 'running') {
+                    this._flushAllOnCourt();
+                    // 即座に再開状態へ戻す
+                    const now = Date.now();
+                    this.state.gameTimer.runningSince = now;
+                    ['A', 'B'].forEach(team => {
+                        this.state.teams[team].players.forEach(p => {
+                            if (p.isOnCourt) p.onCourtSince = now;
+                        });
+                    });
+                }
+
                 const snapPlayers = (teamKey) =>
-                    this.state.teams[teamKey].players.map(p => ({
-                        name:  p.name,
-                        stats: this.getTotalStats(p)
-                    }));
+                    this.state.teams[teamKey].players.map(p => {
+                        const editedMin = minEdits && typeof minEdits[p.id] === 'number'
+                            ? minEdits[p.id]
+                            : null;
+                        const minMs = editedMin !== null ? editedMin * 60000 : this.getPlayerMinMs(p);
+                        return {
+                            name:    p.name,
+                            isMember: this.isRosterMember(p.name),
+                            stats:   this.getTotalStats(p),
+                            minMs:   minMs
+                        };
+                    });
 
                 const entry = {
                     id:      `game-${Date.now()}`,
@@ -2980,6 +3652,85 @@ Google AdSense 設定手順
                 }).join('');
             }
 
+            // 月間集計の共通ロジック（renderMonthlyStats と exportMonthlyCSV で共有）
+            // returns: { rows: [...], hasRoster: bool, includeGuests: bool, teamLabel: string }
+            buildMonthlyAggregation(games, includeGuests) {
+                const hasRoster = this.roster.members.length > 0;
+                const aggMap = new Map();
+
+                const addPlayer = (player, gameId) => {
+                    const key = (player.name || '').trim().toLowerCase();
+                    if (!key) return;
+                    // メンバー判定: 名簿が空なら全員メンバー扱い、そうでなければ名簿一致のみ
+                    const isMember = hasRoster ? this.isRosterMember(player.name) : true;
+                    if (!isMember && !includeGuests) return;
+
+                    if (!aggMap.has(key)) {
+                        aggMap.set(key, {
+                            displayName: player.name,
+                            isMember,
+                            gp: 0,
+                            minMs: 0,
+                            _gameIds: new Set(),
+                            p2m: 0, p2a: 0, p3m: 0, p3a: 0,
+                            ftm: 0, fta: 0,
+                            orb: 0, drb: 0,
+                            ast: 0, stl: 0, blk: 0, to: 0, pf: 0
+                        });
+                    }
+                    const agg = aggMap.get(key);
+                    agg.displayName = player.name;
+                    agg.isMember = isMember;
+                    // 同一試合内で A/B 両方に名前が出ていても GP は +1（_gameIds で重複防止）
+                    if (!agg._gameIds.has(gameId)) {
+                        agg._gameIds.add(gameId);
+                        agg.gp++;
+                    }
+                    agg.minMs += (player.minMs || 0);
+                    const s = player.stats || {};
+                    ['p2m','p2a','p3m','p3a','ftm','fta','orb','drb','ast','stl','blk','to','pf']
+                        .forEach(k => { agg[k] += (s[k] || 0); });
+                };
+
+                games.forEach(game => {
+                    // A/B 両チームから合算
+                    game.teams.A.players.forEach(p => addPlayer(p, game.id));
+                    if (game.teams.B && Array.isArray(game.teams.B.players)) {
+                        game.teams.B.players.forEach(p => addPlayer(p, game.id));
+                    }
+                });
+
+                const rows = [...aggMap.values()].map(agg => {
+                    const pts    = agg.p2m * 2 + agg.p3m * 3 + agg.ftm;
+                    const reb    = agg.orb + agg.drb;
+                    const fgMiss = Math.max(0, agg.p2a - agg.p2m) + Math.max(0, agg.p3a - agg.p3m);
+                    const ftMiss = Math.max(0, agg.fta - agg.ftm);
+                    const eff    = pts + reb + agg.ast + agg.stl + agg.blk - fgMiss - ftMiss - agg.to;
+                    const gp     = agg.gp;
+                    const minTotal = agg.minMs / 60000; // 分
+                    return {
+                        name:    agg.displayName,
+                        isMember: agg.isMember,
+                        gp,
+                        min: minTotal, minAvg: gp > 0 ? minTotal / gp : 0,
+                        pts,     ptsAvg: gp > 0 ? pts  / gp : 0,
+                        fgPct:   (agg.p2a + agg.p3a) > 0
+                                    ? (agg.p2m + agg.p3m) / (agg.p2a + agg.p3a) * 100 : null,
+                        p3Pct:   agg.p3a > 0 ? agg.p3m / agg.p3a * 100 : null,
+                        ftPct:   agg.fta > 0 ? agg.ftm / agg.fta * 100 : null,
+                        reb,     rebAvg: gp > 0 ? reb  / gp : 0,
+                        ast: agg.ast, astAvg: gp > 0 ? agg.ast / gp : 0,
+                        stl: agg.stl, blk: agg.blk,
+                        to:  agg.to,  pf:  agg.pf,
+                        eff,     effAvg: gp > 0 ? eff  / gp : 0,
+                        // CSV用にraw値を保持
+                        _raw: agg
+                    };
+                });
+
+                return { rows, hasRoster };
+            }
+
             renderMonthlyStats() {
                 const sel     = document.getElementById('monthly-month-select');
                 const month   = sel.value;
@@ -2991,10 +3742,10 @@ Google AdSense 設定手順
 
                 this.renderSavedGamesList(games);
 
-                // チーム名表示を更新
-                if (games.length > 0) {
-                    document.getElementById('monthly-team-name').textContent = games[0].teams.A.name;
-                }
+                // チーム名表示を更新（名簿のチーム名を優先、なければA側）
+                const teamLabel = this.roster.teamName
+                    || (games.length > 0 ? games[0].teams.A.name : '自チーム');
+                document.getElementById('monthly-team-name').textContent = teamLabel;
 
                 const tbody = document.getElementById('monthly-stats-body');
                 const emptyEl = document.getElementById('monthly-stats-empty');
@@ -3012,54 +3763,8 @@ Google AdSense 設定手順
                 tableEl.style.display = '';
                 csvBtn.style.display = '';
 
-                // 選手名で集計
-                const aggMap = new Map();
-
-                games.forEach(game => {
-                    game.teams.A.players.forEach(player => {
-                        const key = player.name.trim().toLowerCase();
-                        if (!aggMap.has(key)) {
-                            aggMap.set(key, {
-                                displayName: player.name,
-                                gp: 0,
-                                p2m: 0, p2a: 0, p3m: 0, p3a: 0,
-                                ftm: 0, fta: 0,
-                                orb: 0, drb: 0,
-                                ast: 0, stl: 0, blk: 0, to: 0, pf: 0
-                            });
-                        }
-                        const agg = aggMap.get(key);
-                        agg.displayName = player.name;
-                        agg.gp++;
-                        const s = player.stats;
-                        ['p2m','p2a','p3m','p3a','ftm','fta','orb','drb','ast','stl','blk','to','pf']
-                            .forEach(k => { agg[k] += (s[k] || 0); });
-                    });
-                });
-
-                // 派生値を計算
-                const rows = [...aggMap.values()].map(agg => {
-                    const pts = agg.p2m * 2 + agg.p3m * 3 + agg.ftm;
-                    const reb = agg.orb + agg.drb;
-                    const fgMiss = Math.max(0, agg.p2a - agg.p2m) + Math.max(0, agg.p3a - agg.p3m);
-                    const ftMiss = Math.max(0, agg.fta - agg.ftm);
-                    const eff    = pts + reb + agg.ast + agg.stl + agg.blk - fgMiss - ftMiss - agg.to;
-                    const gp     = agg.gp;
-                    return {
-                        name:    agg.displayName,
-                        gp,
-                        pts,     ptsAvg: gp > 0 ? pts  / gp : 0,
-                        fgPct:   (agg.p2a + agg.p3a) > 0
-                                    ? (agg.p2m + agg.p3m) / (agg.p2a + agg.p3a) * 100 : null,
-                        p3Pct:   agg.p3a > 0 ? agg.p3m / agg.p3a * 100 : null,
-                        ftPct:   agg.fta > 0 ? agg.ftm / agg.fta * 100 : null,
-                        reb,     rebAvg: gp > 0 ? reb  / gp : 0,
-                        ast: agg.ast, astAvg: gp > 0 ? agg.ast / gp : 0,
-                        stl: agg.stl, blk: agg.blk,
-                        to:  agg.to,  pf:  agg.pf,
-                        eff,     effAvg: gp > 0 ? eff  / gp : 0
-                    };
-                });
+                const includeGuests = document.getElementById('monthly-include-guests')?.checked || false;
+                const { rows, hasRoster } = this.buildMonthlyAggregation(games, includeGuests);
 
                 // ソート
                 const key = this._monthlySortKey || 'pts';
@@ -3079,15 +3784,29 @@ Google AdSense 設定手順
                 const fmtPct = v => v !== null && v !== undefined ? v.toFixed(1) + '%' : '-';
                 const fmtInt = v => v !== null && v !== undefined ? Math.round(v) : '-';
 
+                if (rows.length === 0) {
+                    const msg = hasRoster
+                        ? '名簿に登録されたメンバーの記録がこの月にはありません。「ゲストも表示」で全選手を確認できます。'
+                        : 'この月の保存済みゲームに記録がありません。';
+                    tbody.innerHTML = `<tr><td colspan="19" class="p-4 text-center text-xs text-gray-400">${msg}</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = rows.map((r, idx) => {
                     const bg     = idx % 2 === 0 ? 'bg-white' : 'bg-gray-50';
                     const effCls = r.eff > 0 ? 'text-green-600' : r.eff < 0 ? 'text-red-500' : 'text-gray-500';
+                    const memberMark = hasRoster
+                        ? (r.isMember ? '<span class="member-badge">★</span>' : '<span class="guest-tag">ゲスト</span>')
+                        : '';
+                    const nameCls = r.isMember ? 'text-indigo-600' : 'text-gray-500';
                     return `
                         <tr class="${bg}">
-                            <td class="p-2 font-bold text-xs sticky left-0 ${bg} border-r border-gray-100 z-10 text-indigo-600 whitespace-nowrap">
-                                ${this.escapeHtml(r.name)}
+                            <td class="p-2 font-bold text-xs sticky left-0 ${bg} border-r border-gray-100 z-10 ${nameCls} whitespace-nowrap">
+                                ${memberMark}${this.escapeHtml(r.name)}
                             </td>
                             <td class="p-2 text-center text-gray-500">${r.gp}</td>
+                            <td class="p-2 text-center text-gray-500">${fmtInt(r.min)}</td>
+                            <td class="p-2 text-center text-gray-400">${fmt1(r.minAvg)}</td>
                             <td class="p-2 text-center font-bold text-secondary">${fmtInt(r.pts)}</td>
                             <td class="p-2 text-center text-gray-400">${fmt1(r.ptsAvg)}</td>
                             <td class="p-2 text-center font-mono">${fmtPct(r.fgPct)}</td>
@@ -3150,119 +3869,89 @@ Google AdSense 設定手順
                 };
 
                 const [y, mo] = month.split('-');
-                const teamName = games[0].teams.A.name;
+                const teamName = this.roster.teamName || games[0].teams.A.name;
+                const includeGuests = document.getElementById('monthly-include-guests')?.checked || false;
+                const { rows, hasRoster } = this.buildMonthlyAggregation(games, includeGuests);
 
-                // 選手名で集計
-                const aggMap = new Map();
-                games.forEach(game => {
-                    game.teams.A.players.forEach(player => {
-                        const key = player.name.trim().toLowerCase();
-                        if (!aggMap.has(key)) {
-                            aggMap.set(key, {
-                                displayName: player.name, gp: 0,
-                                p2m: 0, p2a: 0, p3m: 0, p3a: 0,
-                                ftm: 0, fta: 0, orb: 0, drb: 0,
-                                ast: 0, stl: 0, blk: 0, to: 0, pf: 0
-                            });
-                        }
-                        const agg = aggMap.get(key);
-                        agg.displayName = player.name;
-                        agg.gp++;
-                        const s = player.stats;
-                        ['p2m','p2a','p3m','p3a','ftm','fta','orb','drb','ast','stl','blk','to','pf']
-                            .forEach(k => { agg[k] += (s[k] || 0); });
-                    });
-                });
+                if (rows.length === 0) {
+                    alert('出力対象の選手がいません。');
+                    return;
+                }
 
-                // 集計データを配列化（BOX SCORE CSV と同じ縦=スタッツ/横=選手の形式で出力するため）
-                const players = [...aggMap.values()].sort((a, b) => {
-                    const ptsA = a.p2m * 2 + a.p3m * 3 + a.ftm;
-                    const ptsB = b.p2m * 2 + b.p3m * 3 + b.ftm;
-                    return ptsB - ptsA;
-                });
+                // PTS降順で並べる
+                const sorted = rows.slice().sort((a, b) => b.pts - a.pts);
 
-                // BOX SCORE CSV と同じ addStatsSection パターン
+                // 縦=スタッツ/横=選手 形式
                 const addStatsSection = (title, statRows) => {
                     let section = `=== ${title} ===\n`;
-                    const headerRow = ["Stat Category", ...players.map(p => escapeCsv(p.displayName))];
+                    const headerRow = ["Stat Category", ...sorted.map(r => {
+                        const tag = hasRoster ? (r.isMember ? '★' : '(G)') : '';
+                        return escapeCsv(`${tag}${r.name}`);
+                    })];
                     section += headerRow.join(",") + "\n";
                     statRows.forEach(rowDef => {
                         const rowData = [escapeCsv(rowDef.label)];
-                        players.forEach(p => { rowData.push(escapeCsv(rowDef.getter(p))); });
+                        sorted.forEach(r => { rowData.push(escapeCsv(rowDef.getter(r))); });
                         section += rowData.join(",") + "\n";
                     });
                     return section + "\n";
                 };
 
-                // 合計スタッツ行の定義
+                const fmt1 = v => v !== null && v !== undefined ? v.toFixed(1) : '-';
+                const fmtPct = v => v !== null && v !== undefined ? v.toFixed(1) + "%" : '-';
+
                 const totalStatRows = [
-                    { label: "GP", getter: p => p.gp },
-                    { label: "合計得点", getter: p => p.p2m * 2 + p.p3m * 3 + p.ftm },
-                    { label: "2P 成功数", getter: p => p.p2m },
-                    { label: "2P 試投数", getter: p => p.p2a },
-                    { label: "2P %", getter: p => p.p2a ? (p.p2m / p.p2a * 100).toFixed(1) + "%" : "-" },
-                    { label: "3P 成功数", getter: p => p.p3m },
-                    { label: "3P 試投数", getter: p => p.p3a },
-                    { label: "3P %", getter: p => p.p3a ? (p.p3m / p.p3a * 100).toFixed(1) + "%" : "-" },
-                    { label: "FT 成功数", getter: p => p.ftm },
-                    { label: "FT 試投数", getter: p => p.fta },
-                    { label: "FT %", getter: p => p.fta ? (p.ftm / p.fta * 100).toFixed(1) + "%" : "-" },
-                    { label: "OR", getter: p => p.orb },
-                    { label: "DR", getter: p => p.drb },
-                    { label: "Total Rebound", getter: p => p.orb + p.drb },
-                    { label: "AST", getter: p => p.ast },
-                    { label: "Steal", getter: p => p.stl },
-                    { label: "Block", getter: p => p.blk },
-                    { label: "Turnover", getter: p => p.to },
-                    { label: "PF", getter: p => p.pf },
-                    { label: "EFF", getter: p => {
-                        const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
-                        const reb = p.orb + p.drb;
-                        const fgMiss = Math.max(0, p.p2a - p.p2m) + Math.max(0, p.p3a - p.p3m);
-                        const ftMiss = Math.max(0, p.fta - p.ftm);
-                        return pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
-                    }}
+                    { label: "GP", getter: r => r.gp },
+                    { label: "MIN(分)", getter: r => Math.round(r.min) },
+                    { label: "合計得点", getter: r => r.pts },
+                    { label: "2P 成功数", getter: r => r._raw.p2m },
+                    { label: "2P 試投数", getter: r => r._raw.p2a },
+                    { label: "2P %", getter: r => r._raw.p2a ? (r._raw.p2m / r._raw.p2a * 100).toFixed(1) + "%" : "-" },
+                    { label: "3P 成功数", getter: r => r._raw.p3m },
+                    { label: "3P 試投数", getter: r => r._raw.p3a },
+                    { label: "3P %", getter: r => fmtPct(r.p3Pct) },
+                    { label: "FT 成功数", getter: r => r._raw.ftm },
+                    { label: "FT 試投数", getter: r => r._raw.fta },
+                    { label: "FT %", getter: r => fmtPct(r.ftPct) },
+                    { label: "FG %", getter: r => fmtPct(r.fgPct) },
+                    { label: "OR", getter: r => r._raw.orb },
+                    { label: "DR", getter: r => r._raw.drb },
+                    { label: "Total Rebound", getter: r => r.reb },
+                    { label: "AST", getter: r => r.ast },
+                    { label: "Steal", getter: r => r.stl },
+                    { label: "Block", getter: r => r.blk },
+                    { label: "Turnover", getter: r => r.to },
+                    { label: "PF", getter: r => r.pf },
+                    { label: "EFF", getter: r => r.eff }
                 ];
 
-                // 1試合平均行の定義
                 const avgStatRows = [
-                    { label: "PTS/G", getter: p => p.gp > 0 ? ((p.p2m * 2 + p.p3m * 3 + p.ftm) / p.gp).toFixed(1) : "0.0" },
-                    { label: "REB/G", getter: p => p.gp > 0 ? ((p.orb + p.drb) / p.gp).toFixed(1) : "0.0" },
-                    { label: "AST/G", getter: p => p.gp > 0 ? (p.ast / p.gp).toFixed(1) : "0.0" },
-                    { label: "STL/G", getter: p => p.gp > 0 ? (p.stl / p.gp).toFixed(1) : "0.0" },
-                    { label: "BLK/G", getter: p => p.gp > 0 ? (p.blk / p.gp).toFixed(1) : "0.0" },
-                    { label: "TO/G", getter: p => p.gp > 0 ? (p.to / p.gp).toFixed(1) : "0.0" },
-                    { label: "EFF/G", getter: p => {
-                        if (p.gp === 0) return "0.0";
-                        const pts = p.p2m * 2 + p.p3m * 3 + p.ftm;
-                        const reb = p.orb + p.drb;
-                        const fgMiss = Math.max(0, p.p2a - p.p2m) + Math.max(0, p.p3a - p.p3m);
-                        const ftMiss = Math.max(0, p.fta - p.ftm);
-                        const eff = pts + reb + p.ast + p.stl + p.blk - fgMiss - ftMiss - p.to;
-                        return (eff / p.gp).toFixed(1);
-                    }}
+                    { label: "MIN/G", getter: r => fmt1(r.minAvg) },
+                    { label: "PTS/G", getter: r => fmt1(r.ptsAvg) },
+                    { label: "REB/G", getter: r => fmt1(r.rebAvg) },
+                    { label: "AST/G", getter: r => fmt1(r.astAvg) },
+                    { label: "STL/G", getter: r => r.gp > 0 ? (r.stl / r.gp).toFixed(1) : "0.0" },
+                    { label: "BLK/G", getter: r => r.gp > 0 ? (r.blk / r.gp).toFixed(1) : "0.0" },
+                    { label: "TO/G",  getter: r => r.gp > 0 ? (r.to  / r.gp).toFixed(1) : "0.0" },
+                    { label: "EFF/G", getter: r => fmt1(r.effAvg) }
                 ];
 
                 let csv = '';
 
-                // ヘッダー情報
                 csv += `=== 月間スタッツ集計 ===\n`;
                 csv += `期間,${y}年${parseInt(mo)}月\n`;
                 csv += `チーム,${escapeCsv(teamName)}\n`;
-                csv += `試合数,${games.length}\n\n`;
+                csv += `試合数,${games.length}\n`;
+                csv += `集計対象,${includeGuests ? 'メンバー＋ゲスト' : (hasRoster ? '名簿メンバーのみ' : '全選手')}\n\n`;
 
-                // 試合一覧
                 csv += `=== 試合一覧 ===\n`;
-                csv += `日付,イベント,${escapeCsv(teamName)},対戦相手,相手スコア\n`;
+                csv += `日付,イベント,${escapeCsv(teamName)} スコア,対戦相手,相手スコア\n`;
                 games.forEach(g => {
                     csv += `${g.gameInfo.date},${escapeCsv(g.gameInfo.event || '-')},${g.teams.A.score},${escapeCsv(g.teams.B.name)},${g.teams.B.score}\n`;
                 });
                 csv += '\n';
 
-                // 月間集計（合計）
                 csv += addStatsSection("月間集計（合計）", totalStatRows);
-
-                // 月間集計（1試合平均）
                 csv += addStatsSection("月間集計（1試合平均）", avgStatRows);
 
                 const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
@@ -3271,7 +3960,8 @@ Google AdSense 設定手順
 
                 const link = document.createElement('a');
                 link.setAttribute('href', url);
-                link.setAttribute('download', `monthly_stats_${month}.csv`);
+                const suffix = includeGuests ? '_全選手' : '';
+                link.setAttribute('download', `monthly_stats_${month}${suffix}.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -3297,6 +3987,7 @@ Google AdSense 設定手順
                 }
 
                 console.log('Resetting...');
+                this.resetAllPlayerMin();
                 this.state.teams.A.players = this.createDefaultPlayers('A');
                 this.state.teams.B.players = this.createDefaultPlayers('B');
                 this.state.teams.A.name = '味方チーム';
@@ -3320,6 +4011,7 @@ Google AdSense 設定手順
                 this.updateScoreboard();
                 this.updateCharts();
                 this.updateQuarterUI();
+                this.updateTimerUI();
                 this.clearLocalStorage();
                 console.log('Reset complete');
             }
@@ -3377,10 +4069,19 @@ Google AdSense 設定手順
                 const players = this.state.teams[team].players;
                 const selectedClass = team === 'A' ? 'selected-ally' : 'selected-enemy';
 
+                const hasRoster = this.roster.members.length > 0;
+
                 players.forEach(p => {
                     const isSelected = this.state.selectedPlayer && this.state.selectedPlayer.playerId === p.id;
                     const totalStats = this.getTotalStats(p);
                     const pts = this.calculatePTS(totalStats);
+                    const isMember = this.isRosterMember(p.name);
+                    const memberBadge = isMember ? '<span class="member-badge" title="名簿に登録されたメンバー">★</span>' : '';
+                    const guestTag    = (hasRoster && !isMember) ? '<span class="guest-tag">ゲスト</span>' : '';
+                    const minDisplay  = (this.state.gameTimer.status !== 'idle' || (p.minMs || 0) > 0)
+                        ? `<span id="min-${p.id}" class="player-min ${this.state.gameTimer.status === 'running' && p.isOnCourt ? 'active' : ''}">${this.formatMs(this.getPlayerMinMs(p))}</span>`
+                        : '';
+
                     const div = document.createElement('div');
                     div.className = `player-row flex items-center justify-between px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition ${isSelected ? selectedClass : ''} ${!p.isOnCourt ? 'opacity-50' : ''}`;
                     div.onclick = () => this.selectPlayer(team, p.id);
@@ -3389,12 +4090,17 @@ Google AdSense 設定手順
                         div.innerHTML = `
                             <div class="flex items-center gap-2 flex-1">
                                 <input type="checkbox" class="custom-checkbox" ${p.isOnCourt ? 'checked' : ''} onclick="event.stopPropagation(); app.toggleOnCourt('${team}', '${p.id}')">
-                                <input type="text" value="${p.name}" class="edit-input flex-1" onclick="event.stopPropagation()" onchange="app.updatePlayerName('${team}', '${p.id}', this.value)">
+                                <input type="text" value="${this.escapeHtml(p.name)}" list="roster-names-list" class="edit-input flex-1" onclick="event.stopPropagation()" onchange="app.updatePlayerName('${team}', '${p.id}', this.value)">
                             </div>
                         `;
                     } else {
                         div.innerHTML = `
-                            <span class="font-bold text-sm text-secondary">${p.name} ${!p.isOnCourt ? '<span class="text-[10px] text-gray-400">(Bench)</span>' : ''}</span>
+                            <span class="font-bold text-sm text-secondary">
+                                ${memberBadge}${this.escapeHtml(p.name)}
+                                ${!p.isOnCourt ? '<span class="text-[10px] text-gray-400">(Bench)</span>' : ''}
+                                ${guestTag}
+                                ${minDisplay}
+                            </span>
                             <span class="text-xs text-gray-500 font-mono">${pts} / ${totalStats.pf} / ${totalStats.ast}</span>
                         `;
                     }
