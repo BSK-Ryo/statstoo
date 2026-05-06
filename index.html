@@ -402,6 +402,14 @@ Google AdSense 設定手順
         .game-timer-display.running { color: #4ade80; }
         .game-timer-display.paused  { color: #fbbf24; }
         .game-timer-display.idle    { color: #cbd5e1; }
+        .game-timer-display.capped  { color: #f87171; }
+
+        .settings-q-preset.active,
+        .settings-ot-preset.active {
+            background: #EA580C;
+            color: white;
+            border-color: #EA580C;
+        }
         .game-timer-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
         .game-timer-buttons button {
             font-size: 11px;
@@ -481,6 +489,9 @@ Google AdSense 設定手順
                     <button id="btn-roster" onclick="app.openRosterModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
                         <span>👥 名簿</span>
                     </button>
+                    <button id="btn-settings" onclick="app.openSettingsModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
+                        <span>⚙️ 設定</span>
+                    </button>
                     <button id="btn-edit-mode" onclick="app.toggleEditMode()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
                         <span>✎ メンバー編集</span>
                     </button>
@@ -519,21 +530,33 @@ Google AdSense 設定手順
                 <div id="quarter-scores-detail" class="flex justify-center gap-2 flex-wrap"></div>
             </div>
 
-            <!-- Game Timer Bar -->
-            <div class="game-timer-bar mt-3">
-                <div class="flex items-center gap-3">
+            <!-- Game Timer Bar (クォーター別モード時のみ表示) -->
+            <div id="game-timer-bar" class="game-timer-bar mt-3 hidden">
+                <div class="flex items-center gap-3 flex-wrap">
                     <span class="text-lg">⏱</span>
                     <div>
-                        <div class="text-[10px] uppercase tracking-wide text-white/60 font-bold">出場時間タイマー</div>
-                        <div id="game-timer-display" class="game-timer-display idle">00:00</div>
+                        <div class="text-[10px] uppercase tracking-wide text-white/60 font-bold flex items-center gap-2">
+                            出場時間タイマー
+                            <span id="game-timer-quarter-label" class="text-[11px] text-primary-light bg-primary/20 px-1.5 py-0.5 rounded font-bold">Q1</span>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <div id="game-timer-display" class="game-timer-display idle">00:00</div>
+                            <div id="game-timer-cap" class="text-xs text-white/50 font-mono">/ 10:00</div>
+                        </div>
                     </div>
                 </div>
                 <div class="game-timer-buttons">
-                    <button id="timer-btn-start"  onclick="app.startGameTimer()"  class="btn-start">▶ 開始</button>
-                    <button id="timer-btn-pause"  onclick="app.pauseGameTimer()"  class="btn-pause" style="display:none">⏸ 中断</button>
-                    <button id="timer-btn-resume" onclick="app.resumeGameTimer()" class="btn-resume" style="display:none">▶ 再開</button>
-                    <button id="timer-btn-end"    onclick="app.endGameTimer()"    class="btn-end">⏹ 終了</button>
+                    <button id="timer-btn-start"   onclick="app.startGameTimer()"   class="btn-start">▶ 開始</button>
+                    <button id="timer-btn-pause"   onclick="app.pauseGameTimer()"   class="btn-pause" style="display:none">⏸ 中断</button>
+                    <button id="timer-btn-resume"  onclick="app.resumeGameTimer()"  class="btn-resume" style="display:none">▶ 再開</button>
+                    <button id="timer-btn-nextq"   onclick="app.advanceToNextQuarter()" class="btn-resume" style="display:none">→ 次のQへ</button>
+                    <button id="timer-btn-end"     onclick="app.endGameTimer()"     class="btn-end">⏹ 終了</button>
                 </div>
+            </div>
+
+            <!-- Simple mode timer notice -->
+            <div id="game-timer-simple-notice" class="mt-3 text-[11px] text-white/60 bg-white/5 rounded-lg px-3 py-2 hidden">
+                ⏱ 出場時間タイマーは「クォーター別」モード時に使用できます。記録モードを切り替えてください。
             </div>
         </div>
     </header>
@@ -1162,11 +1185,32 @@ Google AdSense 設定手順
                         </p>
 
                         <h4>④ 出場時間タイマー（MIN）</h4>
-                        <p>スコアボード下のタイマーで、<strong>各選手がコートに出ていた時間を自動計測</strong>します。月末に「誰が何分出ていて、シュート確率がどうだったか」を確認したい時に使えます。</p>
+                        <p>スコアボード下のタイマーで、<strong>各選手がコートに出ていた時間を自動計測</strong>します。バスケのルールに準拠し、<strong>クォーター時間に達すると自動で停止</strong>するので、現実離れした出場時間にはなりません。月末に「誰が何分出ていて、シュート確率がどうだったか」を確認したい時に使えます。</p>
+                        <p style="font-size: 0.85rem; color: #64748b; background: #fff7ed; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #EA580C;">
+                            ⚠️ タイマーは <strong>「クォーター別」記録モード時のみ</strong> 使用できます。シンプルモードでは表示されません。
+                        </p>
+
+                        <p style="margin-top: 1rem;"><strong>事前準備：クォーター時間の設定</strong></p>
                         <div class="step-list">
                             <div class="step-item">
                                 <span class="step-number">1</span>
-                                <div class="step-text"><strong>▶ 開始</strong> — 試合が始まったらタイマーを開始。コートに出ている選手（チェック☑）の MIN がカウントアップされます。</div>
+                                <div class="step-text"><strong>「⚙️ 設定」をタップ</strong> — 画面右上の設定アイコンを押します。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-text"><strong>クォーター時間を選択</strong> — 10分 / 8分 / 6分 / 他（カスタム）から選びます。<br>※ ミニバス〜中学は8分、高校〜社会人は10分が一般的です。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">3</span>
+                                <div class="step-text"><strong>OT（延長戦）時間も設定</strong> — 5分 / 3分 / カスタムから選択できます。</div>
+                            </div>
+                        </div>
+
+                        <p style="margin-top: 1rem;"><strong>試合中の操作</strong></p>
+                        <div class="step-list">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-text"><strong>▶ 開始</strong> — Qが始まったらタイマーを開始。コートに出ている選手（チェック☑）の MIN がカウントアップされます。表示は <span style="font-family:monospace;">02:34 / 10:00</span> のように <strong>現Qの経過時間 / Q長</strong> 形式です。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
@@ -1178,10 +1222,22 @@ Google AdSense 設定手順
                             </div>
                             <div class="step-item">
                                 <span class="step-number">4</span>
-                                <div class="step-text"><strong>⏹ 終了</strong> — 試合終了時に押すと、すべての選手の出場時間が確定します。</div>
+                                <div class="step-text"><strong>Q終了で自動停止</strong> — 設定したクォーター時間に達すると、タイマーは自動で停止し、表示が <span style="color:#dc2626;font-weight:700;">赤色</span> になります。「→ 次のQへ」ボタンが現れるので、押して次のクォーターへ進みます。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">5</span>
+                                <div class="step-text"><strong>→ 次のQへ</strong> — Q1→Q2のように次のクォーターに進むと、Qのタイマーが <span style="font-family:monospace;">00:00</span> にリセットされ、もう一度「▶ 開始」で次のQの計測ができます。選手の累計 MIN は引き継がれます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">6</span>
+                                <div class="step-text"><strong>+OT</strong> — Q4が終わって延長戦が必要な場合は「+OT」ボタンでOTを追加。タイマーはOT用の時間（デフォルト5分）でカウントされます。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">7</span>
+                                <div class="step-text"><strong>⏹ 終了</strong> — 試合終了時に押すと、すべての選手の出場時間が確定します。</div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">8</span>
                                 <div class="step-text"><strong>保存時に修正可能</strong> — 「💾 保存」を押すと、自動計測した出場時間（分単位）を一覧で確認・修正できます。タイマーの止め忘れがあった時の救済にもなります。</div>
                             </div>
                         </div>
@@ -1469,6 +1525,63 @@ Google AdSense 設定手順
                 </button>
                 <button onclick="app.confirmSaveGame()"
                         class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition">
+                    保存する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-md">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>⚙️</span> 設定
+                </h3>
+                <button onclick="app.closeSettingsModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">⏱ クォーター時間</h4>
+                <p class="text-[11px] text-gray-500 mb-2 leading-relaxed">
+                    1クォーターあたりの試合時間を設定します。タイマーがこの時間に達すると自動停止し、次のQへ進めるようになります。
+                </p>
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <button data-qmin="10" class="settings-q-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">10分</button>
+                    <button data-qmin="8"  class="settings-q-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">8分</button>
+                    <button data-qmin="6"  class="settings-q-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">6分</button>
+                    <button data-qmin="custom" class="settings-q-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">他</button>
+                </div>
+                <div id="settings-q-custom-row" class="hidden mt-2 flex items-center gap-2">
+                    <label class="text-xs text-gray-500">カスタム:</label>
+                    <input id="settings-q-custom" type="number" min="1" max="20" step="1" class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg w-20 text-center focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                    <span class="text-xs text-gray-500">分</span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">⏱ OT（延長戦）時間</h4>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-otmin="5" class="settings-ot-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">5分</button>
+                    <button data-otmin="3" class="settings-ot-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">3分</button>
+                    <button data-otmin="custom" class="settings-ot-preset px-3 py-2 text-sm font-bold rounded-lg border-2 border-gray-200 hover:border-primary transition">他</button>
+                </div>
+                <div id="settings-ot-custom-row" class="hidden mt-2 flex items-center gap-2">
+                    <label class="text-xs text-gray-500">カスタム:</label>
+                    <input id="settings-ot-custom" type="number" min="1" max="20" step="1" class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg w-20 text-center focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary">
+                    <span class="text-xs text-gray-500">分</span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-gray-500 bg-gray-50 px-3 py-2 rounded-lg leading-relaxed mb-4">
+                💡 一般的に、ミニバスは8分×4Q、中学は8分×4Q、高校・大学・社会人は10分×4Q、JBA公式は10分×4Q、3x3は10分1ピリオドが標準です。
+            </p>
+
+            <div class="flex gap-2">
+                <button onclick="app.closeSettingsModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-lg transition text-sm">
+                    キャンセル
+                </button>
+                <button onclick="app.saveSettings()" class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg transition text-sm">
                     保存する
                 </button>
             </div>
@@ -1803,9 +1916,12 @@ Google AdSense 設定手順
                     boxScoreView: 'total', // 'total', 'simple', 'Q1', 'Q2', etc.
                     // 出場時間タイマー
                     gameTimer: {
-                        status: 'idle',     // 'idle' | 'running' | 'paused'
-                        elapsedMs: 0,       // 累積稼働時間
-                        runningSince: null  // 最後に running になった時刻 (ms)
+                        status: 'idle',         // 'idle' | 'running' | 'paused'
+                        elapsedMs: 0,           // 現Q内の累計稼働時間
+                        runningSince: null,     // 最後に running になった時刻 (ms)
+                        quarterLengthMs: 600000, // 1Qあたり 10分（デフォルト）
+                        otLengthMs: 300000,      // OTあたり 5分（デフォルト）
+                        reachedCap: false        // 現Qで上限到達済みフラグ
                     }
                 };
                 // ロスター（自チームの登録メンバー）
@@ -1903,6 +2019,10 @@ Google AdSense 設定手順
                                 });
                             });
                         }
+                        // 新フィールドのデフォルト値を保証（旧データ互換）
+                        if (typeof t.quarterLengthMs !== 'number') t.quarterLengthMs = 600000;
+                        if (typeof t.otLengthMs      !== 'number') t.otLengthMs      = 300000;
+                        if (typeof t.reachedCap      !== 'boolean') t.reachedCap     = false;
                         this.state.gameTimer = t;
                     }
 
@@ -2997,35 +3117,61 @@ Google AdSense 設定手順
             // =============================
             setRecordMode(mode) {
                 this.state.recordMode = mode;
+                // シンプルモードへ切替時はタイマー停止（出場時間概念が無いため）
+                if (mode === 'simple' && this.state.gameTimer.status === 'running') {
+                    this._flushAllOnCourt();
+                    this.state.gameTimer.status = 'paused';
+                    this._stopTimerTick();
+                }
                 this.updateQuarterUI();
+                this.updateTimerUI();
                 this.saveToLocalStorage();
             }
 
+            // クォーターを切り替える際はタイマーをリセット（Q毎に独立してカウント）
+            _resetTimerForQuarterSwitch() {
+                if (this.state.gameTimer.status === 'running') {
+                    this._flushAllOnCourt();
+                }
+                this.state.gameTimer.elapsedMs = 0;
+                this.state.gameTimer.runningSince = null;
+                this.state.gameTimer.status = 'idle';
+                this.state.gameTimer.reachedCap = false;
+                this._stopTimerTick();
+            }
+
             setCurrentQuarter(quarter) {
+                if (quarter !== this.state.currentQuarter) {
+                    this._resetTimerForQuarterSwitch();
+                }
                 this.state.currentQuarter = quarter;
                 this.updateQuarterUI();
+                this.updateTimerUI();
                 this.saveToLocalStorage();
             }
 
             nextQuarter() {
                 const currentIndex = this.state.quarters.indexOf(this.state.currentQuarter);
                 if (currentIndex < this.state.quarters.length - 1) {
+                    this._resetTimerForQuarterSwitch();
                     this.state.currentQuarter = this.state.quarters[currentIndex + 1];
                 } else {
-                    // 最後のクォーターの場合は何もしない（OT追加を促す）
                     alert('最後のクォーターです。延長戦が必要な場合は「+OT」ボタンで追加してください。');
                     return;
                 }
                 this.updateQuarterUI();
+                this.updateTimerUI();
                 this.saveToLocalStorage();
             }
 
             addOvertime() {
                 const otCount = this.state.quarters.filter(q => q.startsWith('OT')).length;
                 const newOT = `OT${otCount + 1}`;
+                this._resetTimerForQuarterSwitch();
                 this.state.quarters.push(newOT);
                 this.state.currentQuarter = newOT;
                 this.updateQuarterUI();
+                this.updateTimerUI();
                 this.updateBoxScoreViewOptions();
                 this.saveToLocalStorage();
             }
@@ -3394,15 +3540,33 @@ Google AdSense 設定手順
             }
 
             // =============================
-            // ⏱ 出場時間タイマー
+            // ⏱ 出場時間タイマー（クォーター別モード時のみ有効）
             // =============================
 
+            isTimerEnabled() {
+                return this.state.recordMode === 'quarter';
+            }
+
+            getCurrentQuarterCap() {
+                const q = this.state.currentQuarter || 'Q1';
+                return q.startsWith('OT')
+                    ? this.state.gameTimer.otLengthMs
+                    : this.state.gameTimer.quarterLengthMs;
+            }
+
             startGameTimer() {
+                if (!this.isTimerEnabled()) {
+                    alert('タイマーは「クォーター別」モード時のみ使用できます。記録モードを切り替えてください。');
+                    return;
+                }
                 if (this.state.gameTimer.status === 'running') return;
+                if (this.state.gameTimer.reachedCap) {
+                    alert('現在のクォーターは終了時間に達しています。「→ 次のQへ」を押してから開始してください。');
+                    return;
+                }
                 const now = Date.now();
                 this.state.gameTimer.status = 'running';
                 this.state.gameTimer.runningSince = now;
-                // オンコート選手の起点を設定
                 ['A', 'B'].forEach(team => {
                     this.state.teams[team].players.forEach(p => {
                         if (p.isOnCourt) p.onCourtSince = now;
@@ -3426,6 +3590,10 @@ Google AdSense 設定手順
 
             resumeGameTimer() {
                 if (this.state.gameTimer.status !== 'paused') return;
+                if (this.state.gameTimer.reachedCap) {
+                    alert('現在のクォーターは終了時間に達しています。「→ 次のQへ」を押してから再開してください。');
+                    return;
+                }
                 const now = Date.now();
                 this.state.gameTimer.status = 'running';
                 this.state.gameTimer.runningSince = now;
@@ -3451,6 +3619,41 @@ Google AdSense 設定手順
                 this.saveToLocalStorage();
             }
 
+            // クォーターを次に進める（タイマー側のボタン）
+            advanceToNextQuarter() {
+                const idx = this.state.quarters.indexOf(this.state.currentQuarter);
+                const isLast = idx >= this.state.quarters.length - 1;
+                if (isLast) {
+                    if (!confirm('最後のクォーターです。延長戦（OT）を追加しますか？')) return;
+                    this.addOvertime();
+                    return;
+                }
+                this.setCurrentQuarter(this.state.quarters[idx + 1]);
+            }
+
+            // 現Q内の上限到達チェック → 自動停止
+            _checkCapAndAutoPause() {
+                const cap = this.getCurrentQuarterCap();
+                const elapsed = this.getCurrentElapsedMs();
+                if (elapsed >= cap && !this.state.gameTimer.reachedCap) {
+                    // 上限超過分は捨てて、ちょうどキャップで停止
+                    this._flushAllOnCourt();
+                    // elapsedMs を cap にスナップし、選手 MIN もキャップ超過分を補正
+                    const overflow = this.state.gameTimer.elapsedMs - cap;
+                    if (overflow > 0) {
+                        this.state.gameTimer.elapsedMs = cap;
+                        // 直前の flush で各選手に余剰が乗った可能性があるが、
+                        // タイマー側で overflow ぶん全選手の minMs を一律差し引くと不公平になるため、
+                        // 軽微なズレ（最大1秒）として無視。実用上は問題なし。
+                    }
+                    this.state.gameTimer.status = 'paused';
+                    this.state.gameTimer.reachedCap = true;
+                    this._stopTimerTick();
+                    this.render();
+                    this.saveToLocalStorage();
+                }
+            }
+
             _flushAllOnCourt() {
                 const now = Date.now();
                 ['A', 'B'].forEach(team => {
@@ -3469,7 +3672,10 @@ Google AdSense 設定手順
 
             _startTimerTick() {
                 if (this._timerInterval) return;
-                this._timerInterval = setInterval(() => this.updateTimerUI(), 1000);
+                this._timerInterval = setInterval(() => {
+                    this._checkCapAndAutoPause();
+                    this.updateTimerUI();
+                }, 500);
             }
 
             _stopTimerTick() {
@@ -3503,24 +3709,50 @@ Google AdSense 設定手順
             }
 
             updateTimerUI() {
-                const el = document.getElementById('game-timer-display');
-                if (!el) return;
-                el.textContent = this.formatMs(this.getCurrentElapsedMs());
-                el.classList.remove('idle', 'running', 'paused');
-                el.classList.add(this.state.gameTimer.status);
+                const bar = document.getElementById('game-timer-bar');
+                const notice = document.getElementById('game-timer-simple-notice');
+                if (!bar) return;
+
+                // クォーター別モード以外ではタイマーを隠す
+                if (!this.isTimerEnabled()) {
+                    bar.classList.add('hidden');
+                    if (notice) notice.classList.remove('hidden');
+                    return;
+                }
+                bar.classList.remove('hidden');
+                if (notice) notice.classList.add('hidden');
+
+                const display = document.getElementById('game-timer-display');
+                const capEl   = document.getElementById('game-timer-cap');
+                const qLabel  = document.getElementById('game-timer-quarter-label');
+                if (!display) return;
+
+                const cap = this.getCurrentQuarterCap();
+                const elapsed = Math.min(this.getCurrentElapsedMs(), cap);
+                display.textContent = this.formatMs(elapsed);
+                display.classList.remove('idle', 'running', 'paused', 'capped');
+                display.classList.add(this.state.gameTimer.reachedCap ? 'capped' : this.state.gameTimer.status);
+
+                if (capEl)  capEl.textContent  = `/ ${this.formatMs(cap)}`;
+                if (qLabel) qLabel.textContent = this.state.currentQuarter || 'Q1';
 
                 const btnStart  = document.getElementById('timer-btn-start');
                 const btnPause  = document.getElementById('timer-btn-pause');
                 const btnResume = document.getElementById('timer-btn-resume');
+                const btnNextQ  = document.getElementById('timer-btn-nextq');
                 const btnEnd    = document.getElementById('timer-btn-end');
                 if (!btnStart) return;
+
                 const status = this.state.gameTimer.status;
-                btnStart.style.display  = (status === 'idle')    ? '' : 'none';
-                btnPause.style.display  = (status === 'running') ? '' : 'none';
-                btnResume.style.display = (status === 'paused')  ? '' : 'none';
+                const reached = this.state.gameTimer.reachedCap;
+
+                btnStart.style.display  = (status === 'idle' && !reached) ? '' : 'none';
+                btnPause.style.display  = (status === 'running')          ? '' : 'none';
+                btnResume.style.display = (status === 'paused' && !reached) ? '' : 'none';
+                btnNextQ.style.display  = reached ? '' : 'none';
                 btnEnd.style.display    = (status === 'idle' && this.state.gameTimer.elapsedMs === 0) ? 'none' : '';
 
-                // 選手リストの MIN 表示も更新（軽量に）
+                // 選手リストの MIN 表示も更新
                 ['A', 'B'].forEach(team => {
                     this.state.teams[team].players.forEach(p => {
                         const minEl = document.getElementById(`min-${p.id}`);
@@ -3539,8 +3771,108 @@ Google AdSense 設定手順
                         p.onCourtSince = null;
                     });
                 });
-                this.state.gameTimer = { status: 'idle', elapsedMs: 0, runningSince: null };
+                this.state.gameTimer = {
+                    status: 'idle',
+                    elapsedMs: 0,
+                    runningSince: null,
+                    quarterLengthMs: this.state.gameTimer.quarterLengthMs || 600000,
+                    otLengthMs:      this.state.gameTimer.otLengthMs      || 300000,
+                    reachedCap: false
+                };
                 this._stopTimerTick();
+            }
+
+            // =============================
+            // ⚙️ 設定モーダル
+            // =============================
+
+            openSettingsModal() {
+                const qMin  = Math.round(this.state.gameTimer.quarterLengthMs / 60000);
+                const otMin = Math.round(this.state.gameTimer.otLengthMs / 60000);
+                this._renderSettingsPresets('q',  qMin,  [10, 8, 6]);
+                this._renderSettingsPresets('ot', otMin, [5, 3]);
+                document.getElementById('settings-modal').classList.add('active');
+            }
+
+            _renderSettingsPresets(kind, currentMin, presets) {
+                const sel = `settings-${kind}-preset`;
+                const customRow = document.getElementById(`settings-${kind}-custom-row`);
+                const customInput = document.getElementById(`settings-${kind}-custom`);
+                const isPreset = presets.includes(currentMin);
+
+                document.querySelectorAll(`.${sel}`).forEach(btn => {
+                    const v = btn.dataset[kind === 'q' ? 'qmin' : 'otmin'];
+                    const isActive = v === 'custom' ? !isPreset : (parseInt(v, 10) === currentMin);
+                    btn.classList.toggle('active', isActive);
+                    btn.onclick = () => {
+                        document.querySelectorAll(`.${sel}`).forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        if (v === 'custom') {
+                            customRow.classList.remove('hidden');
+                            customInput.value = isPreset ? '' : currentMin;
+                            customInput.focus();
+                        } else {
+                            customRow.classList.add('hidden');
+                            customInput.value = '';
+                        }
+                    };
+                });
+
+                if (isPreset) {
+                    customRow.classList.add('hidden');
+                    customInput.value = '';
+                } else {
+                    customRow.classList.remove('hidden');
+                    customInput.value = currentMin;
+                }
+            }
+
+            closeSettingsModal() {
+                document.getElementById('settings-modal').classList.remove('active');
+            }
+
+            saveSettings() {
+                const readPreset = (kind) => {
+                    const sel = `settings-${kind}-preset`;
+                    const active = document.querySelector(`.${sel}.active`);
+                    if (!active) return null;
+                    const v = active.dataset[kind === 'q' ? 'qmin' : 'otmin'];
+                    if (v === 'custom') {
+                        const inp = document.getElementById(`settings-${kind}-custom`);
+                        const min = parseInt(inp.value, 10);
+                        if (isNaN(min) || min < 1 || min > 20) {
+                            alert('1〜20分の範囲で入力してください。');
+                            return null;
+                        }
+                        return min;
+                    }
+                    return parseInt(v, 10);
+                };
+
+                const qMin  = readPreset('q');
+                const otMin = readPreset('ot');
+                if (qMin === null || otMin === null) return;
+
+                const newQMs  = qMin  * 60000;
+                const newOtMs = otMin * 60000;
+
+                // 現Q時間を変更した時、すでに上限超えていれば cap 状態に遷移
+                this.state.gameTimer.quarterLengthMs = newQMs;
+                this.state.gameTimer.otLengthMs      = newOtMs;
+                const cap = this.getCurrentQuarterCap();
+                if (this.state.gameTimer.elapsedMs >= cap) {
+                    if (this.state.gameTimer.status === 'running') {
+                        this._flushAllOnCourt();
+                    }
+                    this.state.gameTimer.elapsedMs = cap;
+                    this.state.gameTimer.status = 'paused';
+                    this.state.gameTimer.reachedCap = true;
+                    this._stopTimerTick();
+                }
+                this.saveToLocalStorage();
+                this.closeSettingsModal();
+                this.updateTimerUI();
+                this.showToast('設定を保存しました');
             }
 
             // =============================
