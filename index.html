@@ -410,6 +410,117 @@ Google AdSense 設定手順
             color: white;
             border-color: #EA580C;
         }
+
+        /* Roster Chip List (edit mode の名簿クイック追加) */
+        .roster-chip-area {
+            padding: 8px 10px;
+            background: #fffaf5;
+            border-top: 1px dashed #fde4cc;
+        }
+        .roster-chip-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #c2410c;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .roster-chip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .roster-chip {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: white;
+            border: 1px solid #fdba74;
+            color: #c2410c;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .roster-chip:hover { background: #fff7ed; }
+        .roster-chip:active { transform: scale(0.95); }
+        .roster-chip.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #9ca3af;
+        }
+        .roster-chip-num {
+            display: inline-block;
+            background: #fed7aa;
+            color: #9a3412;
+            padding: 0 4px;
+            border-radius: 3px;
+            margin-right: 3px;
+            font-size: 10px;
+        }
+
+        /* Roster Picker (bulk select) Modal */
+        .roster-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #f3f4f6;
+            background: white;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .roster-picker-row:hover { background: #fff7ed; border-color: #fed7aa; }
+        .roster-picker-row.selected {
+            background: #fff7ed;
+            border-color: #EA580C;
+            box-shadow: 0 0 0 1px #EA580C inset;
+        }
+        .roster-picker-row.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background: #f9fafb;
+        }
+        .roster-picker-row.disabled:hover {
+            background: #f9fafb;
+            border-color: #f3f4f6;
+        }
+        .roster-picker-num {
+            font-size: 12px;
+            font-weight: 700;
+            color: #c2410c;
+            background: #fed7aa;
+            padding: 2px 8px;
+            border-radius: 4px;
+            min-width: 36px;
+            text-align: center;
+        }
+        .roster-picker-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .roster-picker-status {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Player delete button (edit mode) */
+        .player-delete-btn {
+            color: #ef4444;
+            font-size: 18px;
+            line-height: 1;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .player-delete-btn:hover { background: #fee2e2; }
         .game-timer-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
         .game-timer-buttons button {
             font-size: 11px;
@@ -634,8 +745,13 @@ Google AdSense 設定手順
                 </div>
                 <div id="list-teamA" class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
                 </div>
-                <div id="add-teamA-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 text-center">
-                    <button onclick="app.addNewPlayer('A')" class="w-full py-2 text-xs text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition font-bold">+ 選手を追加</button>
+                <div id="chips-teamA" class="roster-chip-area hidden">
+                    <span class="roster-chip-label">📋 名簿からタップで追加</span>
+                    <div id="chips-list-teamA" class="roster-chip-list"></div>
+                </div>
+                <div id="add-teamA-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 grid grid-cols-2 gap-2">
+                    <button onclick="app.addNewPlayer('A')" class="py-2 text-xs text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition font-bold">+ 選手を追加</button>
+                    <button onclick="app.openRosterPickerModal('A')" class="py-2 text-xs text-orange-600 border border-orange-200 rounded-lg hover:bg-orange-50 transition font-bold">📋 名簿から</button>
                 </div>
             </div>
 
@@ -649,8 +765,13 @@ Google AdSense 設定手順
                 </div>
                 <div id="list-teamB" class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
                 </div>
-                <div id="add-teamB-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 text-center">
-                    <button onclick="app.addNewPlayer('B')" class="w-full py-2 text-xs text-rose-600 border border-rose-200 rounded-lg hover:bg-rose-50 transition font-bold">+ 選手を追加</button>
+                <div id="chips-teamB" class="roster-chip-area hidden">
+                    <span class="roster-chip-label">📋 名簿からタップで追加</span>
+                    <div id="chips-list-teamB" class="roster-chip-list"></div>
+                </div>
+                <div id="add-teamB-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 grid grid-cols-2 gap-2">
+                    <button onclick="app.addNewPlayer('B')" class="py-2 text-xs text-rose-600 border border-rose-200 rounded-lg hover:bg-rose-50 transition font-bold">+ 選手を追加</button>
+                    <button onclick="app.openRosterPickerModal('B')" class="py-2 text-xs text-orange-600 border border-orange-200 rounded-lg hover:bg-orange-50 transition font-bold">📋 名簿から</button>
                 </div>
             </div>
         </section>
@@ -1583,6 +1704,45 @@ Google AdSense 設定手順
                 </button>
                 <button onclick="app.saveSettings()" class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg transition text-sm">
                     保存する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roster Picker Modal (名簿から一括選択して試合に追加) -->
+    <div id="roster-picker-modal" class="modal-overlay">
+        <div class="modal-content p-4 w-full max-w-md">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>📋</span> 名簿から追加
+                </h3>
+                <button onclick="app.closeRosterPickerModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <p class="text-xs text-gray-500 mb-3 leading-relaxed">
+                <span id="roster-picker-target-label" class="font-bold text-primary">味方チーム</span> に追加する選手を選んでください。<br>
+                すでに登録されている選手はグレー表示で選択できません。
+            </p>
+
+            <div class="flex justify-between items-center mb-2 text-xs">
+                <button onclick="app.toggleRosterPickerSelectAll()" class="text-primary hover:text-primary-dark font-bold">全選択 / 解除</button>
+                <span id="roster-picker-count" class="text-gray-500">0人選択中</span>
+            </div>
+
+            <div id="roster-picker-list" class="space-y-1.5 max-h-[45vh] overflow-y-auto pr-1 mb-3">
+            </div>
+
+            <label class="flex items-center gap-2 mb-3 cursor-pointer text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                <input id="roster-picker-on-court" type="checkbox" class="custom-checkbox" style="width:14px;height:14px;" checked>
+                追加した選手を <span class="font-bold">「コートに出ている」</span> 状態にする
+            </label>
+
+            <div class="flex gap-2">
+                <button onclick="app.closeRosterPickerModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-lg transition text-sm">
+                    キャンセル
+                </button>
+                <button onclick="app.confirmRosterPickerAdd()" id="roster-picker-confirm" class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg transition text-sm disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+                    追加する
                 </button>
             </div>
         </div>
@@ -3142,6 +3302,15 @@ Google AdSense 設定手順
 
             setCurrentQuarter(quarter) {
                 if (quarter !== this.state.currentQuarter) {
+                    // 進行中のタイマーが乗っている場合は誤クリック防止のため確認
+                    const t = this.state.gameTimer;
+                    const hasInflight = t.status === 'running'
+                        || (t.status === 'paused' && t.elapsedMs > 0 && !t.reachedCap);
+                    if (hasInflight) {
+                        if (!confirm(`現在の ${this.state.currentQuarter} のタイマーは ${this.formatMs(this.getCurrentElapsedMs())} 経過しています。\n${quarter} に切り替えるとこのQのタイマーは 00:00 にリセットされます（選手の累計MINは維持）。続行しますか？`)) {
+                            return;
+                        }
+                    }
                     this._resetTimerForQuarterSwitch();
                 }
                 this.state.currentQuarter = quarter;
@@ -3326,6 +3495,8 @@ Google AdSense 設定手順
                 document.getElementById('btn-edit-mode').classList.toggle('bg-primary', this.state.editMode);
                 document.getElementById('add-teamA-container').classList.toggle('hidden', !this.state.editMode);
                 document.getElementById('add-teamB-container').classList.toggle('hidden', !this.state.editMode);
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
                 this.render();
             }
 
@@ -3353,6 +3524,8 @@ Google AdSense 設定手順
                 this.renderStatsTable();
                 this.renderTeamList('A');
                 this.renderTeamList('B');
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
                 this.saveToLocalStorage();
             }
 
@@ -3428,6 +3601,200 @@ Google AdSense 設定手順
                 this.renderStatsTable();
                 this.refreshMonthlySectionUI();
                 this.refreshNamesDatalist();
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
+            }
+
+            // =============================
+            // 📋 名簿から試合へ追加（A: モーダル / C: チップ）
+            // =============================
+
+            // 試合中（両チーム）に既に同名で登録済みかどうか
+            isPlayerAlreadyInGame(name) {
+                const key = this.normalizeName(name);
+                if (!key) return false;
+                return ['A', 'B'].some(t =>
+                    this.state.teams[t].players.some(p => this.normalizeName(p.name) === key)
+                );
+            }
+
+            // 試合に新規選手を追加（名簿メンバーから または 自由名で）
+            _addPlayerToTeam(team, name, number, isOnCourt) {
+                if (!name) return null;
+                if (this.isPlayerAlreadyInGame(name)) return null;
+                const player = {
+                    id: `${team}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+                    name,
+                    number: number || '',
+                    team,
+                    isOnCourt: !!isOnCourt,
+                    stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
+                    quarterStats: {},
+                    minMs: 0,
+                    onCourtSince: null
+                };
+                // タイマー稼働中で onCourt として追加する場合は起点を設定
+                if (isOnCourt && this.state.gameTimer.status === 'running') {
+                    player.onCourtSince = Date.now();
+                }
+                this.state.teams[team].players.push(player);
+                return player;
+            }
+
+            // ----- A. 一括選択モーダル -----
+
+            openRosterPickerModal(team) {
+                if (this.roster.members.length === 0) {
+                    if (confirm('名簿が空です。先に「👥 名簿」から登録しますか？')) {
+                        this.openRosterModal();
+                    }
+                    return;
+                }
+                this._pickerTargetTeam = team;
+                this._pickerSelected = new Set();
+                const teamName = team === 'A' ? this.state.teams.A.name : this.state.teams.B.name;
+                document.getElementById('roster-picker-target-label').textContent = teamName;
+                document.getElementById('roster-picker-on-court').checked = true;
+                this.renderRosterPickerList();
+                document.getElementById('roster-picker-modal').classList.add('active');
+            }
+
+            closeRosterPickerModal() {
+                document.getElementById('roster-picker-modal').classList.remove('active');
+                this._pickerTargetTeam = null;
+                this._pickerSelected = null;
+            }
+
+            renderRosterPickerList() {
+                const list = document.getElementById('roster-picker-list');
+                if (!list) return;
+                const html = this.roster.members.map(m => {
+                    const already = this.isPlayerAlreadyInGame(m.name);
+                    const selected = this._pickerSelected && this._pickerSelected.has(m.id);
+                    const cls = already ? 'roster-picker-row disabled' : (selected ? 'roster-picker-row selected' : 'roster-picker-row');
+                    const status = already ? '<span class="roster-picker-status">既に登録済み</span>' : '';
+                    const num = m.number ? `#${this.escapeHtml(m.number)}` : '';
+                    const onclick = already ? '' : `onclick="app.toggleRosterPickerSelect('${m.id}')"`;
+                    return `
+                        <div class="${cls}" ${onclick}>
+                            <span class="roster-picker-num">${num || '-'}</span>
+                            <span class="roster-picker-name">${this.escapeHtml(m.name || '(名前未入力)')}</span>
+                            ${status}
+                            ${already ? '' : `<input type="checkbox" class="custom-checkbox" style="width:16px;height:16px;pointer-events:none;" ${selected ? 'checked' : ''}>`}
+                        </div>
+                    `;
+                }).join('');
+                list.innerHTML = html;
+                this._updateRosterPickerCount();
+            }
+
+            toggleRosterPickerSelect(memberId) {
+                if (!this._pickerSelected) this._pickerSelected = new Set();
+                if (this._pickerSelected.has(memberId)) {
+                    this._pickerSelected.delete(memberId);
+                } else {
+                    this._pickerSelected.add(memberId);
+                }
+                this.renderRosterPickerList();
+            }
+
+            toggleRosterPickerSelectAll() {
+                if (!this._pickerSelected) this._pickerSelected = new Set();
+                const selectable = this.roster.members.filter(m => !this.isPlayerAlreadyInGame(m.name));
+                const allSelected = selectable.length > 0 && selectable.every(m => this._pickerSelected.has(m.id));
+                if (allSelected) {
+                    this._pickerSelected.clear();
+                } else {
+                    selectable.forEach(m => this._pickerSelected.add(m.id));
+                }
+                this.renderRosterPickerList();
+            }
+
+            _updateRosterPickerCount() {
+                const n = this._pickerSelected ? this._pickerSelected.size : 0;
+                document.getElementById('roster-picker-count').textContent = `${n}人選択中`;
+                document.getElementById('roster-picker-confirm').disabled = (n === 0);
+            }
+
+            confirmRosterPickerAdd() {
+                if (!this._pickerSelected || this._pickerSelected.size === 0) return;
+                const team = this._pickerTargetTeam;
+                if (!team) return;
+                const onCourt = document.getElementById('roster-picker-on-court').checked;
+                const ids = Array.from(this._pickerSelected);
+                let added = 0;
+                ids.forEach(id => {
+                    const m = this.roster.members.find(rm => rm.id === id);
+                    if (!m) return;
+                    if (this._addPlayerToTeam(team, m.name, m.number, onCourt)) {
+                        added++;
+                    }
+                });
+                this.closeRosterPickerModal();
+                this.render();
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
+                this.saveToLocalStorage();
+                this.showToast(`${added}人を追加しました`);
+            }
+
+            // ----- C. チップ式クイック追加 -----
+
+            renderRosterChips(team) {
+                const area = document.getElementById(`chips-${team}`);
+                const list = document.getElementById(`chips-list-${team}`);
+                if (!area || !list) return;
+                // 編集モード時 + 名簿が1人以上 のときだけ表示
+                if (!this.state.editMode || this.roster.members.length === 0) {
+                    area.classList.add('hidden');
+                    return;
+                }
+                area.classList.remove('hidden');
+                list.innerHTML = this.roster.members.map(m => {
+                    const already = this.isPlayerAlreadyInGame(m.name);
+                    const cls = already ? 'roster-chip disabled' : 'roster-chip';
+                    const num = m.number ? `<span class="roster-chip-num">#${this.escapeHtml(m.number)}</span>` : '';
+                    const onclick = already ? '' : `onclick="app.addRosterMemberToTeam('${team}', '${m.id}')"`;
+                    const title = already ? '既に追加済みです' : `${this.state.teams[team].name} に追加`;
+                    return `<button class="${cls}" ${onclick} title="${title}">${num}${this.escapeHtml(m.name || '(名前未入力)')}</button>`;
+                }).join('');
+            }
+
+            addRosterMemberToTeam(team, memberId) {
+                const m = this.roster.members.find(rm => rm.id === memberId);
+                if (!m || !m.name) return;
+                // チップから追加 → ベンチ（off court）でスタート（既存の addNewPlayer と同じ振る舞い）
+                const player = this._addPlayerToTeam(team, m.name, m.number, false);
+                if (!player) {
+                    this.showToast('既に登録されています');
+                    return;
+                }
+                this.render();
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
+                this.saveToLocalStorage();
+                this.showToast(`${m.name} を追加しました`);
+            }
+
+            // ----- 選手の削除（編集モード時の × ボタン） -----
+
+            deletePlayer(team, playerId) {
+                const player = this.state.teams[team].players.find(p => p.id === playerId);
+                if (!player) return;
+                const stats = this.getTotalStats(player);
+                const hasStats = Object.values(stats).some(v => v > 0) || (player.minMs || 0) > 0;
+                const msg = hasStats
+                    ? `${player.name} を削除しますか？\n※ 記録済みのスタッツ・出場時間は失われます。`
+                    : `${player.name} を削除しますか？`;
+                if (!confirm(msg)) return;
+                this.state.teams[team].players = this.state.teams[team].players.filter(p => p.id !== playerId);
+                if (this.state.selectedPlayer && this.state.selectedPlayer.playerId === playerId) {
+                    this.deselectPlayer();
+                }
+                this.render();
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
+                this.saveToLocalStorage();
             }
 
             renderRosterModal() {
@@ -3580,6 +3947,9 @@ Google AdSense 設定手順
 
             pauseGameTimer() {
                 if (this.state.gameTimer.status !== 'running') return;
+                // タブ背面化中などで cap を既に超えていたら自動停止に委譲
+                this._checkCapAndAutoPause();
+                if (this.state.gameTimer.reachedCap) return;
                 this._flushAllOnCourt();
                 this.state.gameTimer.status = 'paused';
                 this._stopTimerTick();
@@ -3611,6 +3981,10 @@ Google AdSense 設定手順
             endGameTimer() {
                 if (this.state.gameTimer.status === 'idle' && this.state.gameTimer.elapsedMs === 0) return;
                 if (!confirm('タイマーを終了して出場時間を確定しますか？')) return;
+                // 終了時も cap 超過を防ぐため、running なら cap チェックを先に走らせる
+                if (this.state.gameTimer.status === 'running') {
+                    this._checkCapAndAutoPause();
+                }
                 this._flushAllOnCourt();
                 this.state.gameTimer.status = 'idle';
                 this._stopTimerTick();
@@ -3633,19 +4007,11 @@ Google AdSense 設定手順
 
             // 現Q内の上限到達チェック → 自動停止
             _checkCapAndAutoPause() {
+                if (this.state.gameTimer.status !== 'running') return;
                 const cap = this.getCurrentQuarterCap();
                 const elapsed = this.getCurrentElapsedMs();
-                if (elapsed >= cap && !this.state.gameTimer.reachedCap) {
-                    // 上限超過分は捨てて、ちょうどキャップで停止
-                    this._flushAllOnCourt();
-                    // elapsedMs を cap にスナップし、選手 MIN もキャップ超過分を補正
-                    const overflow = this.state.gameTimer.elapsedMs - cap;
-                    if (overflow > 0) {
-                        this.state.gameTimer.elapsedMs = cap;
-                        // 直前の flush で各選手に余剰が乗った可能性があるが、
-                        // タイマー側で overflow ぶん全選手の minMs を一律差し引くと不公平になるため、
-                        // 軽微なズレ（最大1秒）として無視。実用上は問題なし。
-                    }
+                if (elapsed >= cap) {
+                    this._flushAllOnCourt(); // 内部で cap を超えないよう自動補正
                     this.state.gameTimer.status = 'paused';
                     this.state.gameTimer.reachedCap = true;
                     this._stopTimerTick();
@@ -3654,18 +4020,36 @@ Google AdSense 設定手順
                 }
             }
 
+            // 各選手の onCourtSince + タイマーの runningSince を確定させる。
+            // running 中で現Qの cap を超えそうな場合は cap 到達点で打ち切り、
+            // それ以上の時間（タブ背面化や設定変更による超過）は捨てる。
             _flushAllOnCourt() {
                 const now = Date.now();
+                const cap = this.getCurrentQuarterCap();
+                const isRunning = this.state.gameTimer.status === 'running' && !!this.state.gameTimer.runningSince;
+                let flushUntil = now;
+                if (isRunning) {
+                    const wouldBeElapsed = this.state.gameTimer.elapsedMs + (now - this.state.gameTimer.runningSince);
+                    if (wouldBeElapsed > cap) {
+                        // cap を超えた → 「ちょうど cap に到達した瞬間」で打ち切り
+                        const overshoot = cap - this.state.gameTimer.elapsedMs; // 0 以下の場合あり
+                        flushUntil = this.state.gameTimer.runningSince + Math.max(0, overshoot);
+                    }
+                }
+                // 各選手の minMs を flushUntil まで加算
                 ['A', 'B'].forEach(team => {
                     this.state.teams[team].players.forEach(p => {
                         if (p.onCourtSince) {
-                            p.minMs += now - p.onCourtSince;
+                            const slot = Math.max(0, flushUntil - p.onCourtSince);
+                            p.minMs += slot;
                             p.onCourtSince = null;
                         }
                     });
                 });
+                // タイマー側の elapsedMs を flushUntil まで加算
                 if (this.state.gameTimer.runningSince) {
-                    this.state.gameTimer.elapsedMs += now - this.state.gameTimer.runningSince;
+                    const slotMs = Math.max(0, flushUntil - this.state.gameTimer.runningSince);
+                    this.state.gameTimer.elapsedMs += slotMs;
                     this.state.gameTimer.runningSince = null;
                 }
             }
@@ -3856,15 +4240,34 @@ Google AdSense 設定手順
                 const newQMs  = qMin  * 60000;
                 const newOtMs = otMin * 60000;
 
-                // 現Q時間を変更した時、すでに上限超えていれば cap 状態に遷移
+                // 現Qで既に経過した時間が新キャップを超える場合は警告
+                const oldQ = this.state.currentQuarter || 'Q1';
+                const newCapForCurrent = oldQ.startsWith('OT') ? newOtMs : newQMs;
+                const currentElapsed = this.getCurrentElapsedMs();
+                if (currentElapsed > newCapForCurrent) {
+                    const ok = confirm(
+                        `現在の${oldQ}は既に ${this.formatMs(currentElapsed)} 経過しています。\n`
+                        + `新しい設定（${this.formatMs(newCapForCurrent)}）を超えているため、`
+                        + `${oldQ}は即座に「終了扱い」となり「→ 次のQへ」が表示されます。\n\n`
+                        + `※ 各選手の累計MINは超過分を含むことがあります（過去の記録を遡及修正はしません）。\n\n`
+                        + `続行しますか？`
+                    );
+                    if (!ok) return;
+                }
+
                 this.state.gameTimer.quarterLengthMs = newQMs;
                 this.state.gameTimer.otLengthMs      = newOtMs;
                 const cap = this.getCurrentQuarterCap();
-                if (this.state.gameTimer.elapsedMs >= cap) {
+
+                if (this.getCurrentElapsedMs() >= cap) {
+                    // running なら _flushAllOnCourt が cap で打ち切ってくれる
                     if (this.state.gameTimer.status === 'running') {
                         this._flushAllOnCourt();
                     }
+                    // paused 状態の場合は elapsedMs を cap にスナップするだけ
+                    // （player.minMs は遡及しない＝ユーザー警告済み）
                     this.state.gameTimer.elapsedMs = cap;
+                    this.state.gameTimer.runningSince = null;
                     this.state.gameTimer.status = 'paused';
                     this.state.gameTimer.reachedCap = true;
                     this._stopTimerTick();
@@ -4535,6 +4938,7 @@ Google AdSense 設定手順
                             <div class="flex items-center gap-2 flex-1">
                                 <input type="checkbox" class="custom-checkbox" ${p.isOnCourt ? 'checked' : ''} onclick="event.stopPropagation(); app.toggleOnCourt('${team}', '${p.id}')">
                                 <input type="text" value="${this.escapeHtml(p.name)}" list="roster-names-list" class="edit-input flex-1" onclick="event.stopPropagation()" onchange="app.updatePlayerName('${team}', '${p.id}', this.value)">
+                                <button class="player-delete-btn" onclick="event.stopPropagation(); app.deletePlayer('${team}', '${p.id}')" title="この選手を削除">×</button>
                             </div>
                         `;
                     } else {
