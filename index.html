@@ -746,7 +746,7 @@ Google AdSense 設定手順
                 <div id="list-teamA" class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
                 </div>
                 <div id="chips-teamA" class="roster-chip-area hidden">
-                    <span class="roster-chip-label">📋 名簿からタップで追加</span>
+                    <span class="roster-chip-label">📋 タップで名簿から追加（ベンチへ）</span>
                     <div id="chips-list-teamA" class="roster-chip-list"></div>
                 </div>
                 <div id="add-teamA-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 grid grid-cols-2 gap-2">
@@ -766,7 +766,7 @@ Google AdSense 設定手順
                 <div id="list-teamB" class="divide-y divide-gray-100 max-h-[400px] overflow-y-auto">
                 </div>
                 <div id="chips-teamB" class="roster-chip-area hidden">
-                    <span class="roster-chip-label">📋 名簿からタップで追加</span>
+                    <span class="roster-chip-label">📋 タップで名簿から追加（ベンチへ）</span>
                     <div id="chips-list-teamB" class="roster-chip-list"></div>
                 </div>
                 <div id="add-teamB-container" class="hidden p-2 bg-gray-50 border-t border-gray-100 grid grid-cols-2 gap-2">
@@ -3618,14 +3618,18 @@ Google AdSense 設定手順
                 );
             }
 
+            // 名前が入力済みの名簿メンバーのみを取り出す
+            _getValidRosterMembers() {
+                return this.roster.members.filter(m => m.name && m.name.trim());
+            }
+
             // 試合に新規選手を追加（名簿メンバーから または 自由名で）
-            _addPlayerToTeam(team, name, number, isOnCourt) {
+            _addPlayerToTeam(team, name, isOnCourt) {
                 if (!name) return null;
                 if (this.isPlayerAlreadyInGame(name)) return null;
                 const player = {
                     id: `${team}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                     name,
-                    number: number || '',
                     team,
                     isOnCourt: !!isOnCourt,
                     stats: { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 },
@@ -3644,8 +3648,9 @@ Google AdSense 設定手順
             // ----- A. 一括選択モーダル -----
 
             openRosterPickerModal(team) {
-                if (this.roster.members.length === 0) {
-                    if (confirm('名簿が空です。先に「👥 名簿」から登録しますか？')) {
+                const valid = this._getValidRosterMembers();
+                if (valid.length === 0) {
+                    if (confirm('名簿に登録された選手がいません。先に「👥 名簿」から登録しますか？')) {
                         this.openRosterModal();
                     }
                     return;
@@ -3668,7 +3673,8 @@ Google AdSense 設定手順
             renderRosterPickerList() {
                 const list = document.getElementById('roster-picker-list');
                 if (!list) return;
-                const html = this.roster.members.map(m => {
+                const valid = this._getValidRosterMembers();
+                const html = valid.map(m => {
                     const already = this.isPlayerAlreadyInGame(m.name);
                     const selected = this._pickerSelected && this._pickerSelected.has(m.id);
                     const cls = already ? 'roster-picker-row disabled' : (selected ? 'roster-picker-row selected' : 'roster-picker-row');
@@ -3678,7 +3684,7 @@ Google AdSense 設定手順
                     return `
                         <div class="${cls}" ${onclick}>
                             <span class="roster-picker-num">${num || '-'}</span>
-                            <span class="roster-picker-name">${this.escapeHtml(m.name || '(名前未入力)')}</span>
+                            <span class="roster-picker-name">${this.escapeHtml(m.name)}</span>
                             ${status}
                             ${already ? '' : `<input type="checkbox" class="custom-checkbox" style="width:16px;height:16px;pointer-events:none;" ${selected ? 'checked' : ''}>`}
                         </div>
@@ -3700,7 +3706,7 @@ Google AdSense 設定手順
 
             toggleRosterPickerSelectAll() {
                 if (!this._pickerSelected) this._pickerSelected = new Set();
-                const selectable = this.roster.members.filter(m => !this.isPlayerAlreadyInGame(m.name));
+                const selectable = this._getValidRosterMembers().filter(m => !this.isPlayerAlreadyInGame(m.name));
                 const allSelected = selectable.length > 0 && selectable.every(m => this._pickerSelected.has(m.id));
                 if (allSelected) {
                     this._pickerSelected.clear();
@@ -3726,7 +3732,7 @@ Google AdSense 設定手順
                 ids.forEach(id => {
                     const m = this.roster.members.find(rm => rm.id === id);
                     if (!m) return;
-                    if (this._addPlayerToTeam(team, m.name, m.number, onCourt)) {
+                    if (this._addPlayerToTeam(team, m.name, onCourt)) {
                         added++;
                     }
                 });
@@ -3735,7 +3741,8 @@ Google AdSense 設定手順
                 this.renderRosterChips('A');
                 this.renderRosterChips('B');
                 this.saveToLocalStorage();
-                this.showToast(`${added}人を追加しました`);
+                const suffix = onCourt ? '（コート）' : '（ベンチ）';
+                this.showToast(`${added}人を追加しました${suffix}`);
             }
 
             // ----- C. チップ式クイック追加 -----
@@ -3744,19 +3751,20 @@ Google AdSense 設定手順
                 const area = document.getElementById(`chips-${team}`);
                 const list = document.getElementById(`chips-list-${team}`);
                 if (!area || !list) return;
-                // 編集モード時 + 名簿が1人以上 のときだけ表示
-                if (!this.state.editMode || this.roster.members.length === 0) {
+                const valid = this._getValidRosterMembers();
+                // 編集モード時 + 名前入力済の名簿が1人以上 のときだけ表示
+                if (!this.state.editMode || valid.length === 0) {
                     area.classList.add('hidden');
                     return;
                 }
                 area.classList.remove('hidden');
-                list.innerHTML = this.roster.members.map(m => {
+                list.innerHTML = valid.map(m => {
                     const already = this.isPlayerAlreadyInGame(m.name);
                     const cls = already ? 'roster-chip disabled' : 'roster-chip';
                     const num = m.number ? `<span class="roster-chip-num">#${this.escapeHtml(m.number)}</span>` : '';
                     const onclick = already ? '' : `onclick="app.addRosterMemberToTeam('${team}', '${m.id}')"`;
-                    const title = already ? '既に追加済みです' : `${this.state.teams[team].name} に追加`;
-                    return `<button class="${cls}" ${onclick} title="${title}">${num}${this.escapeHtml(m.name || '(名前未入力)')}</button>`;
+                    const title = already ? '既に追加済みです' : `${this.state.teams[team].name} のベンチに追加`;
+                    return `<button class="${cls}" ${onclick} title="${title}">${num}${this.escapeHtml(m.name)}</button>`;
                 }).join('');
             }
 
@@ -3764,7 +3772,7 @@ Google AdSense 設定手順
                 const m = this.roster.members.find(rm => rm.id === memberId);
                 if (!m || !m.name) return;
                 // チップから追加 → ベンチ（off court）でスタート（既存の addNewPlayer と同じ振る舞い）
-                const player = this._addPlayerToTeam(team, m.name, m.number, false);
+                const player = this._addPlayerToTeam(team, m.name, false);
                 if (!player) {
                     this.showToast('既に登録されています');
                     return;
@@ -3773,7 +3781,7 @@ Google AdSense 設定手順
                 this.renderRosterChips('A');
                 this.renderRosterChips('B');
                 this.saveToLocalStorage();
-                this.showToast(`${m.name} を追加しました`);
+                this.showToast(`${m.name} を追加（ベンチ）`);
             }
 
             // ----- 選手の削除（編集モード時の × ボタン） -----
