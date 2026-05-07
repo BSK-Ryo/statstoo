@@ -404,6 +404,104 @@ Google AdSense 設定手順
         .game-timer-display.idle    { color: #cbd5e1; }
         .game-timer-display.capped  { color: #f87171; }
 
+        /* Tool Toolbar (slim header) */
+        .tool-icon-btn {
+            position: relative;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.08);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 0;
+        }
+        .tool-icon-btn:hover { background: rgba(255,255,255,0.18); color: white; }
+        .tool-icon-btn:active { transform: scale(0.95); }
+        .tool-icon-btn.active { background: #EA580C; color: white; }
+
+        /* CSS-based tooltip (works on hover & focus) */
+        .tool-icon-btn[data-tt]::after {
+            content: attr(data-tt);
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease 0.3s;
+            z-index: 60;
+        }
+        .tool-icon-btn[data-tt]:hover::after,
+        .tool-icon-btn[data-tt]:focus-visible::after { opacity: 1; }
+        @media (hover: none) {
+            .tool-icon-btn[data-tt]::after { display: none; }
+        }
+
+        /* Overflow Menu Dropdown */
+        .overflow-menu-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            min-width: 160px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+            overflow: hidden;
+            z-index: 50;
+        }
+        .overflow-menu-dropdown.hidden { display: none; }
+        .overflow-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            background: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+        .overflow-menu-item:hover { background: #f3f4f6; }
+        .overflow-menu-item.danger { color: #dc2626; }
+        .overflow-menu-item.danger:hover { background: #fee2e2; }
+        .overflow-menu-item span:first-child { font-size: 14px; }
+
+        /* Compact Game Timer Bar */
+        .game-timer-bar {
+            padding: 6px 10px !important;
+            border-radius: 10px !important;
+            gap: 8px;
+        }
+        .game-timer-bar .game-timer-display { font-size: 22px !important; min-width: 64px !important; }
+        .game-timer-buttons button {
+            font-size: 12px !important;
+            padding: 5px 9px !important;
+            min-width: 32px;
+        }
+
+        /* Mobile-only: extra compact for header & score */
+        @media (max-width: 480px) {
+            .tool-icon-btn { width: 34px; height: 34px; }
+            #score-teamA, #score-teamB { font-size: 2.25rem !important; }
+            .scoreboard-team-name { font-size: 11px !important; }
+        }
+
         .settings-q-preset.active,
         .settings-ot-preset.active {
             background: #EA580C;
@@ -589,50 +687,60 @@ Google AdSense 設定手順
 
     <!-- Tool Header -->
     <header class="bg-secondary sticky top-0 z-30 border-b-[3px] border-primary">
-        <div class="max-w-4xl mx-auto px-4 py-3">
-            
-            <div class="flex justify-between items-center mb-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">📊</span>
-                    <h1 class="font-display text-xl tracking-wide text-white m-0"><span class="sr-only">バスケットボール試合スタッツ記録ツール - </span>GAME STATS <span class="text-primary-light">TRACKER</span></h1>
+        <div class="max-w-4xl mx-auto px-4 py-2">
+
+            <!-- Slim Tool Toolbar -->
+            <div class="tool-toolbar flex items-center justify-between gap-2 mb-2">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="text-base">📊</span>
+                    <h1 class="font-display text-sm tracking-wide text-white m-0 whitespace-nowrap">
+                        <span class="sr-only">バスケットボール試合スタッツ記録ツール - </span>GAME STATS <span class="text-primary-light">TRACKER</span>
+                    </h1>
                 </div>
-                <div class="flex gap-2 flex-wrap">
-                    <button id="btn-roster" onclick="app.openRosterModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
-                        <span>👥 名簿</span>
+                <div class="flex items-center gap-1">
+                    <button id="btn-edit-mode" onclick="app.toggleEditMode()" data-tt="メンバー編集" title="メンバー編集" aria-label="メンバー編集" class="tool-icon-btn">
+                        <span class="text-base">✎</span>
                     </button>
-                    <button id="btn-settings" onclick="app.openSettingsModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
-                        <span>⚙️ 設定</span>
+                    <button onclick="app.openSaveGameModal()" data-tt="保存" title="保存" aria-label="保存" class="tool-icon-btn">
+                        <span class="text-base">💾</span>
                     </button>
-                    <button id="btn-edit-mode" onclick="app.toggleEditMode()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
-                        <span>✎ メンバー編集</span>
-                    </button>
-                    <button onclick="app.openSaveGameModal()" class="text-xs bg-white/10 text-white px-3 py-1.5 rounded hover:bg-white/20 transition shadow-sm flex items-center gap-1 font-medium">
-                        💾 保存
-                    </button>
-                    <button onclick="app.resetGame()" class="text-xs bg-white/10 hover:bg-red-500 text-white/80 hover:text-white px-3 py-1.5 rounded transition font-medium">
-                        リセット
-                    </button>
+                    <div id="overflow-menu" class="relative">
+                        <button onclick="app.toggleOverflowMenu()" data-tt="その他" title="その他のメニュー" aria-label="その他のメニュー" class="tool-icon-btn">
+                            <span class="text-base font-bold leading-none">⋮</span>
+                        </button>
+                        <div id="overflow-menu-dropdown" class="overflow-menu-dropdown hidden">
+                            <button onclick="app.closeOverflowMenu(); app.openRosterModal()" class="overflow-menu-item">
+                                <span>👥</span> 名簿
+                            </button>
+                            <button onclick="app.closeOverflowMenu(); app.openSettingsModal()" class="overflow-menu-item">
+                                <span>⚙️</span> 設定
+                            </button>
+                            <button onclick="app.closeOverflowMenu(); app.resetGame()" class="overflow-menu-item danger">
+                                <span>↺</span> リセット
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <!-- Score Board -->
-            <div class="flex items-center justify-between bg-secondary-light rounded-xl p-3 md:p-4 text-white shadow-lg border border-white/10">
+            <div class="flex items-center justify-between bg-secondary-light rounded-xl px-3 py-2 md:p-4 text-white shadow-lg border border-white/10">
                 <div class="flex-1 text-center">
                     <div class="relative group">
-                        <input type="text" id="name-teamA" value="味方チーム" placeholder="チーム名" class="bg-transparent text-center w-full font-bold text-indigo-400 focus:outline-none focus:bg-white/10 hover:bg-white/5 rounded px-2 py-0.5 mb-1 transition-colors text-sm cursor-pointer border border-transparent focus:border-indigo-400/50">
+                        <input type="text" id="name-teamA" value="味方チーム" placeholder="チーム名" class="scoreboard-team-name bg-transparent text-center w-full font-bold text-indigo-400 focus:outline-none focus:bg-white/10 hover:bg-white/5 rounded px-2 py-0.5 transition-colors text-sm cursor-pointer border border-transparent focus:border-indigo-400/50">
                         <span class="absolute right-1 top-1/2 -translate-y-1/2 text-white/30 group-hover:text-white/60 text-xs pointer-events-none">✎</span>
                     </div>
-                    <div id="score-teamA" class="font-display text-5xl md:text-6xl tracking-tight leading-none">0</div>
+                    <div id="score-teamA" class="font-display text-4xl md:text-6xl tracking-tight leading-none">0</div>
                 </div>
-                
-                <div class="px-3 text-white/30 font-display text-2xl">VS</div>
-                
+
+                <div class="px-3 text-white/30 font-display text-xl md:text-2xl">VS</div>
+
                 <div class="flex-1 text-center">
                     <div class="relative group">
-                        <input type="text" id="name-teamB" value="相手チーム" placeholder="チーム名" class="bg-transparent text-center w-full font-bold text-rose-400 focus:outline-none focus:bg-white/10 hover:bg-white/5 rounded px-2 py-0.5 mb-1 transition-colors text-sm cursor-pointer border border-transparent focus:border-rose-400/50">
+                        <input type="text" id="name-teamB" value="相手チーム" placeholder="チーム名" class="scoreboard-team-name bg-transparent text-center w-full font-bold text-rose-400 focus:outline-none focus:bg-white/10 hover:bg-white/5 rounded px-2 py-0.5 transition-colors text-sm cursor-pointer border border-transparent focus:border-rose-400/50">
                         <span class="absolute right-1 top-1/2 -translate-y-1/2 text-white/30 group-hover:text-white/60 text-xs pointer-events-none">✎</span>
                     </div>
-                    <div id="score-teamB" class="font-display text-5xl md:text-6xl tracking-tight leading-none">0</div>
+                    <div id="score-teamB" class="font-display text-4xl md:text-6xl tracking-tight leading-none">0</div>
                 </div>
             </div>
             
@@ -642,32 +750,20 @@ Google AdSense 設定手順
             </div>
 
             <!-- Game Timer Bar (クォーター別モード時のみ表示) -->
-            <div id="game-timer-bar" class="game-timer-bar mt-3 hidden">
-                <div class="flex items-center gap-3 flex-wrap">
-                    <span class="text-lg">⏱</span>
-                    <div>
-                        <div class="text-[10px] uppercase tracking-wide text-white/60 font-bold flex items-center gap-2">
-                            出場時間タイマー
-                            <span id="game-timer-quarter-label" class="text-[11px] text-primary-light bg-primary/20 px-1.5 py-0.5 rounded font-bold">Q1</span>
-                        </div>
-                        <div class="flex items-baseline gap-2">
-                            <div id="game-timer-display" class="game-timer-display idle">00:00</div>
-                            <div id="game-timer-cap" class="text-xs text-white/50 font-mono">/ 10:00</div>
-                        </div>
-                    </div>
+            <div id="game-timer-bar" class="game-timer-bar mt-2 hidden">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-base">⏱</span>
+                    <span id="game-timer-quarter-label" class="text-[10px] text-primary-light bg-primary/20 px-1.5 py-0.5 rounded font-bold flex-shrink-0">Q1</span>
+                    <div id="game-timer-display" class="game-timer-display idle">00:00</div>
+                    <div id="game-timer-cap" class="text-[10px] text-white/50 font-mono whitespace-nowrap">/ 10:00</div>
                 </div>
                 <div class="game-timer-buttons">
-                    <button id="timer-btn-start"   onclick="app.startGameTimer()"   class="btn-start">▶ 開始</button>
-                    <button id="timer-btn-pause"   onclick="app.pauseGameTimer()"   class="btn-pause" style="display:none">⏸ 中断</button>
-                    <button id="timer-btn-resume"  onclick="app.resumeGameTimer()"  class="btn-resume" style="display:none">▶ 再開</button>
-                    <button id="timer-btn-nextq"   onclick="app.advanceToNextQuarter()" class="btn-resume" style="display:none">→ 次のQへ</button>
-                    <button id="timer-btn-end"     onclick="app.endGameTimer()"     class="btn-end">⏹ 終了</button>
+                    <button id="timer-btn-start"   onclick="app.startGameTimer()"   class="btn-start">▶</button>
+                    <button id="timer-btn-pause"   onclick="app.pauseGameTimer()"   class="btn-pause" style="display:none">⏸</button>
+                    <button id="timer-btn-resume"  onclick="app.resumeGameTimer()"  class="btn-resume" style="display:none">▶</button>
+                    <button id="timer-btn-nextq"   onclick="app.advanceToNextQuarter()" class="btn-resume" style="display:none">→ 次Q</button>
+                    <button id="timer-btn-end"     onclick="app.endGameTimer()"     class="btn-end">⏹</button>
                 </div>
-            </div>
-
-            <!-- Simple mode timer notice -->
-            <div id="game-timer-simple-notice" class="mt-3 text-[11px] text-white/60 bg-white/5 rounded-lg px-3 py-2 hidden">
-                ⏱ 出場時間タイマーは「クォーター別」モード時に使用できます。記録モードを切り替えてください。
             </div>
         </div>
     </header>
@@ -2269,6 +2365,10 @@ Google AdSense 設定手順
                         // this.deselectPlayer();
                     }
                     this.sound.init();
+                    // ⋮ メニュー外クリックで閉じる
+                    if (!e.target.closest('#overflow-menu')) {
+                        this.closeOverflowMenu();
+                    }
                 });
 
                 window.addEventListener('resize', () => this.handleResize());
@@ -3492,12 +3592,25 @@ Google AdSense 設定手順
                 this.state.editMode = !this.state.editMode;
                 this.deselectPlayer();
                 document.getElementById('status-bar').classList.toggle('hidden', !this.state.editMode);
-                document.getElementById('btn-edit-mode').classList.toggle('bg-primary', this.state.editMode);
+                const editBtn = document.getElementById('btn-edit-mode');
+                editBtn.classList.toggle('active', this.state.editMode);
                 document.getElementById('add-teamA-container').classList.toggle('hidden', !this.state.editMode);
                 document.getElementById('add-teamB-container').classList.toggle('hidden', !this.state.editMode);
                 this.renderRosterChips('A');
                 this.renderRosterChips('B');
                 this.render();
+            }
+
+            // ----- ⋮ オーバーフローメニュー -----
+            toggleOverflowMenu() {
+                const dd = document.getElementById('overflow-menu-dropdown');
+                if (!dd) return;
+                dd.classList.toggle('hidden');
+            }
+
+            closeOverflowMenu() {
+                const dd = document.getElementById('overflow-menu-dropdown');
+                if (dd) dd.classList.add('hidden');
             }
 
             addNewPlayer(team) {
@@ -4102,17 +4215,14 @@ Google AdSense 設定手順
 
             updateTimerUI() {
                 const bar = document.getElementById('game-timer-bar');
-                const notice = document.getElementById('game-timer-simple-notice');
                 if (!bar) return;
 
                 // クォーター別モード以外ではタイマーを隠す
                 if (!this.isTimerEnabled()) {
                     bar.classList.add('hidden');
-                    if (notice) notice.classList.remove('hidden');
                     return;
                 }
                 bar.classList.remove('hidden');
-                if (notice) notice.classList.add('hidden');
 
                 const display = document.getElementById('game-timer-display');
                 const capEl   = document.getElementById('game-timer-cap');
