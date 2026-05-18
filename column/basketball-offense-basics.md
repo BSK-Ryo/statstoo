@@ -12,6 +12,7 @@ tags:
   - 初心者
   - 攻め方
   - 戦術
+thumbnail: /image/column/basketball-offense-basics.png
 excerpt: "バスケの攻め方の基本を初心者向けに解説。ボールを持った時の優先順位、オフボールの動き方、スペーシングなど、試合で使える知識を身につけましょう。"
 toc: true
 permalink: /column/basketball-offense-basics/
