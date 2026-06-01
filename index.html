@@ -360,6 +360,21 @@ Google AdSense 設定手順
         .roster-item .roster-delete:hover {
             background: #fee2e2;
         }
+        .roster-item .roster-move {
+            flex-shrink: 0;
+            max-width: 64px;
+            font-size: 11px;
+            padding: 5px 4px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .roster-item .roster-move:focus {
+            outline: 2px solid #EA580C;
+            border-color: transparent;
+        }
 
         /* Member Badge */
         .member-badge {
@@ -1002,11 +1017,17 @@ Google AdSense 設定手順
                     <span class="font-display text-lg tracking-wide">MONTHLY STATS</span>
                     <span class="text-xs font-normal text-gray-400 ml-2">- 月間スタッツ -</span>
                 </h2>
-                <select id="monthly-month-select"
-                        onchange="app.renderMonthlyStats()"
-                        class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
-                    <option value="">保存済みゲームなし</option>
-                </select>
+                <div class="flex items-center gap-2">
+                    <select id="monthly-team-select"
+                            onchange="app.switchActiveTeam(this.value)"
+                            class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+                            style="display:none;"></select>
+                    <select id="monthly-month-select"
+                            onchange="app.renderMonthlyStats()"
+                            class="text-sm px-3 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                        <option value="">保存済みゲームなし</option>
+                    </select>
+                </div>
             </div>
 
             <!-- Saved Games List -->
@@ -1856,12 +1877,22 @@ Google AdSense 設定手順
 
             <p class="text-xs text-gray-500 mb-3 leading-relaxed">
                 ここに登録した選手は、試合で名前が一致すると <span class="text-yellow-600 font-bold">★メンバー</span> 扱いになり、月間集計に自動で含まれます。<br>
-                ※ 一致しない名前は「ゲスト」扱いで集計から除外されます。
+                ※ 一致しない名前は「ゲスト」扱いで集計から除外されます。<br>
+                ※ <span class="font-bold">男子・女子など複数チーム</span>を作成でき、月間集計はチームごとに分かれて表示されます。
             </p>
 
             <div class="mb-3">
+                <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">チーム選択</label>
+                <div class="flex gap-2">
+                    <select id="roster-team-select" onchange="app.switchActiveTeam(this.value)" class="flex-1 min-w-0 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"></select>
+                    <button onclick="app.addTeam()" class="shrink-0 text-xs bg-primary hover:bg-orange-700 text-white px-3 py-2 rounded-lg font-bold transition whitespace-nowrap">＋新規</button>
+                    <button onclick="app.deleteActiveTeam()" class="shrink-0 text-xs bg-gray-100 hover:bg-red-50 text-red-500 px-3 py-2 rounded-lg font-bold transition whitespace-nowrap">削除</button>
+                </div>
+            </div>
+
+            <div class="mb-3">
                 <label class="block text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">チーム名</label>
-                <input id="roster-team-name" type="text" placeholder="例: 千葉ジェッツ" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                <input id="roster-team-name" type="text" placeholder="例: 男子" class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
             </div>
 
             <div class="flex justify-between items-center mb-2">
@@ -2180,8 +2211,8 @@ Google AdSense 設定手順
                         reachedCap: false        // 現Qで上限到達済みフラグ
                     }
                 };
-                // ロスター（自チームの登録メンバー）
-                this.roster = this.loadRoster();
+                // ロスター（男子・女子などチームごとの登録メンバー）
+                this.rosters = this.loadRosters();
                 this.chartComparison = null;
                 this.chartPercentage = null;
                 this.generatedImageBlob = null;
@@ -3667,27 +3698,128 @@ Google AdSense 設定手順
             // 👥 ロスター（自チーム登録メンバー）
             // =============================
 
-            loadRoster() {
+            // 複数チーム（男子・女子など）の名簿を読み込む。
+            // 旧バージョンの単一名簿（statstoo_roster）があれば自動で1チームとして移行する。
+            loadRosters() {
                 try {
-                    const raw = localStorage.getItem('statstoo_roster');
-                    if (!raw) return { teamName: '', members: [] };
-                    const parsed = JSON.parse(raw);
-                    return {
-                        teamName: parsed.teamName || '',
-                        members: Array.isArray(parsed.members) ? parsed.members : []
-                    };
+                    const raw = localStorage.getItem('statstoo_rosters');
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        const teams = Array.isArray(parsed.teams)
+                            ? parsed.teams
+                                .filter(t => t && Array.isArray(t.members))
+                                .map(t => ({
+                                    id: t.id || `team-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                                    teamName: t.teamName || '',
+                                    members: t.members
+                                }))
+                            : [];
+                        if (teams.length > 0) {
+                            const activeTeamId = teams.some(t => t.id === parsed.activeTeamId)
+                                ? parsed.activeTeamId : teams[0].id;
+                            return { teams, activeTeamId };
+                        }
+                    }
+                    // 旧データ（単一名簿）からの移行
+                    const legacyRaw = localStorage.getItem('statstoo_roster');
+                    if (legacyRaw) {
+                        const legacy = JSON.parse(legacyRaw);
+                        const team = {
+                            id: `team-${Date.now()}`,
+                            teamName: legacy.teamName || '',
+                            members: Array.isArray(legacy.members) ? legacy.members : []
+                        };
+                        const data = { teams: [team], activeTeamId: team.id };
+                        // 新キーへ保存（旧キーはロールバック時の保険として残す）
+                        localStorage.setItem('statstoo_rosters', JSON.stringify(data));
+                        return data;
+                    }
                 } catch (e) {
                     console.warn('ロスター読み込み失敗:', e);
-                    return { teamName: '', members: [] };
                 }
+                // 初期状態: 空のチームを1つ
+                const team = { id: `team-${Date.now()}`, teamName: '', members: [] };
+                return { teams: [team], activeTeamId: team.id };
             }
 
-            saveRoster() {
+            // アクティブなチームの名簿（{ teamName, members }）を返す。
+            // 既存コードは this.roster.members / this.roster.teamName をそのまま読み書きできる。
+            get roster() {
+                const r = this.rosters;
+                if (!r || !Array.isArray(r.teams) || r.teams.length === 0) {
+                    return { teamName: '', members: [] };
+                }
+                return r.teams.find(t => t.id === r.activeTeamId) || r.teams[0];
+            }
+
+            saveRosters() {
                 try {
-                    localStorage.setItem('statstoo_roster', JSON.stringify(this.roster));
+                    localStorage.setItem('statstoo_rosters', JSON.stringify(this.rosters));
                 } catch (e) {
                     console.warn('ロスター保存失敗:', e);
                 }
+            }
+
+            // 既存呼び出し互換のエイリアス
+            saveRoster() {
+                this.saveRosters();
+            }
+
+            // チームを切り替える（名簿モーダル・月間集計の両方を更新）
+            switchActiveTeam(id) {
+                if (!this.rosters.teams.some(t => t.id === id)) return;
+                this.rosters.activeTeamId = id;
+                this.saveRosters();
+                this.renderRosterModal();
+                this.refreshMonthlySectionUI();
+                this.refreshNamesDatalist();
+                this.renderRosterChips('A');
+                this.renderRosterChips('B');
+                this.renderTeamList('A');
+                this.renderTeamList('B');
+                this.renderStatsTable();
+            }
+
+            // 新しいチームを追加して、それをアクティブにする
+            addTeam() {
+                const input = prompt('新しいチーム名を入力してください（例: 女子）', '');
+                if (input === null) return; // キャンセル
+                const team = { id: `team-${Date.now()}`, teamName: input.trim(), members: [] };
+                this.rosters.teams.push(team);
+                this.rosters.activeTeamId = team.id;
+                this.saveRosters();
+                this.renderRosterModal();
+                this.refreshMonthlySectionUI();
+            }
+
+            // アクティブなチームを削除する（最後の1つは削除不可）
+            deleteActiveTeam() {
+                if (this.rosters.teams.length <= 1) {
+                    alert('チームが1つしかないため削除できません。');
+                    return;
+                }
+                const t = this.roster;
+                if (!confirm(`チーム「${t.teamName || '無名'}」を削除しますか？\nこのチームの登録メンバーも削除されます。\n（保存済みの試合データは消えません）`)) return;
+                this.rosters.teams = this.rosters.teams.filter(x => x.id !== t.id);
+                this.rosters.activeTeamId = this.rosters.teams[0].id;
+                this.saveRosters();
+                this.renderRosterModal();
+                this.refreshMonthlySectionUI();
+                this.refreshNamesDatalist();
+            }
+
+            // メンバーを別チームへ移動する（男女の振り分け用）
+            moveRosterMember(idx, targetTeamId) {
+                const m = this.roster.members[idx];
+                if (!m) return;
+                const target = this.rosters.teams.find(t => t.id === targetTeamId);
+                if (!target) return;
+                this.roster.members.splice(idx, 1);
+                target.members.push(m);
+                this.saveRosters();
+                this.renderRosterModal();
+                this.refreshMonthlySectionUI();
+                this.showToast(`「${m.name || '無名'}」を ${target.teamName || '別チーム'} へ移動しました`);
             }
 
             normalizeName(name) {
@@ -3919,29 +4051,55 @@ Google AdSense 設定手順
             }
 
             renderRosterModal() {
+                // チーム選択ドロップダウンを更新
+                const teamSelect = document.getElementById('roster-team-select');
+                if (teamSelect) {
+                    teamSelect.innerHTML = this.rosters.teams.map(t =>
+                        `<option value="${t.id}" ${t.id === this.rosters.activeTeamId ? 'selected' : ''}>${this.escapeHtml(t.teamName || '無名チーム')}（${t.members.length}人）</option>`
+                    ).join('');
+                }
+
+                // チーム名入力を現在のチームに同期
+                const teamNameInput = document.getElementById('roster-team-name');
+                if (teamNameInput) {
+                    teamNameInput.value = this.roster.teamName || '';
+                    if (!teamNameInput._bound) {
+                        teamNameInput.addEventListener('input', e => {
+                            this.roster.teamName = e.target.value;
+                            this.saveRosters();
+                            // 選択中チームのラベルを更新
+                            const opt = document.querySelector(`#roster-team-select option[value="${this.rosters.activeTeamId}"]`);
+                            if (opt) opt.textContent = `${e.target.value || '無名チーム'}（${this.roster.members.length}人）`;
+                            this.refreshMonthlySectionUI();
+                        });
+                        teamNameInput._bound = true;
+                    }
+                }
+
                 const list = document.getElementById('roster-list');
                 document.getElementById('roster-count').textContent = `(${this.roster.members.length}人)`;
                 if (this.roster.members.length === 0) {
                     list.innerHTML = '<p class="text-xs text-gray-400 text-center py-6">まだメンバーが登録されていません。「+ 追加」ボタンから登録してください。</p>';
                     return;
                 }
-                list.innerHTML = this.roster.members.map((m, idx) => `
+
+                // 他チームが存在する場合は「移動」ドロップダウンを表示
+                const otherTeams = this.rosters.teams.filter(t => t.id !== this.rosters.activeTeamId);
+                list.innerHTML = this.roster.members.map((m, idx) => {
+                    const moveMenu = otherTeams.length > 0 ? `
+                        <select class="roster-move" title="別チームへ移動" onchange="app.moveRosterMember(${idx}, this.value); this.value='';">
+                            <option value="">→</option>
+                            ${otherTeams.map(t => `<option value="${t.id}">${this.escapeHtml(t.teamName || '無名チーム')}へ移動</option>`).join('')}
+                        </select>` : '';
+                    return `
                     <div class="roster-item">
                         <input class="roster-number" type="text" placeholder="#" value="${this.escapeHtml(m.number || '')}" oninput="app.updateRosterMember(${idx}, 'number', this.value)">
                         <input class="roster-name" type="text" placeholder="選手名" value="${this.escapeHtml(m.name || '')}" oninput="app.updateRosterMember(${idx}, 'name', this.value)">
+                        ${moveMenu}
                         <button class="roster-delete" onclick="app.deleteRosterMember(${idx})" title="削除">×</button>
                     </div>
-                `).join('');
-                // チーム名の保存はリスナーで行う
-                const teamNameInput = document.getElementById('roster-team-name');
-                if (!teamNameInput._bound) {
-                    teamNameInput.addEventListener('input', e => {
-                        this.roster.teamName = e.target.value;
-                        this.saveRoster();
-                        this.refreshMonthlySectionUI();
-                    });
-                    teamNameInput._bound = true;
-                }
+                    `;
+                }).join('');
             }
 
             addRosterMember() {
@@ -4558,8 +4716,23 @@ Google AdSense 設定手順
             // =============================
 
             refreshMonthlySectionUI() {
+                this.updateMonthlyTeamSelector();
                 this.updateMonthSelector();
                 this.renderMonthlyStats();
+            }
+
+            // 月間集計のチーム切替ドロップダウン（チームが複数ある時だけ表示）
+            updateMonthlyTeamSelector() {
+                const sel = document.getElementById('monthly-team-select');
+                if (!sel) return;
+                if (this.rosters.teams.length <= 1) {
+                    sel.style.display = 'none';
+                    return;
+                }
+                sel.style.display = '';
+                sel.innerHTML = this.rosters.teams.map(t =>
+                    `<option value="${t.id}" ${t.id === this.rosters.activeTeamId ? 'selected' : ''}>${this.escapeHtml(t.teamName || '無名チーム')}</option>`
+                ).join('');
             }
 
             updateMonthSelector() {
