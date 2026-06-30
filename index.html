@@ -2267,6 +2267,11 @@ Google AdSense 設定手順
                                 if (!p.quarterStats) p.quarterStats = {};
                                 if (typeof p.minMs !== 'number') p.minMs = 0;
                                 if (typeof p.onCourtSince === 'undefined') p.onCourtSince = null;
+                                // 古いデータでスタッツのキーが欠けている/NaNの場合に補完
+                                p.stats = this.normalizeStats(p.stats);
+                                Object.keys(p.quarterStats).forEach(q => {
+                                    p.quarterStats[q] = this.normalizeStats(p.quarterStats[q]);
+                                });
                             });
                         });
                     }
@@ -2369,6 +2374,18 @@ Google AdSense 設定手順
             
             createEmptyStats() {
                 return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, fta: 0, orb: 0, drb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0 };
+            }
+
+            // 古い保存データでキーが欠けている/NaNの場合に全スタッツキーを数値で補完する
+            // （CSV出力で orb 等が undefined になる不具合の修正）
+            normalizeStats(stats) {
+                const base = this.createEmptyStats();
+                if (!stats || typeof stats !== 'object') return base;
+                Object.keys(base).forEach(k => {
+                    const v = stats[k];
+                    base[k] = (typeof v === 'number' && !isNaN(v)) ? v : 0;
+                });
+                return base;
             }
 
             init() {
@@ -3352,7 +3369,7 @@ Google AdSense 設定手順
 
             // プレイヤーの総合スタッツを計算（stats + quarterStats全て）
             getTotalStats(player) {
-                const total = { ...player.stats };
+                const total = { ...this.createEmptyStats(), ...player.stats };
                 Object.keys(player.quarterStats || {}).forEach(q => {
                     const qs = player.quarterStats[q];
                     Object.keys(qs).forEach(key => {
