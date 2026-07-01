@@ -54,6 +54,16 @@ python generate_column.py
 - 候補リスト（47件）は SKILL.md 内に持ち、新記事が追加されると自動で脱落する
 - スキル本体: `.claude/skills/suggest-column/SKILL.md`
 
+### pulse（デザインシステム）
+
+UI 作業時に参照する既定のデザイン言語スキル。[awesome-design-skills](https://github.com/bergside/awesome-design-skills)（typeui.sh）から導入。太ボーダー・幾何学・高コントラスト・力強い見出しで「躍動・活力」を表現するスタイルで、バスケのスタッツサイトという世界観に合致するため採用した。
+
+- カラー・タイポ・余白などの**デザイントークンと適用ルール**を提供する（記事執筆系スキルと違い、UI/スタイル変更時の判断基準として使う）
+- pulse の主色 `#EA580B` はプロジェクトの `primary #EA580C` とほぼ一致、地色も暖色クリームで `#faf8f5` と整合する
+- 本体（typeui管理ブロック）に加え、**StatsToo の既存トークンへの対応表**を SKILL.md 末尾に追記済み（見出しは Bebas Neue 維持、本文はスレート維持など）
+- 更新は `npx typeui.sh pull pulse` で再取得可能（管理マーカー外の適合メモは保持される）
+- スキル本体: `.claude/skills/pulse/SKILL.md` / 設計意図: `.claude/skills/pulse/DESIGN.md`
+
 ## ブランチとデプロイ
 
 - **develop** — アクティブな開発ブランチ
