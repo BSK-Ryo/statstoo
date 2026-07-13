@@ -52,11 +52,8 @@ extra_css: |
         <button class="filter-btn" data-category="その他">📌 その他</button>
     </nav>
 
-    <!-- 広告枠 -->
-    <div class="ad-space">
-        <p class="ad-label">広告</p>
-        <!-- Google AdSense 広告ユニット -->
-    </div>
+    <!-- 広告枠（上部） -->
+    {% include ad-unit.html slot=site.adsense.slots.list_top %}
 
     <!-- 件数表示 -->
     <p id="results-info" class="results-info"></p>
@@ -118,11 +115,8 @@ extra_css: |
     </div>
     {% endif %}
 
-    <!-- 広告枠 -->
-    <div class="ad-space">
-        <p class="ad-label">広告</p>
-        <!-- Google AdSense 広告ユニット -->
-    </div>
+    <!-- 広告枠（下部） -->
+    {% include ad-unit.html slot=site.adsense.slots.list_bottom %}
 </div>
 
 <script>

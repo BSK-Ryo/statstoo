@@ -9,6 +9,19 @@ image: /ogp.png
 twitter:
   card: summary_large_image
 
+# Google AdSense
+# slots に AdSense 管理画面で作成した「ディスプレイ広告」ユニットのスロットIDを入れる。
+# 未設定（空文字）の枠は広告を出力しない（空の枠も表示されない）。
+# 参考: 既存のサイドバー枠のスロットIDは 3364975374
+adsense:
+  client: "ca-pub-1459200463172380"
+  slots:
+    article_top: ""     # 記事本文の上部（目次の直前）
+    article_mid: ""      # 記事本文の中盤（H2の中央にJSで自動挿入・インアーティクル）
+    article_bottom: ""   # 記事本文の下部（CTAの直前）
+    list_top: ""         # コラム一覧の上部
+    list_bottom: ""      # コラム一覧の下部
+
 # Locale
 lang: ja_JP
 

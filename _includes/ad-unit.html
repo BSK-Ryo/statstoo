@@ -1,0 +1,26 @@
+{%- comment -%}
+  AdSense 手動広告ユニット（レスポンシブ・ディスプレイ）
+
+  使い方:
+    {% include ad-unit.html slot=site.adsense.slots.article_top %}
+
+  - slot は _config.yml の adsense.slots で管理するスロットID。
+  - slot が未設定（空文字）の場合は、広告も枠（.ad-space）も出力しない。
+    → 差し替え前は空白のグレー枠が出ないので本番でも問題ない。
+{%- endcomment -%}
+{%- if include.slot and include.slot != "" -%}
+<div class="ad-space">
+    <p class="ad-label">広告</p>
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="{{ site.adsense.client }}"
+        data-ad-slot="{{ include.slot }}"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+{%- else -%}
+<!-- ad-unit: スロットID未設定（_config.yml の adsense.slots を設定してください） -->
+{%- endif -%}

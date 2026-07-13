@@ -665,10 +665,7 @@
             {% endif %}
 
             <!-- 広告枠（上部） -->
-            <div class="ad-space">
-                <p class="ad-label">広告</p>
-                <!-- Google AdSense 広告ユニット -->
-            </div>
+            {% include ad-unit.html slot=site.adsense.slots.article_top %}
 
             <!-- 目次 -->
             {% if page.toc != false %}
@@ -686,10 +683,20 @@
             </article>
 
             <!-- 広告枠（下部） -->
-            <div class="ad-space">
+            {% include ad-unit.html slot=site.adsense.slots.article_bottom %}
+
+            <!-- 記事中盤の広告（インアーティクル / JSでH2の中央に自動挿入） -->
+            {% if site.adsense.slots.article_mid and site.adsense.slots.article_mid != "" %}
+            <div class="ad-space ad-inarticle" id="ad-inarticle" style="display:none;">
                 <p class="ad-label">広告</p>
-                <!-- Google AdSense 広告ユニット -->
+                <ins class="adsbygoogle"
+                    style="display:block; text-align:center;"
+                    data-ad-layout="in-article"
+                    data-ad-format="fluid"
+                    data-ad-client="{{ site.adsense.client }}"
+                    data-ad-slot="{{ site.adsense.slots.article_mid }}"></ins>
             </div>
+            {% endif %}
 
             <!-- CTAセクション -->
             <section class="article-cta">
@@ -770,6 +777,26 @@
             li.appendChild(a);
             tocList.appendChild(li);
         });
+    });
+    </script>
+
+    <!-- 記事中盤広告の挿入スクリプト -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleContent = document.getElementById('article-content');
+        const inArticleAd = document.getElementById('ad-inarticle');
+        if (!articleContent || !inArticleAd) return;
+
+        // 記事本文のH2を取得し、中央付近のH2の直前に広告を挿入する
+        const h2s = articleContent.querySelectorAll('h2');
+        if (h2s.length < 3) return; // 見出しが少ない短い記事には挿入しない
+
+        const target = h2s[Math.floor(h2s.length / 2)];
+        target.parentNode.insertBefore(inArticleAd, target);
+        inArticleAd.style.display = '';
+
+        // 表示位置が確定してから広告を読み込む
+        (adsbygoogle = window.adsbygoogle || []).push({});
     });
     </script>
 
