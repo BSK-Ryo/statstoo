@@ -992,6 +992,8 @@ Google AdSense 設定手順
                                 <th class="p-2.5" title="2ポイント 成功率">2P%</th>
                                 <th class="p-2.5" title="3ポイント 成功-試投">3P</th>
                                 <th class="p-2.5" title="3ポイント 成功率">3P%</th>
+                                <th class="p-2.5" title="フィールドゴール(2P+3P) 成功-試投">FG</th>
+                                <th class="p-2.5" title="フィールドゴール(2P+3P) 成功率">FG%</th>
                                 <th class="p-2.5" title="フリースロー 成功-試投">FT</th>
                                 <th class="p-2.5" title="フリースロー 成功率">FT%</th>
                                 <th class="p-2.5" title="オフェンスリバウンド-ディフェンスリバウンド">REB</th>
@@ -2499,7 +2501,7 @@ Google AdSense 設定手順
                     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
                     padding: 16px;
                     font-family: 'Noto Sans JP', sans-serif;
-                    min-width: 600px;
+                    min-width: 700px;
                     max-width: 800px;
                 `;
                 
@@ -2564,22 +2566,24 @@ Google AdSense 設定手順
                 ];
                 
                 let tableHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 10px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9px;">
                         <thead>
                             <tr style="background: #1e293b; color: white;">
-                                <th style="padding: 8px 6px; text-align: left; font-weight: bold;">Player</th>
-                                <th style="padding: 8px 4px; text-align: center; font-weight: bold;">PTS</th>
-                                <th style="padding: 8px 4px; text-align: center;">2P</th>
-                                <th style="padding: 8px 4px; text-align: center;">2P%</th>
-                                <th style="padding: 8px 4px; text-align: center;">3P</th>
-                                <th style="padding: 8px 4px; text-align: center;">3P%</th>
-                                <th style="padding: 8px 4px; text-align: center;">FT</th>
-                                <th style="padding: 8px 4px; text-align: center;">OR-DR</th>
-                                <th style="padding: 8px 4px; text-align: center;">AST</th>
-                                <th style="padding: 8px 4px; text-align: center;">STL</th>
-                                <th style="padding: 8px 4px; text-align: center;">BLK</th>
-                                <th style="padding: 8px 4px; text-align: center;">TO</th>
-                                <th style="padding: 8px 4px; text-align: center; font-weight: bold;">EFF</th>
+                                <th style="padding: 7px 5px; text-align: left; font-weight: bold;">Player</th>
+                                <th style="padding: 7px 3px; text-align: center; font-weight: bold;">PTS</th>
+                                <th style="padding: 7px 3px; text-align: center;">2P</th>
+                                <th style="padding: 7px 3px; text-align: center;">2P%</th>
+                                <th style="padding: 7px 3px; text-align: center;">3P</th>
+                                <th style="padding: 7px 3px; text-align: center;">3P%</th>
+                                <th style="padding: 7px 3px; text-align: center;">FG</th>
+                                <th style="padding: 7px 3px; text-align: center;">FG%</th>
+                                <th style="padding: 7px 3px; text-align: center;">FT</th>
+                                <th style="padding: 7px 3px; text-align: center;">OR-DR</th>
+                                <th style="padding: 7px 3px; text-align: center;">AST</th>
+                                <th style="padding: 7px 3px; text-align: center;">STL</th>
+                                <th style="padding: 7px 3px; text-align: center;">BLK</th>
+                                <th style="padding: 7px 3px; text-align: center;">TO</th>
+                                <th style="padding: 7px 3px; text-align: center; font-weight: bold;">EFF</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2587,36 +2591,36 @@ Google AdSense 設定手順
                 
                 allPlayers.forEach((p, idx) => {
                     const s = this.getTotalStats(p);
-                    const pts = this.calculatePTS(s);
+                    const d = this.calcDerivedStats(s);
+                    const pts = d.pts;
                     const teamColor = p.team === 'A' ? '#4f46e5' : '#e11d48';
                     const bgColor = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
-                    
+
                     // Calculate percentages
                     const p2Pct = s.p2a > 0 ? (s.p2m / s.p2a * 100).toFixed(0) : '-';
                     const p3Pct = s.p3a > 0 ? (s.p3m / s.p3a * 100).toFixed(0) : '-';
-                    
-                    // Calculate EFF
-                    const reb = s.orb + s.drb;
-                    const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
-                    const ftMiss = Math.max(0, s.fta - s.ftm);
-                    const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
+                    const fgPct = d.fgPct !== null ? d.fgPct.toFixed(0) : '-';
+
+                    const eff = d.eff;
                     const effColor = eff > 0 ? '#16a34a' : eff < 0 ? '#dc2626' : '#6b7280';
                     
                     tableHTML += `
                         <tr style="background: ${bgColor};">
-                            <td style="padding: 6px; font-weight: bold; color: ${teamColor}; white-space: nowrap; font-size: 10px;">${p.name}</td>
-                            <td style="padding: 6px; text-align: center; font-weight: bold;">${pts}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.p2m}-${s.p2a}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${p2Pct}${p2Pct !== '-' ? '%' : ''}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.p3m}-${s.p3a}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${p3Pct}${p3Pct !== '-' ? '%' : ''}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.ftm}-${s.fta}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.orb}-${s.drb}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.ast}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.stl}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.blk}</td>
-                            <td style="padding: 6px; text-align: center; color: #6b7280;">${s.to}</td>
-                            <td style="padding: 6px; text-align: center; font-weight: bold; color: ${effColor};">${eff >= 0 ? '+' : ''}${eff}</td>
+                            <td style="padding: 5px; font-weight: bold; color: ${teamColor}; white-space: nowrap; font-size: 9px;">${p.name}</td>
+                            <td style="padding: 5px 3px; text-align: center; font-weight: bold;">${pts}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.p2m}-${s.p2a}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${p2Pct}${p2Pct !== '-' ? '%' : ''}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.p3m}-${s.p3a}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${p3Pct}${p3Pct !== '-' ? '%' : ''}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${d.fgm}-${d.fga}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${fgPct}${fgPct !== '-' ? '%' : ''}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.ftm}-${s.fta}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.orb}-${s.drb}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.ast}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.stl}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.blk}</td>
+                            <td style="padding: 5px 3px; text-align: center; color: #6b7280;">${s.to}</td>
+                            <td style="padding: 5px 3px; text-align: center; font-weight: bold; color: ${effColor};">${eff >= 0 ? '+' : ''}${eff}</td>
                         </tr>
                     `;
                 });
@@ -3365,6 +3369,27 @@ Google AdSense 設定手順
 
             calculatePTS(stats) {
                 return stats.p2m * 2 + stats.p3m * 3 + stats.ftm;
+            }
+
+            // シュート系の派生スタッツをまとめて算出
+            // s は p2m/p2a/p3m/p3a/ftm/fta/orb/drb/ast/stl/blk/to を持つオブジェクト
+            // （選手の stats・quarterStats・月間集計の _raw いずれにも使える）
+            calcDerivedStats(s) {
+                const n = k => s[k] || 0;   // 旧データで undefined になるケースへの防御
+                const pts    = n('p2m') * 2 + n('p3m') * 3 + n('ftm');
+                const fgm    = n('p2m') + n('p3m');
+                const fga    = n('p2a') + n('p3a');
+                const reb    = n('orb') + n('drb');
+                const tsAtt  = fga + 0.44 * n('fta');
+                const fgMiss = Math.max(0, n('p2a') - n('p2m')) + Math.max(0, n('p3a') - n('p3m'));
+                const ftMiss = Math.max(0, n('fta') - n('ftm'));
+                return {
+                    pts, fgm, fga, reb,
+                    fgPct:  fga > 0 ? fgm / fga * 100 : null,
+                    efgPct: fga > 0 ? (fgm + 0.5 * n('p3m')) / fga * 100 : null,
+                    tsPct:  tsAtt > 0 ? pts / (2 * tsAtt) * 100 : null,
+                    eff: pts + reb + n('ast') + n('stl') + n('blk') - fgMiss - ftMiss - n('to')
+                };
             }
 
             // プレイヤーの総合スタッツを計算（stats + quarterStats全て）
@@ -5065,10 +5090,14 @@ Google AdSense 設定手順
                     { label: "3P 成功数", getter: r => r._raw.p3m },
                     { label: "3P 試投数", getter: r => r._raw.p3a },
                     { label: "3P %", getter: r => fmtPct(r.p3Pct) },
+                    { label: "FG 成功数", getter: r => this.calcDerivedStats(r._raw).fgm },
+                    { label: "FG 試投数", getter: r => this.calcDerivedStats(r._raw).fga },
+                    { label: "FG %", getter: r => fmtPct(r.fgPct) },
                     { label: "FT 成功数", getter: r => r._raw.ftm },
                     { label: "FT 試投数", getter: r => r._raw.fta },
                     { label: "FT %", getter: r => fmtPct(r.ftPct) },
-                    { label: "FG %", getter: r => fmtPct(r.fgPct) },
+                    { label: "eFG %", getter: r => fmtPct(this.calcDerivedStats(r._raw).efgPct) },
+                    { label: "TS %", getter: r => fmtPct(this.calcDerivedStats(r._raw).tsPct) },
                     { label: "OR", getter: r => r._raw.orb },
                     { label: "DR", getter: r => r._raw.drb },
                     { label: "Total Rebound", getter: r => r.reb },
@@ -5274,16 +5303,15 @@ Google AdSense 設定手順
                     const s = this.state.recordMode === 'quarter' 
                         ? this.getDisplayStats(p) 
                         : this.getTotalStats(p);
-                    const pts = this.calculatePTS(s);
+                    const d = this.calcDerivedStats(s);
+                    const pts = d.pts;
                     const p2pct = s.p2a > 0 ? (s.p2m/s.p2a*100).toFixed(0)+'%' : '-';
                     const p3pct = s.p3a > 0 ? (s.p3m/s.p3a*100).toFixed(0)+'%' : '-';
+                    const fgpct = d.fgPct !== null ? d.fgPct.toFixed(0)+'%' : '-';
                     const ftpct = s.fta > 0 ? (s.ftm/s.fta*100).toFixed(0)+'%' : '-';
-                    
-                    // Calculate EFF: (PTS + REB + AST + STL + BLK) - (FGミス + FTミス + TO)
-                    const reb = s.orb + s.drb;
-                    const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
-                    const ftMiss = Math.max(0, s.fta - s.ftm);
-                    const eff = pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
+
+                    // EFF: (PTS + REB + AST + STL + BLK) - (FGミス + FTミス + TO)
+                    const eff = d.eff;
                     const effClass = eff > 0 ? 'text-green-600' : eff < 0 ? 'text-red-500' : 'text-gray-500';
                     
                     const teamColorClass = p.team === 'A' ? 'text-indigo-600' : 'text-rose-600';
@@ -5298,11 +5326,13 @@ Google AdSense 設定手順
                         </td>
                         <td class="p-2.5 text-center font-bold text-secondary">${pts}</td>
                         <td class="p-2.5 text-center text-gray-500 bg-gray-50/50">${s.p2m}-${s.p2a}</td>
-                        <td class="p-2.5 text-center text-xs font-mono">${p2pct}</td>
+                        <td class="p-2.5 text-center text-xs font-mono bg-gray-50/50">${p2pct}</td>
                         <td class="p-2.5 text-center text-gray-500">${s.p3m}-${s.p3a}</td>
                         <td class="p-2.5 text-center text-xs font-mono">${p3pct}</td>
-                        <td class="p-2.5 text-center text-gray-500 bg-gray-50/50">${s.ftm}-${s.fta}</td>
-                        <td class="p-2.5 text-center text-xs font-mono bg-gray-50/50">${ftpct}</td>
+                        <td class="p-2.5 text-center text-gray-500 bg-gray-50/50">${d.fgm}-${d.fga}</td>
+                        <td class="p-2.5 text-center text-xs font-mono bg-gray-50/50">${fgpct}</td>
+                        <td class="p-2.5 text-center text-gray-500">${s.ftm}-${s.fta}</td>
+                        <td class="p-2.5 text-center text-xs font-mono">${ftpct}</td>
                         <td class="p-2.5 text-center text-gray-500">${s.orb}-${s.drb}</td>
                         <td class="p-2.5 text-center text-gray-500">${s.ast}</td>
                         <td class="p-2.5 text-center text-gray-500">${s.stl}</td>
@@ -5412,33 +5442,36 @@ Google AdSense 設定手順
                     return str;
                 };
 
+                // パーセント表示（null は "-"）
+                const fmtPct = v => v !== null && v !== undefined ? v.toFixed(1) + "%" : "-";
+
                 // スタッツ行を生成するヘルパー関数
-                const createStatRows = (getStats) => [
-                    { label: "合計得点", getter: p => this.calculatePTS(getStats(p)) },
+                // includeMin: MIN 行を含めるか（minMs は試合単位でしか持たないため総合スタッツのみ true）
+                const createStatRows = (getStats, { includeMin = false } = {}) => [
+                    ...(includeMin ? [{ label: "MIN", getter: p => this.formatMs(this.getPlayerMinMs(p)) }] : []),
+                    { label: "合計得点", getter: p => this.calcDerivedStats(getStats(p)).pts },
                     { label: "2P 成功数", getter: p => getStats(p).p2m },
                     { label: "2P 試投数", getter: p => getStats(p).p2a },
                     { label: "2P %", getter: p => getStats(p).p2a ? (getStats(p).p2m/getStats(p).p2a*100).toFixed(1)+"%" : "-" },
                     { label: "3P 成功数", getter: p => getStats(p).p3m },
                     { label: "3P 試投数", getter: p => getStats(p).p3a },
                     { label: "3P %", getter: p => getStats(p).p3a ? (getStats(p).p3m/getStats(p).p3a*100).toFixed(1)+"%" : "-" },
+                    { label: "FG 成功数", getter: p => this.calcDerivedStats(getStats(p)).fgm },
+                    { label: "FG 試投数", getter: p => this.calcDerivedStats(getStats(p)).fga },
+                    { label: "FG %", getter: p => fmtPct(this.calcDerivedStats(getStats(p)).fgPct) },
                     { label: "FT 成功数", getter: p => getStats(p).ftm },
                     { label: "FT 試投数", getter: p => getStats(p).fta },
                     { label: "FT %", getter: p => getStats(p).fta ? (getStats(p).ftm/getStats(p).fta*100).toFixed(1)+"%" : "-" },
+                    { label: "eFG %", getter: p => fmtPct(this.calcDerivedStats(getStats(p)).efgPct) },
+                    { label: "TS %", getter: p => fmtPct(this.calcDerivedStats(getStats(p)).tsPct) },
                     { label: "OR", getter: p => getStats(p).orb },
                     { label: "DR", getter: p => getStats(p).drb },
-                    { label: "Total Rebound", getter: p => getStats(p).orb + getStats(p).drb },
+                    { label: "Total Rebound", getter: p => this.calcDerivedStats(getStats(p)).reb },
                     { label: "AST", getter: p => getStats(p).ast },
                     { label: "Steal", getter: p => getStats(p).stl },
                     { label: "Block", getter: p => getStats(p).blk },
                     { label: "Turnover", getter: p => getStats(p).to },
-                    { label: "EFF", getter: p => {
-                        const s = getStats(p);
-                        const pts = this.calculatePTS(s);
-                        const reb = s.orb + s.drb;
-                        const fgMiss = Math.max(0, s.p2a - s.p2m) + Math.max(0, s.p3a - s.p3m);
-                        const ftMiss = Math.max(0, s.fta - s.ftm);
-                        return pts + reb + s.ast + s.stl + s.blk - fgMiss - ftMiss - s.to;
-                    }}
+                    { label: "EFF", getter: p => this.calcDerivedStats(getStats(p)).eff }
                 ];
 
                 // スタッツセクションをCSVに追加するヘルパー関数
@@ -5489,7 +5522,7 @@ Google AdSense 設定手順
                 // 総合スタッツ
                 csvContent += addStatsSection(
                     "総合スタッツ",
-                    createStatRows(p => this.getTotalStats(p))
+                    createStatRows(p => this.getTotalStats(p), { includeMin: true })
                 );
 
                 // シンプル記録分（データがある場合）
