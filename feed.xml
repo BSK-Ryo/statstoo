@@ -1,0 +1,43 @@
+---
+permalink: /feed.xml
+layout: null
+sitemap: false
+---
+{%- assign columns = site.pages | where: "layout", "column" | sort: "date" | reverse -%}
+{%- assign latest = columns | first -%}
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">{{ site.title | xml_escape }} コラム</title>
+  <subtitle type="text">{{ site.description | xml_escape }}</subtitle>
+  <id>{{ "/feed.xml" | absolute_url }}</id>
+  <link href="{{ "/feed.xml" | absolute_url }}" rel="self" type="application/atom+xml"/>
+  <link href="{{ "/column/" | absolute_url }}" rel="alternate" type="text/html"/>
+  <updated>{{ latest.update | default: latest.date | date_to_xmlschema }}</updated>
+  <icon>{{ "/image/favicon.png" | absolute_url }}</icon>
+  <logo>{{ "/ogp.png" | absolute_url }}</logo>
+  <rights>© {{ site.time | date: "%Y" }} StatsToo</rights>
+  <author>
+    <name>{{ site.author.name | xml_escape }}</name>
+    <uri>{{ "/about/" | absolute_url }}</uri>
+  </author>
+  {% for post in columns limit: 20 %}
+  <entry>
+    <title type="text">{{ post.title | strip_html | xml_escape }}</title>
+    <id>{{ post.url | absolute_url }}</id>
+    <link href="{{ post.url | absolute_url }}" rel="alternate" type="text/html"/>
+    <published>{{ post.date | date_to_xmlschema }}</published>
+    <updated>{{ post.update | default: post.date | date_to_xmlschema }}</updated>
+    {%- if post.category %}
+    <category term="{{ post.category | xml_escape }}"/>
+    {%- endif %}
+    {%- for tag in post.tags %}{%- unless tag == post.category %}
+    <category term="{{ tag | xml_escape }}"/>
+    {%- endunless %}{%- endfor %}
+    <summary type="text">{{ post.excerpt | default: post.description | strip_html | strip_newlines | xml_escape }}</summary>
+    <author>
+      <name>{{ post.author | default: site.author.name | xml_escape }}</name>
+      <uri>{{ "/about/" | absolute_url }}</uri>
+    </author>
+  </entry>
+  {% endfor %}
+</feed>

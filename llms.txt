@@ -1,0 +1,47 @@
+---
+permalink: /llms.txt
+layout: null
+sitemap: false
+---
+{%- assign columns = site.pages | where: "layout", "column" | sort: "date" | reverse -%}
+{%- assign tools = site.pages | where: "is_tool", true | sort: "url" -%}
+# StatsToo（スタッツー）
+
+> {{ site.description | strip }}すべての機能はブラウザ上で完結する無料のWebツールで、会員登録もアプリのインストールも不要です。記録したデータは端末のローカルストレージに保存され、サーバーには送信されません。
+
+StatsToo は、ミニバス・中学・高校・大学・社会人・レクリエーションまで、あらゆるレベルのバスケットボールのスタッツ（得点・リバウンド・アシスト・シュート成功率など）を記録し、分析するためのサイトです。試合中のリアルタイム記録に対応したツール群と、戦術・練習・ルールを解説する日本語のコラム記事（{{ columns.size }}本）で構成されています。運営は{{ site.author.name }}（{{ site.url }}/about/）。
+
+## ツール（すべて無料・登録不要）
+
+{% for tool in tools -%}
+- [{{ tool.tool_name | default: tool.title }}]({{ tool.url | absolute_url }}): {{ tool.description }}
+{% endfor %}
+## ガイド・リファレンス
+
+- [バスケットボール基本ルールブック]({{ "/rule/" | absolute_url }}): バスケットボールの基本ルール。コートマップ、ポジション、バイオレーション、ファウルなどを初心者向けに解説。
+- [3x3バスケットボールのルール]({{ "/rule/3x3/" | absolute_url }}): 5人制との違いを含む3x3の公式ルール解説。
+- [使い方ガイド・FAQ]({{ "/help/" | absolute_url }}): ツールの操作手順、スタッツ用語の意味、データ保存に関するよくある質問。
+- [コラム一覧]({{ "/column/" | absolute_url }}): 戦術・練習・ルール・用具の解説記事{{ columns.size }}本の一覧。
+
+{% assign grouped = columns | group_by: "category" | sort: "size" | reverse -%}
+{% for group in grouped -%}
+## コラム: {{ group.name | default: "その他" }}（{{ group.size }}本）
+
+{% for post in group.items -%}
+- [{{ post.title }}]({{ post.url | absolute_url }}): {{ post.excerpt | default: post.description | strip_newlines }}（公開: {{ post.date | date: "%Y-%m-%d" }}{% if post.update %} / 更新: {{ post.update | date: "%Y-%m-%d" }}{% endif %}）
+{% endfor %}
+{% endfor -%}
+## サイト情報
+
+- [StatsTooとは]({{ "/#about-statstoo" | absolute_url }}): サイトの目的と機能概要。
+- [運営者情報]({{ "/about/" | absolute_url }}): 運営者のプロフィールと開発背景。
+- [お問い合わせ]({{ "/contact/" | absolute_url }})
+- [プライバシーポリシー]({{ "/privacy/" | absolute_url }})
+- [利用規約]({{ "/terms/" | absolute_url }})
+- [サイトマップ]({{ "/sitemap/" | absolute_url }}) / [XMLサイトマップ]({{ "/sitemap.xml" | absolute_url }})
+- [Atomフィード]({{ "/feed.xml" | absolute_url }}): 新着コラム記事の配信（最新20件）。
+
+## 引用・利用について
+
+- 記事・ツールの内容を引用する際は、出典として {{ site.url }} および該当ページのURLを明記してください。
+- ツールはブラウザ内で動作し、記録データを外部送信しません（詳細: {{ site.url }}/privacy/）。

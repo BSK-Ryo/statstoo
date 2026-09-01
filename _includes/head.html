@@ -2,27 +2,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% seo %}
 
-<!-- Organization structured data (homepage only) -->
-{% if page.url == "/" %}
+<!-- Organization / WebSite structured data (全ページ共通・@id で各ページから参照する) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "StatsToo（スタッツー）",
-  "url": "https://statstoo.com",
-  "logo": "https://statstoo.com/image/favicon.png",
-  "description": "{{ site.description }}",
-  "sameAs": [
-    "https://www.instagram.com/statstoo_2026/"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "customer service",
-    "url": "https://statstoo.com/contact/"
-  }
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "{{ site.url }}/#organization",
+      "name": "StatsToo（スタッツー）",
+      "url": "{{ site.url }}",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ site.url }}/image/favicon.png"
+      },
+      "image": "{{ site.url }}/ogp.png",
+      "description": {{ site.description | jsonify }},
+      "foundingDate": "2025-12-25",
+      "founder": {
+        "@id": "{{ site.url }}/about/#person"
+      },
+      "sameAs": [
+        "https://www.instagram.com/statstoo_2026/"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "url": "{{ site.url }}/contact/"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "{{ site.url }}/#website",
+      "url": "{{ site.url }}",
+      "name": "{{ site.title }}",
+      "description": {{ site.description | jsonify }},
+      "inLanguage": "ja",
+      "publisher": {
+        "@id": "{{ site.url }}/#organization"
+      }
+    }
+  ]
 }
 </script>
-{% endif %}
 
 <!-- SoftwareApplication structured data (tool pages only) -->
 {% if page.is_tool %}
@@ -43,6 +65,9 @@
 }
 </script>
 {% endif %}
+
+<!-- フィード（コラム記事の更新配信） -->
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }} コラム" href="{{ site.url }}/feed.xml">
 
 <!-- Favicon -->
 <link rel="icon" type="image/png" sizes="480x480" href="/image/favicon.png">

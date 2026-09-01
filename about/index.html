@@ -66,6 +66,51 @@ extra_css: |
     }
 ---
 
+<!-- ProfilePage / Person structured data（記事の author・Organization の founder から @id で参照される） -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfilePage",
+      "@id": "{{ site.url }}/about/",
+      "url": "{{ site.url }}/about/",
+      "name": "運営者情報",
+      "inLanguage": "ja",
+      "isPartOf": { "@id": "{{ site.url }}/#website" },
+      "mainEntity": { "@id": "{{ site.url }}/about/#person" }
+    },
+    {
+      "@type": "Person",
+      "@id": "{{ site.url }}/about/#person",
+      "name": "多田 諒聖",
+      "alternateName": "Ryosei Tada",
+      "url": "{{ site.url }}/about/",
+      "image": "{{ site.url }}/image/favicon.png",
+      "jobTitle": "Webエンジニア / SEOコンサルタント",
+      "description": "1999年生まれ。小学5年生でバスケットボールを始め、中学・高校・大学を経て現在も社会人プレイヤーとして競技を継続。Web制作エンジニア・SEOコンサルタントとして活動し、StatsToo の設計・開発・記事執筆・運用を個人で担当している。",
+      "knowsAbout": [
+        "バスケットボール",
+        "バスケットボールのスタッツ分析",
+        "バスケットボールの戦術",
+        "Web制作",
+        "SEO"
+      ],
+      "worksFor": { "@id": "{{ site.url }}/#organization" }
+    },
+    {
+      "@type": "Organization",
+      "@id": "{{ site.url }}/#editorial",
+      "name": "StatsToo編集部",
+      "url": "{{ site.url }}/about/",
+      "description": "StatsToo のコラム記事を執筆・監修する編集チーム。",
+      "parentOrganization": { "@id": "{{ site.url }}/#organization" },
+      "member": { "@id": "{{ site.url }}/about/#person" }
+    }
+  ]
+}
+</script>
+
 <div class="max-w-3xl mx-auto px-4 py-10 md:py-16">
     <div class="bg-white rounded-2xl shadow-lg p-6 md:p-10">
         

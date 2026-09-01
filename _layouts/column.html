@@ -104,6 +104,38 @@
         display: block;
     }
     
+    /* ----- この記事の要点 ----- */
+    .article-summary {
+        background: #fff7ed;
+        border-left: 4px solid var(--column-primary);
+        border-radius: 8px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .article-summary-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--column-primary-dark);
+        margin: 0 0 0.75rem;
+    }
+    .article-summary-list {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+    .article-summary-list li {
+        margin-bottom: 0.5rem;
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+    .article-summary-list li:last-child {
+        margin-bottom: 0;
+    }
+    .article-summary-text {
+        margin: 0;
+        line-height: 1.7;
+        font-size: 0.95rem;
+    }
+
     /* ----- 目次 ----- */
     .table-of-contents {
         background: var(--column-card-bg);
@@ -305,6 +337,19 @@
         width: 100%;
         height: 120px;
         object-fit: cover;
+    }
+    /* サムネイル未設定の記事用プレースホルダー */
+    .related-post-thumb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 120px;
+        background: #fff7ed;
+        border-bottom: 3px solid var(--column-primary);
+        color: var(--column-primary-dark);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
     }
     .related-post-title {
         display: block;
@@ -627,6 +672,62 @@
             }
             </script>
 
+            <!-- BlogPosting structured data -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": {{ page.url | absolute_url | jsonify }}
+              },
+              "url": {{ page.url | absolute_url | jsonify }},
+              "headline": {{ page.title | strip_html | jsonify }},
+              "description": {{ page.description | default: page.excerpt | strip_html | jsonify }},
+              "image": {{ page.image | absolute_url | jsonify }},
+              "datePublished": "{{ page.date | date_to_xmlschema }}",
+              "dateModified": "{{ page.update | default: page.date | date_to_xmlschema }}",
+              "inLanguage": "ja",
+              {% if page.category %}"articleSection": {{ page.category | jsonify }},{% endif %}
+              {% if page.tags %}"keywords": {{ page.tags | join: "," | jsonify }},{% endif %}
+              "author": {
+                "@type": "Organization",
+                "@id": "{{ site.url }}/#editorial",
+                "name": {{ page.author | default: site.author.name | jsonify }},
+                "url": "{{ site.url }}/about/",
+                "parentOrganization": {
+                  "@id": "{{ site.url }}/#organization"
+                }
+              },
+              "publisher": {
+                "@id": "{{ site.url }}/#organization"
+              },
+              "isPartOf": {
+                "@id": "{{ site.url }}/#website"
+              }
+            }
+            </script>
+
+            {% if page.faq and page.faq.size > 0 %}
+            <!-- FAQPage structured data（本文の「よくある質問」から自動生成） -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": [
+                {% for item in page.faq %}{
+                  "@type": "Question",
+                  "name": {{ item.question | jsonify }},
+                  "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": {{ item.answer | jsonify }}
+                  }
+                }{% unless forloop.last %},{% endunless %}{% endfor %}
+              ]
+            }
+            </script>
+            {% endif %}
+
             <!-- 記事ヘッダー -->
             <header class="article-header">
                 {% if page.category %}
@@ -657,11 +758,27 @@
                 {% endif %}
             </header>
 
-            <!-- アイキャッチ画像 -->
-            {% if page.thumbnail %}
+            <!-- アイキャッチ画像（実ファイルが存在する場合のみ表示） -->
+            {% if page.thumbnail and page.thumbnail_valid %}
             <div class="article-thumbnail">
                 <img src="{{ page.thumbnail }}" alt="{{ page.title }}" loading="lazy">
             </div>
+            {% endif %}
+
+            <!-- この記事の要点（_plugins/key_points.rb が「まとめ」から自動生成） -->
+            {% if page.key_points or page.excerpt %}
+            <section class="article-summary">
+                <h2 class="article-summary-title">📝 この記事の要点</h2>
+                {% if page.key_points %}
+                <ul class="article-summary-list">
+                    {% for point in page.key_points %}
+                    <li>{{ point }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="article-summary-text">{{ page.excerpt | strip_html }}</p>
+                {% endif %}
+            </section>
             {% endif %}
 
             <!-- 広告枠（上部） -->
@@ -696,6 +813,28 @@
                     data-ad-client="{{ site.adsense.client }}"
                     data-ad-slot="{{ site.adsense.slots.article_mid }}"></ins>
             </div>
+            {% endif %}
+
+            <!-- 関連記事（_plugins/related_posts.rb がタグ・カテゴリーから自動選出） -->
+            {% if page.related_urls and page.related_urls.size > 0 %}
+            <section class="related-posts">
+                <h2>🔗 あわせて読みたい</h2>
+                <div class="related-posts-grid">
+                    {% for related_url in page.related_urls %}
+                    {% assign related = site.pages | where: "url", related_url | first %}
+                    {% if related %}
+                    <a href="{{ related.url }}" class="related-post-card">
+                        {% if related.thumbnail and related.thumbnail_valid %}
+                        <img src="{{ related.thumbnail }}" alt="{{ related.title | strip_html }}" loading="lazy">
+                        {% else %}
+                        <span class="related-post-thumb">{{ related.category | default: "コラム" }}</span>
+                        {% endif %}
+                        <span class="related-post-title">{{ related.title | strip_html }}</span>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
             {% endif %}
 
             <!-- CTAセクション -->
