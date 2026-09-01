@@ -1011,13 +1011,15 @@ Google AdSense 設定手順
             </div>
         </section>
 
-        <!-- Monthly Stats Section -->
+        <!-- Stats Summary Section（月間 / 年間 / 通算） -->
         <section id="monthly-stats-section" class="bg-white p-4 md:p-6 rounded-xl shadow-md border border-gray-100">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
-                    <span class="text-lg">📅</span>
-                    <span id="period-stats-title" class="font-display text-lg tracking-wide">MONTHLY STATS</span>
-                    <span id="period-stats-subtitle" class="text-xs font-normal text-gray-400 ml-2">- 月間スタッツ -</span>
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2 flex-wrap">
+                    <span class="text-lg">📊</span>
+                    <span class="font-display text-lg tracking-wide">STATS SUMMARY</span>
+                    <!-- NEW バッジ: 年間・通算の追加告知用。周知できたらこの span を削除する -->
+                    <span class="text-[9px] font-bold text-white bg-primary px-1.5 py-0.5 rounded-full tracking-wider">NEW</span>
+                    <span class="text-xs font-normal text-gray-400">- 月間・年間・通算スタッツ -</span>
                 </h2>
                 <div class="flex items-center gap-2">
                     <select id="monthly-team-select"
@@ -1493,7 +1495,7 @@ Google AdSense 設定手順
                         <div class="step-list">
                             <div class="step-item">
                                 <span class="step-number">1</span>
-                                <div class="step-text"><strong>期間を選択</strong> — セクション右上のプルダウンから <strong>通算（全期間）</strong> / <strong>◯◯年（年間）</strong> / <strong>◯◯年◯月</strong> を選びます。選んだ期間に合わせて見出しが MONTHLY / YEARLY / CAREER STATS に切り替わります。</div>
+                                <div class="step-text"><strong>期間を選択</strong> — 「STATS SUMMARY」セクション右上のプルダウンから <strong>通算（全期間）</strong> / <strong>◯◯年（年間）</strong> / <strong>◯◯年◯月</strong> を選びます。表の見出し（個人スタッツ集計）に選択中の期間が表示されます。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
@@ -4784,16 +4786,16 @@ Google AdSense 設定手順
             // ※ 期間まわりの処理はすべて保存済み履歴の「読み取り専用」。履歴の書き換えは一切しない
             getPeriodInfo(value) {
                 if (value === 'all') {
-                    return { type: 'all', value, label: '通算（全期間）', csvName: '通算スタッツ集計', title: 'CAREER STATS', subtitle: '- 通算スタッツ -' };
+                    return { type: 'all', value, label: '通算（全期間）', csvName: '通算スタッツ集計' };
                 }
                 if (/^\d{4}$/.test(value)) {
-                    return { type: 'year', value, label: `${value}年（年間）`, csvName: '年間スタッツ集計', title: 'YEARLY STATS', subtitle: '- 年間スタッツ -' };
+                    return { type: 'year', value, label: `${value}年（年間）`, csvName: '年間スタッツ集計' };
                 }
                 if (/^\d{4}-\d{2}$/.test(value)) {
                     const [y, mo] = value.split('-');
-                    return { type: 'month', value, label: `${y}年${parseInt(mo, 10)}月`, csvName: '月間スタッツ集計', title: 'MONTHLY STATS', subtitle: '- 月間スタッツ -' };
+                    return { type: 'month', value, label: `${y}年${parseInt(mo, 10)}月`, csvName: '月間スタッツ集計' };
                 }
-                return { type: 'none', value: '', label: '', csvName: 'スタッツ集計', title: 'MONTHLY STATS', subtitle: '- 月間スタッツ -' };
+                return { type: 'none', value: '', label: '', csvName: 'スタッツ集計' };
             }
 
             getSelectedPeriod() {
@@ -4958,12 +4960,8 @@ Google AdSense 設定手順
                 const history = this.loadGameHistory();
                 const games   = this.filterGamesByPeriod(history, period);
 
-                // 見出しを選択中の期間に合わせて切り替え
-                const titleEl = document.getElementById('period-stats-title');
-                const subEl   = document.getElementById('period-stats-subtitle');
+                // 見出しは固定。選択中の期間は集計表のラベルに出す
                 const periodLabelEl = document.getElementById('monthly-period-label');
-                if (titleEl) titleEl.textContent = period.title;
-                if (subEl)   subEl.textContent   = period.subtitle;
                 if (periodLabelEl) periodLabelEl.textContent = period.label ? ` ／ ${period.label}` : '';
 
                 this.renderSavedGamesList(games);
