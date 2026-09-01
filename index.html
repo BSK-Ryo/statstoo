@@ -1016,8 +1016,8 @@ Google AdSense 設定手順
             <div class="flex justify-between items-center mb-4">
                 <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span class="text-lg">📅</span>
-                    <span class="font-display text-lg tracking-wide">MONTHLY STATS</span>
-                    <span class="text-xs font-normal text-gray-400 ml-2">- 月間スタッツ -</span>
+                    <span id="period-stats-title" class="font-display text-lg tracking-wide">MONTHLY STATS</span>
+                    <span id="period-stats-subtitle" class="text-xs font-normal text-gray-400 ml-2">- 月間スタッツ -</span>
                 </h2>
                 <div class="flex items-center gap-2">
                     <select id="monthly-team-select"
@@ -1035,7 +1035,10 @@ Google AdSense 設定手順
             <!-- Saved Games List -->
             <div class="mb-4">
                 <div class="flex justify-between items-center mb-2">
-                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide">保存済みゲーム</h3>
+                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                        保存済みゲーム
+                        <span id="saved-games-count" class="normal-case font-normal text-gray-400"></span>
+                    </h3>
                     <button onclick="app.deleteAllGames()"
                             class="text-xs text-red-400 hover:text-red-600 transition">全件削除</button>
                 </div>
@@ -1048,7 +1051,7 @@ Google AdSense 設定手順
             <div>
                 <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
                     <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                        個人スタッツ集計（<span id="monthly-team-name">自チーム</span>）
+                        個人スタッツ集計（<span id="monthly-team-name">自チーム</span>）<span id="monthly-period-label" class="normal-case font-normal text-gray-400"></span>
                     </h3>
                     <div class="flex items-center gap-2 flex-wrap">
                         <label class="text-[11px] text-gray-500 flex items-center gap-1 cursor-pointer">
@@ -1354,7 +1357,7 @@ Google AdSense 設定手順
                     <section class="article-block">
                         <h2>📖 StatsTooの各ツールの使い方</h2>
                         <h3>試合スタッツ記録ツール</h3>
-                        <p>試合や練習の5対5を記録するメインツールです。基本記録に加えて、<strong>自チーム名簿の登録</strong>、<strong>★メンバー / ゲストの自動判別</strong>、<strong>出場時間の自動計測</strong>、<strong>月間スタッツの自動合算</strong>に対応しています。</p>
+                        <p>試合や練習の5対5を記録するメインツールです。基本記録に加えて、<strong>自チーム名簿の登録</strong>、<strong>★メンバー / ゲストの自動判別</strong>、<strong>出場時間の自動計測</strong>、<strong>月間・年間・通算スタッツの自動合算</strong>に対応しています。</p>
 
                         <h4>① 基本の使い方</h4>
                         <div class="step-list">
@@ -1485,12 +1488,12 @@ Google AdSense 設定手順
                             💡 タイマー稼働中は、コートにいる選手の MIN 表示が <span style="background:#dcfce7;color:#166534;padding:1px 5px;border-radius:3px;font-size:0.75rem;font-family:monospace;">緑色</span> になります。ベンチに下がっている選手のカウントは止まります。
                         </p>
 
-                        <h4>⑤ 月間スタッツの合算と出力</h4>
-                        <p>保存したゲームを月単位で自動集計します。<strong>名簿に登録されたメンバーだけ</strong>がデフォルトで集計され、紅白戦で A/B 両チームに同じ選手が出ていた場合は名前で自動的に合算されます。</p>
+                        <h4>⑤ 月間・年間・通算スタッツの合算と出力</h4>
+                        <p>保存したゲームを<strong>月ごと・年ごと・通算（全期間）</strong>で自動集計します。<strong>名簿に登録されたメンバーだけ</strong>がデフォルトで集計され、紅白戦で A/B 両チームに同じ選手が出ていた場合は名前で自動的に合算されます。</p>
                         <div class="step-list">
                             <div class="step-item">
                                 <span class="step-number">1</span>
-                                <div class="step-text"><strong>月を選択</strong> — 「MONTHLY STATS」セクションのプルダウンから集計したい月を選びます。</div>
+                                <div class="step-text"><strong>期間を選択</strong> — セクション右上のプルダウンから <strong>通算（全期間）</strong> / <strong>◯◯年（年間）</strong> / <strong>◯◯年◯月</strong> を選びます。選んだ期間に合わせて見出しが MONTHLY / YEARLY / CAREER STATS に切り替わります。</div>
                             </div>
                             <div class="step-item">
                                 <span class="step-number">2</span>
@@ -1506,7 +1509,7 @@ Google AdSense 設定手順
                             </div>
                             <div class="step-item">
                                 <span class="step-number">5</span>
-                                <div class="step-text"><strong>📥 CSV出力</strong> — 月間集計を CSV ファイルとしてダウンロード。チーム内での共有や Excel での分析に使えます。</div>
+                                <div class="step-text"><strong>📥 CSV出力</strong> — 選択中の期間（月間 / 年間 / 通算）の集計を CSV ファイルとしてダウンロード。チーム内での共有や Excel での分析に使えます。</div>
                             </div>
                         </div>
                         <p style="font-size: 0.8rem; color: #64748b; background: #fff7ed; padding: 0.625rem 0.875rem; border-radius: 6px; border-left: 3px solid #EA580C;">
@@ -4777,31 +4780,70 @@ Google AdSense 設定手順
                 ).join('');
             }
 
+            // 集計期間（通算 / 年間 / 月間）のメタ情報を返す
+            // ※ 期間まわりの処理はすべて保存済み履歴の「読み取り専用」。履歴の書き換えは一切しない
+            getPeriodInfo(value) {
+                if (value === 'all') {
+                    return { type: 'all', value, label: '通算（全期間）', csvName: '通算スタッツ集計', title: 'CAREER STATS', subtitle: '- 通算スタッツ -' };
+                }
+                if (/^\d{4}$/.test(value)) {
+                    return { type: 'year', value, label: `${value}年（年間）`, csvName: '年間スタッツ集計', title: 'YEARLY STATS', subtitle: '- 年間スタッツ -' };
+                }
+                if (/^\d{4}-\d{2}$/.test(value)) {
+                    const [y, mo] = value.split('-');
+                    return { type: 'month', value, label: `${y}年${parseInt(mo, 10)}月`, csvName: '月間スタッツ集計', title: 'MONTHLY STATS', subtitle: '- 月間スタッツ -' };
+                }
+                return { type: 'none', value: '', label: '', csvName: 'スタッツ集計', title: 'MONTHLY STATS', subtitle: '- 月間スタッツ -' };
+            }
+
+            getSelectedPeriod() {
+                const sel = document.getElementById('monthly-month-select');
+                return this.getPeriodInfo(sel ? sel.value : '');
+            }
+
+            filterGamesByPeriod(history, period) {
+                if (!period || period.type === 'none') return [];
+                // 通算は日付未入力のゲームも含めて全件（保存したデータがどこにも出てこない状態を作らない）
+                if (period.type === 'all')  return history.slice();
+                if (period.type === 'year') return history.filter(g => g.gameInfo && g.gameInfo.date && g.gameInfo.date.slice(0, 4) === period.value);
+                return history.filter(g => g.gameInfo && g.gameInfo.date && g.gameInfo.date.startsWith(period.value));
+            }
+
             updateMonthSelector() {
                 const history = this.loadGameHistory();
-                const months  = [...new Set(
-                    history
-                        .map(g => g.gameInfo.date ? g.gameInfo.date.slice(0, 7) : null)
-                        .filter(Boolean)
-                )].sort().reverse();
+                const dates   = history
+                    .map(g => (g.gameInfo && g.gameInfo.date) ? g.gameInfo.date : null)
+                    .filter(Boolean);
+                const months  = [...new Set(dates.map(d => d.slice(0, 7)))].sort().reverse();
+                const years   = [...new Set(dates.map(d => d.slice(0, 4)))].sort().reverse();
 
                 const sel = document.getElementById('monthly-month-select');
                 const current = sel.value;
 
-                if (months.length === 0) {
+                if (history.length === 0) {
                     sel.innerHTML = '<option value="">保存済みゲームなし</option>';
                     return;
                 }
 
-                sel.innerHTML = months.map(m => {
-                    const [y, mo] = m.split('-');
-                    return `<option value="${m}" ${m === current ? 'selected' : ''}>${y}年${parseInt(mo)}月</option>`;
-                }).join('');
-
-                // 初回: 最新月を選択
-                if (!current || !months.includes(current)) {
-                    sel.value = months[0];
+                let html = '<optgroup label="通算"><option value="all">通算（全期間）</option></optgroup>';
+                if (years.length > 0) {
+                    html += '<optgroup label="年間">'
+                        + years.map(y => `<option value="${y}">${y}年（年間）</option>`).join('')
+                        + '</optgroup>';
                 }
+                if (months.length > 0) {
+                    html += '<optgroup label="月間">'
+                        + months.map(m => {
+                            const [y, mo] = m.split('-');
+                            return `<option value="${m}">${y}年${parseInt(mo, 10)}月</option>`;
+                        }).join('')
+                        + '</optgroup>';
+                }
+                sel.innerHTML = html;
+
+                // 直前の選択を維持。初回は従来どおり最新月（日付ありのゲームが無ければ通算）
+                const options = ['all', ...years, ...months];
+                sel.value = options.includes(current) ? current : (months[0] || 'all');
             }
 
             renderSavedGamesList(games) {
@@ -4912,15 +4954,27 @@ Google AdSense 設定手順
             }
 
             renderMonthlyStats() {
-                const sel     = document.getElementById('monthly-month-select');
-                const month   = sel.value;
+                const period  = this.getSelectedPeriod();
                 const history = this.loadGameHistory();
+                const games   = this.filterGamesByPeriod(history, period);
 
-                const games = month
-                    ? history.filter(g => g.gameInfo.date && g.gameInfo.date.startsWith(month))
-                    : [];
+                // 見出しを選択中の期間に合わせて切り替え
+                const titleEl = document.getElementById('period-stats-title');
+                const subEl   = document.getElementById('period-stats-subtitle');
+                const periodLabelEl = document.getElementById('monthly-period-label');
+                if (titleEl) titleEl.textContent = period.title;
+                if (subEl)   subEl.textContent   = period.subtitle;
+                if (periodLabelEl) periodLabelEl.textContent = period.label ? ` ／ ${period.label}` : '';
 
                 this.renderSavedGamesList(games);
+
+                // 保存データの総数を常に表示（表示中の期間で絞られているだけだと分かるように）
+                const countEl = document.getElementById('saved-games-count');
+                if (countEl) {
+                    countEl.textContent = history.length > 0
+                        ? `（表示中 ${games.length}件 / 保存済み 全${history.length}件）`
+                        : '';
+                }
 
                 // チーム名表示を更新（名簿のチーム名を優先、なければA側）
                 const teamLabel = this.roster.teamName
@@ -4934,6 +4988,9 @@ Google AdSense 設定手順
 
                 if (games.length === 0) {
                     tbody.innerHTML = '';
+                    emptyEl.textContent = period.type === 'year' ? 'この年の保存済みゲームはありません'
+                        : period.type === 'all' ? '保存済みゲームはありません'
+                        : 'この月の保存済みゲームはありません';
                     emptyEl.style.display = '';
                     tableEl.style.display = 'none';
                     csvBtn.style.display = 'none';
@@ -4966,8 +5023,8 @@ Google AdSense 設定手順
 
                 if (rows.length === 0) {
                     const msg = hasRoster
-                        ? '名簿に登録されたメンバーの記録がこの月にはありません。「ゲストも表示」で全選手を確認できます。'
-                        : 'この月の保存済みゲームに記録がありません。';
+                        ? `名簿に登録されたメンバーの記録がありません（${period.label}）。「ゲストも表示」で全選手を確認できます。`
+                        : `保存済みゲームに記録がありません（${period.label}）。`;
                     tbody.innerHTML = `<tr><td colspan="19" class="p-4 text-center text-xs text-gray-400">${msg}</td></tr>`;
                     return;
                 }
@@ -5026,18 +5083,22 @@ Google AdSense 設定手順
             }
 
             deleteAllGames() {
-                if (!confirm('保存済みゲームをすべて削除しますか？この操作は元に戻せません。')) return;
+                const total = this.loadGameHistory().length;
+                if (total === 0) {
+                    this.showToast('保存済みゲームはありません');
+                    return;
+                }
+                if (!confirm(`保存済みゲーム${total}件をすべて削除します。\n表示中の期間だけでなく、他の月・年に保存したゲームもすべて消えます。\nこの操作は元に戻せません。よろしいですか？`)) return;
                 this.saveGameHistory([]);
                 this.refreshMonthlySectionUI();
             }
 
             exportMonthlyCSV() {
-                const sel   = document.getElementById('monthly-month-select');
-                const month = sel.value;
-                if (!month) return;
+                const period = this.getSelectedPeriod();
+                if (period.type === 'none') return;
 
                 const history = this.loadGameHistory();
-                const games = history.filter(g => g.gameInfo.date && g.gameInfo.date.startsWith(month));
+                const games = this.filterGamesByPeriod(history, period);
                 if (games.length === 0) return;
 
                 const escapeCsv = (val) => {
@@ -5048,7 +5109,6 @@ Google AdSense 設定手順
                     return str;
                 };
 
-                const [y, mo] = month.split('-');
                 const teamName = this.roster.teamName || games[0].teams.A.name;
                 const includeGuests = document.getElementById('monthly-include-guests')?.checked || false;
                 const { rows, hasRoster } = this.buildMonthlyAggregation(games, includeGuests);
@@ -5120,23 +5180,27 @@ Google AdSense 設定手順
                     { label: "EFF/G", getter: r => fmt1(r.effAvg) }
                 ];
 
+                const sectionName = period.csvName.replace('スタッツ集計', '集計'); // 月間集計 / 年間集計 / 通算集計
                 let csv = '';
 
-                csv += `=== 月間スタッツ集計 ===\n`;
-                csv += `期間,${y}年${parseInt(mo)}月\n`;
+                csv += `=== ${period.csvName} ===\n`;
+                csv += `期間,${escapeCsv(period.label)}\n`;
                 csv += `チーム,${escapeCsv(teamName)}\n`;
                 csv += `試合数,${games.length}\n`;
                 csv += `集計対象,${includeGuests ? 'メンバー＋ゲスト' : (hasRoster ? '名簿メンバーのみ' : '全選手')}\n\n`;
 
                 csv += `=== 試合一覧 ===\n`;
                 csv += `日付,イベント,${escapeCsv(teamName)} スコア,対戦相手,相手スコア\n`;
-                games.forEach(g => {
-                    csv += `${g.gameInfo.date},${escapeCsv(g.gameInfo.event || '-')},${g.teams.A.score},${escapeCsv(g.teams.B.name)},${g.teams.B.score}\n`;
-                });
+                // 期間が長いほど時系列で見たいので日付の古い順に並べる（元の履歴は並べ替えない）
+                games.slice()
+                    .sort((a, b) => (a.gameInfo.date || '').localeCompare(b.gameInfo.date || ''))
+                    .forEach(g => {
+                        csv += `${g.gameInfo.date || '日付なし'},${escapeCsv(g.gameInfo.event || '-')},${g.teams.A.score},${escapeCsv(g.teams.B.name)},${g.teams.B.score}\n`;
+                    });
                 csv += '\n';
 
-                csv += addStatsSection("月間集計（合計）", totalStatRows);
-                csv += addStatsSection("月間集計（1試合平均）", avgStatRows);
+                csv += addStatsSection(`${sectionName}（合計）`, totalStatRows);
+                csv += addStatsSection(`${sectionName}（1試合平均）`, avgStatRows);
 
                 const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
                 const blob = new Blob([bom, csv], { type: 'text/csv;charset=utf-8' });
@@ -5145,7 +5209,10 @@ Google AdSense 設定手順
                 const link = document.createElement('a');
                 link.setAttribute('href', url);
                 const suffix = includeGuests ? '_全選手' : '';
-                link.setAttribute('download', `monthly_stats_${month}${suffix}.csv`);
+                const baseName = period.type === 'all' ? 'career_stats'
+                    : period.type === 'year' ? `yearly_stats_${period.value}`
+                    : `monthly_stats_${period.value}`;
+                link.setAttribute('download', `${baseName}${suffix}.csv`);
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
