@@ -86,7 +86,7 @@ extra_css: |
       "name": "多田 諒聖",
       "alternateName": "Ryosei Tada",
       "url": "{{ site.url }}/about/",
-      "image": "{{ site.url }}/image/favicon.png",
+      "image": "{{ site.url }}/image/profile/tada-ryosei-avatar.jpg",
       "jobTitle": "Webエンジニア / SEOコンサルタント",
       "description": "2001年生まれ。小学5年生でバスケットボールを始め、小学・中学・高校・大学を経て現在も社会人プレイヤーとして競技を継続。Web制作エンジニア・SEO/LLMO/GEOコンサルタントとして活動し、StatsToo の設計・開発・記事執筆・運用を個人で担当している。",
       "knowsAbout": [
@@ -118,7 +118,10 @@ extra_css: |
         
         <!-- Profile Card -->
         <div class="profile-card">
-            <img class="profile-avatar" src="https://www.statstoo.com/image/favicon.png" alt="多田 諒聖">
+            <!-- アバターは元写真 tada-ryosei.jpg を正方形に切り出した tada-ryosei-avatar.jpg を使用。読み込み失敗時はファビコンにフォールバック -->
+            <img class="profile-avatar" src="/image/profile/tada-ryosei-avatar.jpg" alt="多田 諒聖"
+                 width="100" height="100" loading="lazy"
+                 onerror="this.onerror=null; this.src='/image/favicon.png';">
             <h2 class="profile-name">多田 諒聖（Tada Ryosei）</h2>
             <p class="profile-role">StatsToo 運営者・開発者 / Webエンジニア・SEO/LLMO/GEOコンサルタント</p>
             <p class="text-sm text-gray-600 max-w-md mx-auto">
