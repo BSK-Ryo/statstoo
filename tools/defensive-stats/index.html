@@ -1,0 +1,914 @@
+---
+layout: default
+title: ディフェンススタッツ記録
+description: ディフレクション・オンボールバンプ・コンテストなど、ボックススコアに残らないディフェンスの頑張りをエリア別に記録・数値化するツールです。試合の録画を別画面で見ながら、タップだけで計測できます。
+is_tool: true
+tool_name: ディフェンススタッツ記録
+---
+
+<style>
+    /* ===== Controller ===== */
+    .slide-up   { transform: translateY(0%);    pointer-events: auto; opacity: 1; }
+    .slide-down { transform: translateY(110%);  pointer-events: none; opacity: 0; }
+
+    /* ===== Player rows ===== */
+    .player-row { transition: all .18s ease; border-left: 4px solid transparent; }
+    .player-row.selected-ally  { background-color: #e0e7ff; border-left-color: #4f46e5; }
+    .player-row.selected-enemy { background-color: #ffe4e6; border-left-color: #e11d48; }
+
+    .btn-press:active { transform: scale(.96); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* ===== Court map ===== */
+    .court-svg { width: 100%; height: 100%; display: block; }
+    .court-wrap {
+        max-height: 190px;
+        display: flex; justify-content: center;
+        background: #D4956B; border-radius: 8px; padding: 4px;
+    }
+    @media (min-width: 768px) { .court-wrap { max-height: 250px; } }
+
+    .zone { cursor: pointer; }
+    .zone > path, .zone > rect { transition: fill .12s ease, fill-opacity .12s ease; }
+    .zone > text {
+        fill: #fff; font-size: 14px; font-weight: 700; text-anchor: middle;
+        pointer-events: none; paint-order: stroke;
+        stroke: rgba(0,0,0,.45); stroke-width: 3px; stroke-linejoin: round;
+    }
+    .zone:hover  > path, .zone:hover  > rect { fill: #EA580C; fill-opacity: .9; }
+    .zone:active > path, .zone:active > rect { fill: #c2410c; fill-opacity: 1; }
+    .zone.disabled { cursor: not-allowed; pointer-events: none; }
+    .zone.disabled > path, .zone.disabled > rect { fill: #57534e; fill-opacity: .55; }
+    .zone.disabled > text { opacity: .45; }
+
+    /* ===== Toast ===== */
+    .df-toast {
+        position: fixed; left: 50%; bottom: 250px; z-index: 60;
+        transform: translateX(-50%) translateY(16px);
+        background: rgba(0,0,0,.85); color: #fff;
+        padding: 8px 18px; border-radius: 9999px;
+        font-size: 13px; font-weight: 700; white-space: nowrap;
+        opacity: 0; pointer-events: none; transition: all .25s ease;
+    }
+    .df-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===== Modal ===== */
+    .df-modal { position: fixed; inset: 0; z-index: 70; display: none; }
+    .df-modal.active { display: block; }
+    .df-modal-bg { position: absolute; inset: 0; background: rgba(0,0,0,.5); }
+    .df-modal-box {
+        position: relative; margin: 6vh auto 0; max-width: 640px; width: 92%;
+        max-height: 84vh; overflow-y: auto;
+        background: #fff; border-radius: 14px; padding: 18px;
+    }
+
+    .edit-input { width: 100%; padding: 4px 8px; border: 1px solid #d6d3d1; border-radius: 4px; font-size: 13px; }
+    .edit-input:focus { outline: 2px solid #EA580C; border-color: transparent; }
+
+    /* Summary table */
+    .sum-table th, .sum-table td { white-space: nowrap; }
+    .sum-table tbody tr:nth-child(odd) { background: #fafaf9; }
+</style>
+
+<!-- ============================ Tool Header ============================ -->
+<div class="bg-secondary text-white rounded-xl p-4 md:p-5 mb-4 shadow-lg">
+    <div class="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+            <h1 class="font-display text-2xl md:text-3xl tracking-wide">DEFENSIVE STATS TRACKER</h1>
+            <p class="text-white/70 text-xs md:text-sm mt-1">
+                ボックススコアに残らないディフェンスの頑張りを、エリア別に記録して数値化します。
+            </p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="app.openGlossary()" class="btn-press text-[11px] px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition font-bold">
+                📖 判定基準
+            </button>
+            <button onclick="app.openSettings()" class="btn-press text-[11px] px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition font-bold">
+                ⚙️ 配点
+            </button>
+        </div>
+    </div>
+
+    <div class="mt-3 p-2.5 bg-primary/20 border border-primary/30 rounded-lg text-[11px] leading-relaxed">
+        <strong class="text-primary-light">使い方：</strong>
+        試合の録画を<strong>別ウィンドウ・別アプリ</strong>（スマホはYouTubeのミニプレーヤー、PCは別ウィンドウ）で再生しながら、このページでタップして記録します。
+        <span class="text-white/60">※オフボールの動きを記録するには、コート全体が映る引きの映像が必要です。</span>
+    </div>
+</div>
+
+<!-- ============================ Game Info ============================ -->
+<section class="bg-white p-4 rounded-xl shadow-md border border-gray-100 mb-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div>
+            <label class="block text-[10px] font-bold text-gray-500 mb-1">大会・試合名</label>
+            <input type="text" id="game-event" class="edit-input" placeholder="例: 県大会 2回戦" oninput="app.save()">
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-gray-500 mb-1">日付</label>
+            <input type="date" id="game-date" class="edit-input" onchange="app.save()">
+        </div>
+        <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-gray-500 mb-1">記録中のクォーター</label>
+            <div id="quarter-tabs" class="flex gap-1"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================ Teams ============================ -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    <!-- Team A -->
+    <div class="bg-white rounded-xl shadow-md border-2 border-indigo-200 overflow-hidden">
+        <div class="bg-indigo-500 text-white px-3 py-2 flex items-center gap-2">
+            <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded">自チーム</span>
+            <input type="text" id="name-teamA" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
+                   value="自チーム" oninput="app.setTeamName('A', this.value)">
+        </div>
+        <div id="list-teamA" class="divide-y divide-gray-100"></div>
+        <button onclick="app.addPlayer('A')" class="w-full py-2.5 text-xs font-bold text-indigo-600 hover:bg-indigo-50 transition border-t border-gray-100">
+            ＋ 選手を追加
+        </button>
+    </div>
+
+    <!-- Team B -->
+    <div class="bg-white rounded-xl shadow-md border-2 border-rose-200 overflow-hidden">
+        <div class="bg-rose-500 text-white px-3 py-2 flex items-center gap-2">
+            <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded">相手</span>
+            <input type="text" id="name-teamB" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
+                   value="相手チーム" oninput="app.setTeamName('B', this.value)">
+        </div>
+        <div id="list-teamB" class="divide-y divide-gray-100"></div>
+        <button onclick="app.addPlayer('B')" class="w-full py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition border-t border-gray-100">
+            ＋ 選手を追加
+        </button>
+    </div>
+</section>
+
+<!-- ============================ Summary ============================ -->
+<section class="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 mb-4">
+    <div class="flex items-center justify-between gap-2 flex-wrap mb-3">
+        <h2 class="font-display text-xl tracking-wide text-secondary">集計</h2>
+        <div class="flex gap-2 items-center flex-wrap">
+            <select id="summary-view" class="edit-input text-xs" style="width:auto" onchange="app.render()">
+                <option value="total">種別サマリー</option>
+                <option value="zone">エリア別内訳</option>
+            </select>
+            <select id="summary-stat" class="edit-input text-xs hidden" style="width:auto" onchange="app.render()"></select>
+            <select id="summary-quarter" class="edit-input text-xs" style="width:auto" onchange="app.render()">
+                <option value="all">全体</option>
+            </select>
+            <button onclick="app.exportCSV()" class="btn-press text-[11px] px-3 py-1.5 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark transition">
+                CSV出力
+            </button>
+        </div>
+    </div>
+    <div class="overflow-x-auto no-scrollbar">
+        <table class="sum-table w-full text-xs" style="min-width:720px">
+            <thead id="summary-head" class="bg-secondary text-white"></thead>
+            <tbody id="summary-body"></tbody>
+        </table>
+    </div>
+    <p id="summary-empty" class="text-center text-gray-400 text-sm py-6">まだ記録がありません。選手を選んで記録を開始してください。</p>
+    <p class="text-[10px] text-gray-400 mt-3 leading-relaxed">
+        ※ DFスコアは「種別の配点 × エリア係数」の合計です。配点は ⚙️ から変更できます。出場時間は記録していないため、出場時間が違う選手同士の単純比較には注意してください。
+    </p>
+</section>
+
+<!-- ============================ Danger zone ============================ -->
+<section class="text-center mb-6">
+    <button onclick="app.resetAll()" class="text-[11px] text-gray-400 hover:text-rose-500 underline transition">
+        すべての記録をリセット
+    </button>
+</section>
+
+<!-- ============================ Controller ============================ -->
+<div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40">
+    <div class="max-w-4xl mx-auto px-3 py-2.5">
+
+        <!-- Header row -->
+        <div class="flex justify-between items-center gap-2 mb-2">
+            <div class="flex items-center gap-2 min-w-0">
+                <span id="ctl-player" class="text-sm font-bold text-secondary truncate"></span>
+                <span id="ctl-quarter" class="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded flex-shrink-0"></span>
+            </div>
+            <div class="flex gap-1.5 flex-shrink-0">
+                <button id="help-toggle" onclick="app.toggleHelp()" class="btn-press text-[10px] px-2 py-1 rounded border font-bold transition"></button>
+                <button onclick="app.undo()" class="btn-press text-[10px] text-primary px-2 py-1 border border-primary/30 rounded bg-primary/5 hover:bg-primary/10 transition font-bold">↩ 戻す</button>
+                <button onclick="app.openHistory()" class="btn-press text-[10px] text-gray-500 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-bold">📋</button>
+                <button onclick="app.deselectPlayer()" class="btn-press text-[10px] text-gray-500 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-bold">✕</button>
+            </div>
+        </div>
+
+        <!-- STEP 1: stat type -->
+        <div id="ctl-stats">
+            <div id="stat-buttons" class="grid grid-cols-4 gap-1.5"></div>
+        </div>
+
+        <!-- STEP 2: zone picker -->
+        <div id="ctl-zone" class="hidden">
+            <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-secondary">
+                    <span id="zone-stat-label"></span> <span class="text-gray-400 font-normal">→ エリアをタップ</span>
+                </span>
+                <button onclick="app.cancelZone()" class="btn-press text-[10px] text-gray-500 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-bold">← 戻る</button>
+            </div>
+
+            <!-- Backcourt bar -->
+            <div id="zone-backcourt" onclick="app.pickZone('backcourt')"
+                 class="btn-press cursor-pointer text-center text-[11px] font-bold text-white py-2 rounded-md mb-1.5 bg-stone-500 hover:bg-primary transition select-none">
+                バックコート
+            </div>
+
+            <!-- Halfcourt -->
+            <div class="court-wrap">
+                <svg class="court-svg" viewBox="0 0 300 345" preserveAspectRatio="xMidYMid meet">
+                    <!-- court lines (non-interactive) -->
+                    <rect x="0" y="0" width="300" height="345" fill="#D4956B" rx="8"/>
+
+                    <!-- zone: outside 3P (frontcourt minus arc) -->
+                    <g class="zone" data-zone="out3" onclick="app.pickZone('out3')">
+                        <path fill="#0ea5e9" fill-opacity=".3" fill-rule="evenodd"
+                              d="M 10 10 L 290 10 L 290 335 L 10 335 Z M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335 Z"/>
+                        <text x="150" y="45">3Pライン外</text>
+                    </g>
+
+                    <!-- zone: inside 3P, outside paint -->
+                    <g class="zone" data-zone="in3" onclick="app.pickZone('in3')">
+                        <path fill="#6366f1" fill-opacity=".32" fill-rule="evenodd"
+                              d="M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335 Z M 90 215 L 210 215 L 210 335 L 90 335 Z"/>
+                        <text x="150" y="150">3Pライン内</text>
+                    </g>
+
+                    <!-- zone: paint -->
+                    <g class="zone" data-zone="paint" onclick="app.pickZone('paint')">
+                        <path fill="#ef4444" fill-opacity=".34" d="M 90 215 L 210 215 L 210 335 L 90 335 Z"/>
+                        <text x="150" y="262">ペイント内</text>
+                    </g>
+
+                    <!-- decorative lines on top -->
+                    <g pointer-events="none" fill="none" stroke="#fff" stroke-width="2">
+                        <rect x="10" y="10" width="280" height="325" rx="4"/>
+                        <path d="M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335" stroke-dasharray="8,4" opacity=".7"/>
+                        <rect x="90" y="215" width="120" height="120"/>
+                        <circle cx="150" cy="215" r="45"/>
+                        <line x1="90" y1="215" x2="210" y2="215"/>
+                        <circle cx="150" cy="305" r="8"/>
+                        <line x1="90" y1="255" x2="95" y2="255"/>
+                        <line x1="90" y1="275" x2="95" y2="275"/>
+                        <line x1="90" y1="295" x2="95" y2="295"/>
+                        <line x1="205" y1="255" x2="210" y2="255"/>
+                        <line x1="205" y1="275" x2="210" y2="275"/>
+                        <line x1="205" y1="295" x2="210" y2="295"/>
+                    </g>
+                    <rect x="125" y="320" width="50" height="4" fill="#fff" pointer-events="none"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="df-toast"></div>
+
+<!-- ============================ Modals ============================ -->
+<div id="history-modal" class="df-modal">
+    <div class="df-modal-bg" onclick="app.closeModal('history-modal')"></div>
+    <div class="df-modal-box">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-display text-xl tracking-wide text-secondary">記録履歴</h3>
+            <button onclick="app.closeModal('history-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+        </div>
+        <div id="history-list" class="space-y-1"></div>
+    </div>
+</div>
+
+<div id="settings-modal" class="df-modal">
+    <div class="df-modal-bg" onclick="app.closeModal('settings-modal')"></div>
+    <div class="df-modal-box">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-display text-xl tracking-wide text-secondary">DFスコアの配点</h3>
+            <button onclick="app.closeModal('settings-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+        </div>
+        <p class="text-[11px] text-gray-500 mb-4 leading-relaxed">
+            初期値は「取りにくいプレーほど高い」という考え方の目安です。絶対的な正解はないので、チームの狙いに合わせて調整してください。
+        </p>
+        <h4 class="text-[11px] font-bold text-gray-500 mb-1.5">種別の配点</h4>
+        <div id="weight-stats" class="grid grid-cols-2 gap-2 mb-4"></div>
+        <h4 class="text-[11px] font-bold text-gray-500 mb-1.5">エリア係数（配点に掛ける）</h4>
+        <div id="weight-zones" class="grid grid-cols-2 gap-2 mb-4"></div>
+        <button onclick="app.resetWeights()" class="w-full py-2 text-xs font-bold text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+            初期値に戻す
+        </button>
+    </div>
+</div>
+
+<div id="glossary-modal" class="df-modal">
+    <div class="df-modal-bg" onclick="app.closeModal('glossary-modal')"></div>
+    <div class="df-modal-box">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-display text-xl tracking-wide text-secondary">判定基準</h3>
+            <button onclick="app.closeModal('glossary-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
+        </div>
+        <p class="text-[11px] text-gray-500 mb-4 leading-relaxed">
+            ディフェンスの評価は主観が入りやすい指標です。<strong>複数人で記録する場合は必ず基準を揃えてください。</strong>
+        </p>
+        <div id="glossary-list" class="space-y-3"></div>
+        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 leading-relaxed">
+            <strong>「マッチアップ / ヘルプ」の使い分け</strong><br>
+            自分がマークしている相手に対するプレーは<strong>マッチアップ</strong>、自分の持ち場を離れて味方をカバーしたプレーは<strong>ヘルプ</strong>です。
+            ヘルプはエリア係数と別に集計され、献身度の指標になります。
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // ============================ 定義 ============================
+    const ZONES = [
+        { key: 'backcourt', label: 'バックコート', short: 'BC' },
+        { key: 'out3',      label: '3Pライン外',  short: '3P外' },
+        { key: 'in3',       label: '3Pライン内',  short: '3P内' },
+        { key: 'paint',     label: 'ペイント内',  short: 'ペイント' }
+    ];
+
+    // zones: 'all' = 4エリア / 'front' = バックコート以外 / 'none' = エリア指定なし
+    const STATS = [
+        { key: 'deflection', label: 'ディフレクション', short: 'ディフレ', kind: 'plus',  zones: 'all',   help: true,
+          cls: 'bg-sky-500 hover:bg-sky-600 text-white',
+          desc: 'シュート以外のボール（パス・ドリブル）に手が触れ、軌道を変えた。奪い切れなくても、コート外に出てもカウントする。ブロックは含めない。' },
+        { key: 'bump',       label: 'オンボールバンプ', short: 'バンプ',   kind: 'plus',  zones: 'all',   help: true,
+          cls: 'bg-indigo-500 hover:bg-indigo-600 text-white',
+          desc: 'ぶつかってくる相手の進路に先に立ち、体で受け止めて動きを制限した。止め切れなくてもコースを変えさせたらカウントする。' },
+        { key: 'contest',    label: 'コンテスト',       short: 'コンテスト', kind: 'plus', zones: 'front', help: true,
+          cls: 'bg-violet-500 hover:bg-violet-600 text-white',
+          desc: 'シューターに正対して手を伸ばし、シュートに影響を与えた（目安：約1m以内）。手が上がっていない・後ろから追いかけただけはカウントしない。' },
+        { key: 'boxout',     label: 'ボックスアウト',   short: 'BOX OUT',  kind: 'plus',  zones: 'front', help: true,
+          cls: 'bg-teal-500 hover:bg-teal-600 text-white',
+          desc: 'シュート後に相手を体で押さえ、リバウンドに触らせなかった。自分がリバウンドを取れなくても、味方が取れたならカウントする。' },
+        { key: 'looseball',  label: 'ルーズボール獲得', short: 'ルーズ',   kind: 'plus',  zones: 'none',  help: false,
+          cls: 'bg-emerald-500 hover:bg-emerald-600 text-white',
+          desc: 'ディフェンス時に、どちらのボールでもない状態から自チームのボールにし切った。' },
+        { key: 'jumpball',   label: 'ジャンプボール誘発', short: 'ジャンプ', kind: 'plus', zones: 'none', help: false,
+          cls: 'bg-amber-500 hover:bg-amber-600 text-white',
+          desc: 'ディフェンス時に、ボールを掴んでジャンプボールシチュエーションに持ち込んだ。' },
+        { key: 'blowby',     label: '抜かれた',         short: '抜かれた', kind: 'minus', zones: 'all',   help: true,
+          cls: 'bg-rose-500 hover:bg-rose-600 text-white',
+          desc: '【減点】マッチアップに突破された、またはヘルプ／ローテーションが間に合わなかった。バンプとペアで記録することで「止め切れた率」が出せる。' }
+    ];
+
+    const DEFAULT_STAT_W = { deflection: 2, bump: 2, contest: 1.5, boxout: 1.5, looseball: 3, jumpball: 2.5, blowby: -2 };
+    const DEFAULT_ZONE_W = { backcourt: 1.2, out3: 1, in3: 1.1, paint: 1.3, none: 1 };
+    const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4', 'OT'];
+    const STORAGE_KEY = 'statstoo_defensive_stats_v1';
+
+    const statDef = k => STATS.find(s => s.key === k);
+    const zoneDef = k => ZONES.find(z => z.key === k);
+    const zoneLabel = k => (k === 'none' || !k) ? '—' : (zoneDef(k) ? zoneDef(k).label : k);
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    // ============================ State ============================
+    const app = {
+        state: {
+            teams: {
+                A: { name: '自チーム', players: [] },
+                B: { name: '相手チーム', players: [] }
+            },
+            history: [],
+            counter: 0,
+            quarter: 'Q1',
+            helpMode: false,
+            weights: { stat: Object.assign({}, DEFAULT_STAT_W), zone: Object.assign({}, DEFAULT_ZONE_W) }
+        },
+        selected: null,   // { team, playerId }
+        pendingStat: null,
+
+        // ---------------------- 永続化 ----------------------
+        save() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    teams: this.state.teams,
+                    history: this.state.history,
+                    counter: this.state.counter,
+                    quarter: this.state.quarter,
+                    weights: this.state.weights,
+                    gameEvent: document.getElementById('game-event').value,
+                    gameDate: document.getElementById('game-date').value
+                }));
+            } catch (e) { /* ストレージ無効時は無視 */ }
+        },
+
+        load() {
+            let d = null;
+            try { d = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (e) { d = null; }
+            if (!d) return false;
+            if (d.teams && d.teams.A && d.teams.B) this.state.teams = d.teams;
+            if (Array.isArray(d.history)) this.state.history = d.history;
+            if (typeof d.counter === 'number') this.state.counter = d.counter;
+            if (d.quarter && QUARTERS.includes(d.quarter)) this.state.quarter = d.quarter;
+            if (d.weights) {
+                this.state.weights.stat = Object.assign({}, DEFAULT_STAT_W, d.weights.stat || {});
+                this.state.weights.zone = Object.assign({}, DEFAULT_ZONE_W, d.weights.zone || {});
+            }
+            document.getElementById('game-event').value = d.gameEvent || '';
+            document.getElementById('game-date').value = d.gameDate || new Date().toISOString().slice(0, 10);
+            return true;
+        },
+
+        // ---------------------- 初期化 ----------------------
+        init() {
+            const loaded = this.load();
+            if (!loaded) {
+                document.getElementById('game-date').value = new Date().toISOString().slice(0, 10);
+                for (let i = 0; i < 5; i++) this.state.teams.A.players.push(this.newPlayer('A', i));
+            }
+            document.getElementById('name-teamA').value = this.state.teams.A.name;
+            document.getElementById('name-teamB').value = this.state.teams.B.name;
+
+            this.buildStatButtons();
+            this.buildQuarterTabs();
+            this.buildStatSelect();
+            this.buildQuarterSelect();
+            this.buildGlossary();
+            this.render();
+        },
+
+        newPlayer(team, i) {
+            return { id: team + '-' + Date.now() + '-' + i + '-' + Math.random().toString(36).slice(2, 7), name: '', number: '' };
+        },
+
+        // ---------------------- 静的UIの構築 ----------------------
+        buildStatButtons() {
+            document.getElementById('stat-buttons').innerHTML = STATS.map(s => `
+                <button onclick="app.pickStat('${s.key}')"
+                        class="btn-press ${s.cls} font-bold py-2.5 px-1 rounded-lg text-[11px] leading-tight shadow-sm transition">
+                    ${esc(s.short)}
+                </button>
+            `).join('');
+        },
+
+        buildQuarterTabs() {
+            document.getElementById('quarter-tabs').innerHTML = QUARTERS.map(q => `
+                <button onclick="app.setQuarter('${q}')" data-q="${q}"
+                        class="q-tab btn-press flex-1 py-1.5 text-xs font-bold rounded-lg border-2 transition">${q}</button>
+            `).join('');
+        },
+
+        buildStatSelect() {
+            document.getElementById('summary-stat').innerHTML =
+                STATS.map(s => `<option value="${s.key}">${esc(s.label)}</option>`).join('');
+        },
+
+        buildQuarterSelect() {
+            const sel = document.getElementById('summary-quarter');
+            sel.innerHTML = '<option value="all">全体</option>' +
+                QUARTERS.map(q => `<option value="${q}">${q}</option>`).join('');
+        },
+
+        buildGlossary() {
+            document.getElementById('glossary-list').innerHTML = STATS.map(s => `
+                <div class="border-l-4 ${s.kind === 'minus' ? 'border-rose-400' : 'border-primary'} pl-3">
+                    <div class="text-sm font-bold text-secondary">${esc(s.label)}</div>
+                    <p class="text-[11px] text-gray-600 leading-relaxed mt-0.5">${esc(s.desc)}</p>
+                    <p class="text-[10px] text-gray-400 mt-1">
+                        エリア：${s.zones === 'none' ? '指定なし' : s.zones === 'front' ? 'バックコート以外の3エリア' : '4エリア'}
+                        ／ マッチアップ・ヘルプの区別：${s.help ? 'あり' : 'なし'}
+                    </p>
+                </div>
+            `).join('');
+        },
+
+        // ---------------------- 選手管理 ----------------------
+        setTeamName(team, v) { this.state.teams[team].name = v; this.save(); this.render(); },
+
+        addPlayer(team) {
+            const t = this.state.teams[team];
+            t.players.push(this.newPlayer(team, t.players.length));
+            this.save();
+            this.render();
+        },
+
+        removePlayer(team, id) {
+            const t = this.state.teams[team];
+            const p = t.players.find(x => x.id === id);
+            const n = this.state.history.filter(h => h.playerId === id).length;
+            if (n > 0 && !confirm(`${this.playerLabel(p)} の記録 ${n}件 も削除されます。よろしいですか？`)) return;
+            t.players = t.players.filter(x => x.id !== id);
+            this.state.history = this.state.history.filter(h => h.playerId !== id);
+            if (this.selected && this.selected.playerId === id) this.deselectPlayer();
+            this.save();
+            this.render();
+        },
+
+        updatePlayer(team, id, field, v) {
+            const p = this.state.teams[team].players.find(x => x.id === id);
+            if (!p) return;
+            p[field] = v;
+            // 履歴側の表示名も追従させる
+            this.state.history.forEach(h => { if (h.playerId === id) h.playerName = this.playerLabel(p); });
+            this.save();
+            this.renderSummary();
+        },
+
+        playerLabel(p) {
+            if (!p) return '不明';
+            const num = String(p.number || '').trim();
+            const name = String(p.name || '').trim();
+            if (num && name) return `#${num} ${name}`;
+            if (num) return `#${num}`;
+            return name || '（名前未設定）';
+        },
+
+        findPlayer(id) {
+            for (const t of ['A', 'B']) {
+                const p = this.state.teams[t].players.find(x => x.id === id);
+                if (p) return { team: t, player: p };
+            }
+            return null;
+        },
+
+        // ---------------------- 記録フロー ----------------------
+        selectPlayer(team, playerId) {
+            this.selected = { team, playerId };
+            this.pendingStat = null;
+            this.showZonePanel(false);
+            document.getElementById('controller').classList.replace('slide-down', 'slide-up');
+            this.render();
+        },
+
+        deselectPlayer() {
+            this.selected = null;
+            this.pendingStat = null;
+            this.showZonePanel(false);
+            document.getElementById('controller').classList.replace('slide-up', 'slide-down');
+            this.render();
+        },
+
+        pickStat(statKey) {
+            if (!this.selected) { this.toast('選手を選択してください'); return; }
+            const s = statDef(statKey);
+            if (!s) return;
+            if (s.zones === 'none') { this.record(statKey, 'none'); return; }
+            this.pendingStat = statKey;
+            document.getElementById('zone-stat-label').textContent = s.label;
+            // バックコートが使えない種別は無効化する
+            const backAllowed = s.zones === 'all';
+            const bc = document.getElementById('zone-backcourt');
+            bc.classList.toggle('opacity-40', !backAllowed);
+            bc.classList.toggle('pointer-events-none', !backAllowed);
+            this.showZonePanel(true);
+        },
+
+        cancelZone() { this.pendingStat = null; this.showZonePanel(false); },
+
+        showZonePanel(on) {
+            document.getElementById('ctl-zone').classList.toggle('hidden', !on);
+            document.getElementById('ctl-stats').classList.toggle('hidden', on);
+        },
+
+        pickZone(zoneKey) {
+            if (!this.pendingStat) return;
+            const s = statDef(this.pendingStat);
+            if (s.zones === 'front' && zoneKey === 'backcourt') return;
+            this.record(this.pendingStat, zoneKey);
+            this.pendingStat = null;
+            this.showZonePanel(false);
+        },
+
+        record(statKey, zoneKey) {
+            if (!this.selected) return;
+            const found = this.findPlayer(this.selected.playerId);
+            if (!found) return;
+            const s = statDef(statKey);
+            this.state.history.push({
+                id: ++this.state.counter,
+                team: this.selected.team,
+                playerId: this.selected.playerId,
+                playerName: this.playerLabel(found.player),
+                statKey,
+                zone: zoneKey,
+                help: s.help ? this.state.helpMode : false,
+                quarter: this.state.quarter
+            });
+            this.save();
+            this.render();
+            const suffix = (s.help && this.state.helpMode) ? '（ヘルプ）' : '';
+            this.toast(`${this.playerLabel(found.player)}：${s.label}${zoneKey === 'none' ? '' : ' / ' + zoneLabel(zoneKey)}${suffix}`);
+        },
+
+        toggleHelp() { this.state.helpMode = !this.state.helpMode; this.renderController(); },
+
+        setQuarter(q) { this.state.quarter = q; this.save(); this.render(); },
+
+        undo() {
+            if (this.state.history.length === 0) { this.toast('取り消す記録がありません'); return; }
+            const last = this.state.history.pop();
+            this.save();
+            this.render();
+            this.toast(`取り消し：${last.playerName} ${statDef(last.statKey).label}`);
+        },
+
+        deleteEvent(id) {
+            this.state.history = this.state.history.filter(h => h.id !== id);
+            this.save();
+            this.render();
+            this.renderHistory();
+        },
+
+        // ---------------------- 集計 ----------------------
+        filteredHistory() {
+            const q = document.getElementById('summary-quarter').value;
+            return q === 'all' ? this.state.history : this.state.history.filter(h => h.quarter === q);
+        },
+
+        aggregate() {
+            const rows = [];
+            const hist = this.filteredHistory();
+            ['A', 'B'].forEach(team => {
+                this.state.teams[team].players.forEach(p => {
+                    const events = hist.filter(h => h.playerId === p.id);
+                    const counts = {};
+                    const byZone = {};
+                    let helpCount = 0, score = 0;
+                    STATS.forEach(s => {
+                        counts[s.key] = 0;
+                        byZone[s.key] = { backcourt: 0, out3: 0, in3: 0, paint: 0, none: 0 };
+                    });
+                    events.forEach(e => {
+                        if (counts[e.statKey] === undefined) return;
+                        counts[e.statKey]++;
+                        const z = e.zone || 'none';
+                        if (byZone[e.statKey][z] !== undefined) byZone[e.statKey][z]++;
+                        if (e.help) helpCount++;
+                        score += (this.state.weights.stat[e.statKey] || 0) * (this.state.weights.zone[z] || 1);
+                    });
+                    const stops = counts.bump + counts.blowby;
+                    rows.push({
+                        team, player: p, name: this.playerLabel(p),
+                        counts, byZone, helpCount, total: events.length,
+                        stopRate: stops > 0 ? counts.bump / stops * 100 : null,
+                        score: Math.round(score * 10) / 10
+                    });
+                });
+            });
+            return rows;
+        },
+
+        // ---------------------- 描画 ----------------------
+        render() {
+            this.renderPlayers();
+            this.renderQuarterTabs();
+            this.renderSummary();
+            this.renderController();
+        },
+
+        renderPlayers() {
+            ['A', 'B'].forEach(team => {
+                const isA = team === 'A';
+                const el = document.getElementById('list-team' + team);
+                const players = this.state.teams[team].players;
+                if (players.length === 0) {
+                    el.innerHTML = '<p class="text-center text-gray-400 text-xs py-5">選手を追加してください</p>';
+                    return;
+                }
+                const hist = this.filteredHistory();
+                el.innerHTML = players.map(p => {
+                    const sel = this.selected && this.selected.playerId === p.id;
+                    const n = hist.filter(h => h.playerId === p.id).length;
+                    return `
+                    <div class="player-row ${sel ? (isA ? 'selected-ally' : 'selected-enemy') : 'hover:bg-gray-50'} px-2 py-1.5 flex items-center gap-2">
+                        <input type="text" value="${esc(p.number)}" placeholder="#" maxlength="3"
+                               class="edit-input text-center font-bold flex-shrink-0" style="width:44px"
+                               oninput="app.updatePlayer('${team}','${p.id}','number',this.value)">
+                        <input type="text" value="${esc(p.name)}" placeholder="選手名"
+                               class="edit-input flex-1 min-w-0"
+                               oninput="app.updatePlayer('${team}','${p.id}','name',this.value)">
+                        <button onclick="app.selectPlayer('${team}','${p.id}')"
+                                class="btn-press flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold transition ${sel
+                                    ? 'bg-primary text-white shadow-sm'
+                                    : (isA ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200' : 'bg-rose-100 text-rose-700 hover:bg-rose-200')}">
+                            ${sel ? '記録中' : '記録'}
+                        </button>
+                        <span class="flex-shrink-0 text-[10px] font-bold text-gray-400 tabular-nums" style="width:26px">${n}</span>
+                        <button onclick="app.removePlayer('${team}','${p.id}')"
+                                class="flex-shrink-0 text-gray-300 hover:text-rose-500 transition text-sm leading-none px-1">✕</button>
+                    </div>`;
+                }).join('');
+            });
+        },
+
+        renderQuarterTabs() {
+            document.querySelectorAll('.q-tab').forEach(b => {
+                const on = b.dataset.q === this.state.quarter;
+                b.className = 'q-tab btn-press flex-1 py-1.5 text-xs font-bold rounded-lg border-2 transition ' +
+                    (on ? 'bg-primary text-white border-primary shadow-sm'
+                        : 'bg-white text-gray-500 border-gray-200 hover:border-primary hover:text-primary');
+            });
+        },
+
+        renderController() {
+            if (!this.selected) return;
+            const found = this.findPlayer(this.selected.playerId);
+            if (!found) { this.deselectPlayer(); return; }
+            document.getElementById('ctl-player').textContent = this.playerLabel(found.player);
+            document.getElementById('ctl-player').className =
+                'text-sm font-bold truncate ' + (this.selected.team === 'A' ? 'text-indigo-600' : 'text-rose-600');
+            document.getElementById('ctl-quarter').textContent = this.state.quarter;
+
+            const hb = document.getElementById('help-toggle');
+            hb.textContent = this.state.helpMode ? 'ヘルプ ON' : 'マッチアップ';
+            hb.className = 'btn-press text-[10px] px-2 py-1 rounded border font-bold transition ' +
+                (this.state.helpMode
+                    ? 'bg-amber-400 text-amber-950 border-amber-500'
+                    : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200');
+        },
+
+        renderSummary() {
+            const rows = this.aggregate().filter(r => r.total > 0 || this.state.teams[r.team].players.length <= 12);
+            const hasData = this.state.history.length > 0;
+            document.getElementById('summary-empty').classList.toggle('hidden', hasData);
+
+            const view = document.getElementById('summary-view').value;
+            document.getElementById('summary-stat').classList.toggle('hidden', view !== 'zone');
+
+            const head = document.getElementById('summary-head');
+            const body = document.getElementById('summary-body');
+            if (!hasData) { head.innerHTML = ''; body.innerHTML = ''; return; }
+
+            if (view === 'total') {
+                head.innerHTML = `<tr>
+                    <th class="text-left px-2 py-2 sticky left-0 bg-secondary">選手</th>
+                    ${STATS.map(s => `<th class="px-2 py-2 text-center">${esc(s.short)}</th>`).join('')}
+                    <th class="px-2 py-2 text-center">ヘルプ</th>
+                    <th class="px-2 py-2 text-center">止め切れた率</th>
+                    <th class="px-2 py-2 text-center bg-primary">DFスコア</th>
+                </tr>`;
+                body.innerHTML = rows.map(r => `<tr class="border-b border-gray-100">
+                    <td class="px-2 py-1.5 font-bold sticky left-0 ${r.team === 'A' ? 'text-indigo-600' : 'text-rose-600'} bg-white">${esc(r.name)}</td>
+                    ${STATS.map(s => `<td class="px-2 py-1.5 text-center tabular-nums ${s.kind === 'minus' && r.counts[s.key] > 0 ? 'text-rose-500 font-bold' : ''}">${r.counts[s.key] || '-'}</td>`).join('')}
+                    <td class="px-2 py-1.5 text-center tabular-nums text-amber-600 font-bold">${r.helpCount || '-'}</td>
+                    <td class="px-2 py-1.5 text-center tabular-nums">${r.stopRate == null ? '-' : Math.round(r.stopRate) + '%'}</td>
+                    <td class="px-2 py-1.5 text-center tabular-nums font-bold text-primary-dark bg-primary/5">${r.score}</td>
+                </tr>`).join('');
+            } else {
+                const sk = document.getElementById('summary-stat').value;
+                const s = statDef(sk);
+                head.innerHTML = `<tr>
+                    <th class="text-left px-2 py-2 sticky left-0 bg-secondary">選手</th>
+                    ${ZONES.map(z => `<th class="px-2 py-2 text-center">${esc(z.label)}</th>`).join('')}
+                    <th class="px-2 py-2 text-center">エリア指定なし</th>
+                    <th class="px-2 py-2 text-center bg-primary">合計</th>
+                </tr>`;
+                body.innerHTML = rows.map(r => `<tr class="border-b border-gray-100">
+                    <td class="px-2 py-1.5 font-bold sticky left-0 ${r.team === 'A' ? 'text-indigo-600' : 'text-rose-600'} bg-white">${esc(r.name)}</td>
+                    ${ZONES.map(z => `<td class="px-2 py-1.5 text-center tabular-nums">${r.byZone[sk][z.key] || '-'}</td>`).join('')}
+                    <td class="px-2 py-1.5 text-center tabular-nums">${r.byZone[sk].none || '-'}</td>
+                    <td class="px-2 py-1.5 text-center tabular-nums font-bold text-primary-dark bg-primary/5">${r.counts[sk] || '-'}</td>
+                </tr>`).join('');
+                if (s && s.zones === 'none') {
+                    body.innerHTML += `<tr><td colspan="${ZONES.length + 3}" class="px-2 py-2 text-[10px] text-gray-400">
+                        ${esc(s.label)} はエリアを指定せずに記録する種別です。</td></tr>`;
+                }
+            }
+        },
+
+        renderHistory() {
+            const el = document.getElementById('history-list');
+            const hist = this.state.history.slice().reverse();
+            if (hist.length === 0) {
+                el.innerHTML = '<p class="text-center text-gray-400 text-sm py-6">まだ記録がありません</p>';
+                return;
+            }
+            el.innerHTML = hist.map(h => {
+                const s = statDef(h.statKey);
+                return `<div class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-gray-100">
+                    <span class="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded flex-shrink-0">${esc(h.quarter)}</span>
+                    <span class="text-xs font-bold flex-shrink-0 ${h.team === 'A' ? 'text-indigo-600' : 'text-rose-600'}">${esc(h.playerName)}</span>
+                    <span class="text-xs ${s.kind === 'minus' ? 'text-rose-500 font-bold' : 'text-gray-700'}">${esc(s ? s.label : h.statKey)}</span>
+                    <span class="text-[10px] text-gray-400">${esc(zoneLabel(h.zone))}</span>
+                    ${h.help ? '<span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">ヘルプ</span>' : ''}
+                    <button onclick="app.deleteEvent(${h.id})" class="ml-auto flex-shrink-0 text-gray-300 hover:text-rose-500 transition text-sm leading-none px-1">✕</button>
+                </div>`;
+            }).join('');
+        },
+
+        // ---------------------- モーダル ----------------------
+        openHistory() { this.renderHistory(); document.getElementById('history-modal').classList.add('active'); },
+        openGlossary() { document.getElementById('glossary-modal').classList.add('active'); },
+        openSettings() { this.renderWeights(); document.getElementById('settings-modal').classList.add('active'); },
+        closeModal(id) { document.getElementById(id).classList.remove('active'); },
+
+        renderWeights() {
+            document.getElementById('weight-stats').innerHTML = STATS.map(s => `
+                <label class="flex items-center gap-2">
+                    <span class="text-[11px] text-gray-600 flex-1 truncate">${esc(s.label)}</span>
+                    <input type="number" step="0.5" value="${this.state.weights.stat[s.key]}"
+                           class="edit-input text-center" style="width:64px"
+                           oninput="app.setWeight('stat','${s.key}',this.value)">
+                </label>`).join('');
+            document.getElementById('weight-zones').innerHTML = ZONES.map(z => `
+                <label class="flex items-center gap-2">
+                    <span class="text-[11px] text-gray-600 flex-1 truncate">${esc(z.label)}</span>
+                    <input type="number" step="0.1" value="${this.state.weights.zone[z.key]}"
+                           class="edit-input text-center" style="width:64px"
+                           oninput="app.setWeight('zone','${z.key}',this.value)">
+                </label>`).join('');
+        },
+
+        setWeight(kind, key, v) {
+            const n = parseFloat(v);
+            this.state.weights[kind][key] = isNaN(n) ? 0 : n;
+            this.save();
+            this.renderSummary();
+        },
+
+        resetWeights() {
+            this.state.weights.stat = Object.assign({}, DEFAULT_STAT_W);
+            this.state.weights.zone = Object.assign({}, DEFAULT_ZONE_W);
+            this.save();
+            this.renderWeights();
+            this.renderSummary();
+            this.toast('配点を初期値に戻しました');
+        },
+
+        // ---------------------- 出力 ----------------------
+        exportCSV() {
+            if (this.state.history.length === 0) { this.toast('記録がありません'); return; }
+            const q = esc(document.getElementById('game-event').value);
+            const cell = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+            const date = document.getElementById('game-date').value;
+            const rows = this.aggregate();
+
+            let csv = '=== 試合情報 ===\n';
+            csv += `大会・試合名,${cell(document.getElementById('game-event').value)}\n`;
+            csv += `日付,${cell(date)}\n`;
+            csv += `${cell(this.state.teams.A.name)},${cell(this.state.teams.B.name)}\n`;
+            csv += `集計範囲,${cell(document.getElementById('summary-quarter').value === 'all' ? '全体' : document.getElementById('summary-quarter').value)}\n\n`;
+
+            csv += '=== 種別サマリー ===\n';
+            csv += ['チーム', '選手', ...STATS.map(s => s.label), 'ヘルプ回数', '止め切れた率', 'DFスコア'].map(cell).join(',') + '\n';
+            rows.forEach(r => {
+                csv += [
+                    this.state.teams[r.team].name, r.name,
+                    ...STATS.map(s => r.counts[s.key]),
+                    r.helpCount,
+                    r.stopRate == null ? '' : Math.round(r.stopRate) + '%',
+                    r.score
+                ].map(cell).join(',') + '\n';
+            });
+            csv += '\n';
+
+            csv += '=== エリア別内訳 ===\n';
+            csv += ['チーム', '選手', '種別', ...ZONES.map(z => z.label), 'エリア指定なし', '合計'].map(cell).join(',') + '\n';
+            rows.forEach(r => STATS.forEach(s => {
+                if (!r.counts[s.key]) return;
+                csv += [
+                    this.state.teams[r.team].name, r.name, s.label,
+                    ...ZONES.map(z => r.byZone[s.key][z.key]),
+                    r.byZone[s.key].none,
+                    r.counts[s.key]
+                ].map(cell).join(',') + '\n';
+            }));
+            csv += '\n';
+
+            csv += '=== 記録ログ ===\n';
+            csv += ['No', 'クォーター', 'チーム', '選手', '種別', 'エリア', '対応区分'].map(cell).join(',') + '\n';
+            this.state.history.forEach(h => {
+                const s = statDef(h.statKey);
+                csv += [
+                    h.id, h.quarter, this.state.teams[h.team].name, h.playerName,
+                    s ? s.label : h.statKey, zoneLabel(h.zone),
+                    s && s.help ? (h.help ? 'ヘルプ' : 'マッチアップ') : ''
+                ].map(cell).join(',') + '\n';
+            });
+
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `defensive_stats_${date || new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.toast('CSVをダウンロードしました');
+        },
+
+        resetAll() {
+            if (!confirm('選手・記録・配点をすべて消去して最初からやり直します。よろしいですか？')) return;
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* noop */ }
+            location.reload();
+        },
+
+        // ---------------------- Toast ----------------------
+        toast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(this._toastTimer);
+            this._toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
+        }
+    };
+
+    window.app = app;
+    document.addEventListener('DOMContentLoaded', () => app.init());
+})();
+</script>
