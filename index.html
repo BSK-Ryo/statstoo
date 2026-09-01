@@ -698,6 +698,77 @@ Google AdSense 設定手順
             outline: 2px solid #EA580C;
             border-color: transparent;
         }
+
+        /* Saved game edit modal */
+        .modal-content.modal-wide {
+            max-width: 760px;
+        }
+        .game-edit-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
+            min-width: 760px;
+        }
+        .game-edit-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #1e293b;
+            color: white;
+            padding: 6px 8px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .game-edit-table thead th.col-player {
+            left: 0;
+            z-index: 3;
+            text-align: left;
+        }
+        .game-edit-table td {
+            padding: 4px 6px;
+            border-bottom: 1px solid #f3f4f6;
+            text-align: center;
+        }
+        .game-edit-table td.col-player {
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            background: white;
+            text-align: left;
+        }
+        .game-edit-table tr.team-divider td {
+            background: #f1f5f9;
+            font-weight: 700;
+            text-align: left;
+            color: #1e293b;
+            padding: 6px 8px;
+        }
+        .game-edit-table input.stat-input {
+            width: 44px;
+            padding: 3px 4px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            text-align: center;
+        }
+        .game-edit-table input.name-input {
+            width: 116px;
+            padding: 3px 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .game-edit-table input:focus {
+            outline: 2px solid #EA580C;
+            border-color: transparent;
+        }
+        .game-edit-table input.invalid {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
     </style>
 
     <!-- Tool Header -->
@@ -1771,6 +1842,88 @@ Google AdSense 設定手順
                 <button onclick="app.confirmSaveGame()"
                         class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition">
                     保存する
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved Game Edit Modal -->
+    <div id="edit-game-modal" class="modal-overlay">
+        <div class="modal-content modal-wide p-4 w-full">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-bold text-lg text-secondary flex items-center gap-2">
+                    <span>✏️</span> 保存したゲームを修正
+                </h3>
+                <button onclick="app.closeEditGameModal()" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+            </div>
+
+            <!-- 試合情報 -->
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <div class="col-span-2">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">大会名・イベント</label>
+                    <input id="edit-game-event" type="text" placeholder="例: 〇〇カップ 1回戦"
+                           class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">日付</label>
+                    <input id="edit-game-date" type="date"
+                           class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">時間</label>
+                    <input id="edit-game-time" type="time"
+                           class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">チームA名</label>
+                    <input id="edit-game-teamA" type="text" oninput="app.updateEditGameScore()"
+                           class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">チームB名</label>
+                    <input id="edit-game-teamB" type="text" oninput="app.updateEditGameScore()"
+                           class="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
+                </div>
+            </div>
+
+            <div id="edit-game-score" class="bg-gray-50 rounded-lg p-3 mb-3 text-sm text-center"></div>
+
+            <div class="flex justify-between items-center mb-1">
+                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wide">スタッツの修正</h4>
+                <span class="text-[10px] text-gray-400">MIN の単位: 分</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mb-2">
+                選手名を直すと月間・年間・通算の合算先が変わります。試投数（2PA / 3PA / FTA）は成功数以上にしてください。
+            </p>
+            <div class="overflow-auto max-h-[45vh] border border-gray-100 rounded-lg">
+                <table class="game-edit-table">
+                    <thead>
+                        <tr>
+                            <th class="col-player">選手</th>
+                            <th>2PM</th><th>2PA</th>
+                            <th>3PM</th><th>3PA</th>
+                            <th>FTM</th><th>FTA</th>
+                            <th>OR</th><th>DR</th>
+                            <th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>PF</th>
+                            <th>MIN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="edit-game-body"></tbody>
+                </table>
+            </div>
+            <p id="edit-game-error" class="text-xs text-red-500 mt-2" style="display:none;"></p>
+
+            <p class="text-xs text-gray-500 my-3">
+                この試合1件だけを上書きします。他の保存済みゲームには影響しません。
+            </p>
+            <div class="flex gap-2">
+                <button onclick="app.closeEditGameModal()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition">
+                    キャンセル
+                </button>
+                <button onclick="app.confirmEditGame()"
+                        class="flex-1 bg-primary hover:bg-orange-700 text-white font-bold py-3 rounded-xl transition">
+                    変更を保存
                 </button>
             </div>
         </div>
@@ -4615,12 +4768,15 @@ Google AdSense 設定手順
                 }
             }
 
+            // 成否を返す（失敗時 localStorage は書き換わらず、直前のデータがそのまま残る）
             saveGameHistory(history) {
                 try {
                     localStorage.setItem('statstoo_game_history', JSON.stringify(history));
+                    return true;
                 } catch (e) {
                     alert('ストレージの容量が不足しています。古いゲームを削除してから再試行してください。');
                     console.warn('ゲーム履歴の保存に失敗:', e);
+                    return false;
                 }
             }
 
@@ -4748,6 +4904,11 @@ Google AdSense 設定手順
                 return div.innerHTML;
             }
 
+            // 属性値（value="..."）に埋め込む用。escapeHtml はクォートを変換しないため別途用意
+            escapeAttr(str) {
+                return this.escapeHtml(str).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            }
+
             showToast(message) {
                 const el = document.getElementById('toast-notification');
                 el.textContent = message;
@@ -4857,19 +5018,28 @@ Google AdSense 設定手順
                 container.innerHTML = games.map(g => {
                     const label  = g.gameInfo.event || '試合';
                     const date   = g.gameInfo.date  || '---';
+                    const edited = g.editedAt
+                        ? '<span class="text-[9px] text-gray-400 ml-1">（修正済み）</span>'
+                        : '';
                     return `
                         <div class="saved-game-item">
-                            <div class="flex justify-between items-center">
-                                <div>
+                            <div class="flex justify-between items-center gap-2">
+                                <div class="min-w-0">
                                     <div class="text-xs font-bold text-secondary">
                                         ${this.escapeHtml(g.teams.A.name)} ${g.teams.A.score} — ${g.teams.B.score} ${this.escapeHtml(g.teams.B.name)}
                                     </div>
-                                    <div class="text-[10px] text-gray-400">${this.escapeHtml(date)} ${this.escapeHtml(label)}</div>
+                                    <div class="text-[10px] text-gray-400">${this.escapeHtml(date)} ${this.escapeHtml(label)}${edited}</div>
                                 </div>
-                                <button onclick="app.deleteSavedGame('${g.id}')"
-                                        class="text-xs text-red-400 hover:text-red-600 px-2 py-1 border border-red-200 rounded transition">
-                                    削除
-                                </button>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button onclick="app.openEditGameModal('${g.id}')"
+                                            class="text-xs text-primary hover:text-orange-700 px-2 py-1 border border-orange-200 rounded transition">
+                                        編集
+                                    </button>
+                                    <button onclick="app.deleteSavedGame('${g.id}')"
+                                            class="text-xs text-red-400 hover:text-red-600 px-2 py-1 border border-red-200 rounded transition">
+                                        削除
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -5077,6 +5247,309 @@ Google AdSense 設定手順
                 let history = this.loadGameHistory();
                 history = history.filter(g => g.id !== gameId);
                 this.saveGameHistory(history);
+                this.refreshMonthlySectionUI();
+            }
+
+            // =============================
+            // ✏️ 保存済みゲームの修正
+            // =============================
+            // データ保全の方針（既存の集計を壊さないための取り決め）:
+            //  1. 保存形式は一切変更しない。マイグレーションも行わないので既存データはそのまま読める
+            //  2. 書き込みは「id で特定した1件だけ」を差分上書き。元オブジェクトを spread するため、
+            //     画面に出していないフィールド（savedAt など）は失われない
+            //  3. 書き込み直前に件数と id の並びが編集前と一致するか検証し、崩れていたら中止する
+            //  4. 入力が空/不正な数値のときは 0 で潰さず元の値を維持する
+            //  5. localStorage への書き込みが失敗した場合は既存データがそのまま残る（setItem は原子的）
+
+            EDIT_STAT_KEYS = ['p2m', 'p2a', 'p3m', 'p3a', 'ftm', 'fta', 'orb', 'drb', 'ast', 'stl', 'blk', 'to', 'pf'];
+
+            editingGameId = null;
+
+            openEditGameModal(gameId) {
+                const game = this.loadGameHistory().find(g => g.id === gameId);
+                if (!game) {
+                    this.showToast('対象のゲームが見つかりませんでした');
+                    this.refreshMonthlySectionUI();
+                    return;
+                }
+                this.editingGameId = gameId;
+
+                const info = game.gameInfo || {};
+                document.getElementById('edit-game-event').value = info.event || '';
+                document.getElementById('edit-game-date').value  = info.date  || '';
+                document.getElementById('edit-game-time').value  = info.time  || '';
+
+                const teams = game.teams || {};
+                const inputA = document.getElementById('edit-game-teamA');
+                const inputB = document.getElementById('edit-game-teamB');
+                inputA.value = teams.A ? (teams.A.name || '') : '';
+                inputA.disabled = !teams.A;
+                inputB.value = teams.B ? (teams.B.name || '') : '';
+                inputB.disabled = !teams.B;
+
+                this.renderEditGameTable(game);
+                this.updateEditGameScore();
+
+                document.getElementById('edit-game-error').style.display = 'none';
+                document.getElementById('edit-game-modal').classList.add('active');
+            }
+
+            closeEditGameModal() {
+                document.getElementById('edit-game-modal').classList.remove('active');
+                this.editingGameId = null;
+            }
+
+            renderEditGameTable(game) {
+                const tbody = document.getElementById('edit-game-body');
+                const colCount = this.EDIT_STAT_KEYS.length + 2; // 選手名 + スタッツ + MIN
+                const rows = [];
+
+                ['A', 'B'].forEach(teamKey => {
+                    const team = (game.teams || {})[teamKey];
+                    if (!team || !Array.isArray(team.players) || team.players.length === 0) return;
+
+                    const fallbackName = teamKey === 'A' ? 'チームA' : 'チームB';
+                    rows.push(`
+                        <tr class="team-divider">
+                            <td colspan="${colCount}">
+                                ${teamKey === 'A' ? '🔵' : '🔴'} ${this.escapeHtml(team.name || fallbackName)}
+                            </td>
+                        </tr>
+                    `);
+
+                    team.players.forEach((p, idx) => {
+                        const s = this.normalizeStats(p.stats);
+                        const minMs  = (typeof p.minMs === 'number' && !isNaN(p.minMs)) ? p.minMs : 0;
+                        const minMin = Math.round(minMs / 60000);
+                        const statCells = this.EDIT_STAT_KEYS.map(k => `
+                            <td>
+                                <input type="number" min="0" step="1" class="stat-input"
+                                       data-team="${teamKey}" data-idx="${idx}" data-key="${k}"
+                                       value="${s[k]}" oninput="app.updateEditGameScore()">
+                            </td>
+                        `).join('');
+                        rows.push(`
+                            <tr>
+                                <td class="col-player">
+                                    <input type="text" class="name-input" list="roster-names-list"
+                                           data-team="${teamKey}" data-idx="${idx}" data-key="name"
+                                           value="${this.escapeAttr(p.name || '')}">
+                                </td>
+                                ${statCells}
+                                <td>
+                                    <input type="number" min="0" step="1" class="stat-input"
+                                           data-team="${teamKey}" data-idx="${idx}" data-key="min"
+                                           value="${minMin}">
+                                </td>
+                            </tr>
+                        `);
+                    });
+                });
+
+                tbody.innerHTML = rows.length > 0
+                    ? rows.join('')
+                    : `<tr><td colspan="${colCount}" class="text-center text-gray-400 py-4">選手データがありません</td></tr>`;
+            }
+
+            // 入力中のスタッツからスコアを再計算してプレビュー表示する
+            updateEditGameScore() {
+                const el = document.getElementById('edit-game-score');
+                if (!el) return;
+
+                const sumKey = (teamKey, key) =>
+                    [...document.querySelectorAll(`#edit-game-body input[data-team="${teamKey}"][data-key="${key}"]`)]
+                        .reduce((sum, inp) => sum + Math.max(0, parseInt(inp.value, 10) || 0), 0);
+                const scoreOf = (teamKey) =>
+                    sumKey(teamKey, 'p2m') * 2 + sumKey(teamKey, 'p3m') * 3 + sumKey(teamKey, 'ftm');
+
+                const hasTeam = (teamKey) =>
+                    document.querySelector(`#edit-game-body input[data-team="${teamKey}"]`) !== null;
+
+                const nameA = document.getElementById('edit-game-teamA').value || 'チームA';
+                const nameB = document.getElementById('edit-game-teamB').value || 'チームB';
+
+                const line = hasTeam('B')
+                    ? `${this.escapeHtml(nameA)} ${scoreOf('A')} — ${scoreOf('B')} ${this.escapeHtml(nameB)}`
+                    : `${this.escapeHtml(nameA)} ${scoreOf('A')}`;
+
+                el.innerHTML = `
+                    <div class="font-bold text-secondary">${line}</div>
+                    <div class="text-[10px] text-gray-400 mt-1">スコアは入力中のスタッツから自動計算されます</div>
+                `;
+            }
+
+            // 入力値を回収する。問題があれば null を返し、履歴には一切触れない
+            collectEditGameInputs(original) {
+                const errors = [];
+                const result = {
+                    event: document.getElementById('edit-game-event').value.trim(),
+                    date:  document.getElementById('edit-game-date').value,
+                    time:  document.getElementById('edit-game-time').value,
+                    teamNames: {
+                        A: document.getElementById('edit-game-teamA').value.trim(),
+                        B: document.getElementById('edit-game-teamB').value.trim()
+                    },
+                    players: { A: {}, B: {} }
+                };
+
+                document.querySelectorAll('#edit-game-body input').forEach(inp => inp.classList.remove('invalid'));
+
+                ['A', 'B'].forEach(teamKey => {
+                    const team = (original.teams || {})[teamKey];
+                    if (!team || !Array.isArray(team.players)) return;
+
+                    team.players.forEach((p, idx) => {
+                        const find = (key) => document.querySelector(
+                            `#edit-game-body input[data-team="${teamKey}"][data-idx="${idx}"][data-key="${key}"]`
+                        );
+                        const nameInput = find('name');
+                        if (!nameInput) return; // 行が描画されていない = 編集対象外。元データを保持する
+
+                        const name = nameInput.value.trim();
+                        if (!name) {
+                            nameInput.classList.add('invalid');
+                            errors.push('選手名は空にできません（空の選手は集計から外れてしまいます）。');
+                        }
+
+                        const originalStats = this.normalizeStats(p.stats);
+                        const stats = {};
+                        this.EDIT_STAT_KEYS.forEach(k => {
+                            const el  = find(k);
+                            const raw = el ? el.value : '';
+                            const num = parseInt(raw, 10);
+                            // 空欄・数値でない場合は 0 で潰さず元の値を維持
+                            stats[k] = (raw !== '' && !isNaN(num)) ? Math.max(0, num) : originalStats[k];
+                        });
+
+                        // 成功数 > 試投数 は成立しないので保存を止める（FG% などが壊れるため）
+                        [['p2m', 'p2a', '2P'], ['p3m', 'p3a', '3P'], ['ftm', 'fta', 'FT']].forEach(([mKey, aKey, label]) => {
+                            if (stats[mKey] > stats[aKey]) {
+                                const el = find(aKey);
+                                if (el) el.classList.add('invalid');
+                                errors.push(`${name || '（名前未入力）'}: ${label}の試投数が成功数を下回っています。`);
+                            }
+                        });
+
+                        const minEl  = find('min');
+                        const minRaw = minEl ? minEl.value : '';
+                        const minNum = parseInt(minRaw, 10);
+                        const originalMinMs = (typeof p.minMs === 'number' && !isNaN(p.minMs)) ? p.minMs : 0;
+                        let minMs = originalMinMs;
+                        if (minRaw !== '' && !isNaN(minNum)) {
+                            const minutes = Math.max(0, minNum);
+                            // 表示は分に丸めているので、値が変わっていなければ元の精度(ms)をそのまま残す
+                            if (minutes !== Math.round(originalMinMs / 60000)) minMs = minutes * 60000;
+                        }
+
+                        result.players[teamKey][idx] = { name, stats, minMs };
+                    });
+                });
+
+                const errEl = document.getElementById('edit-game-error');
+                if (errors.length > 0) {
+                    errEl.innerHTML = [...new Set(errors)].map(msg => this.escapeHtml(msg)).join('<br>');
+                    errEl.style.display = '';
+                    return null;
+                }
+                errEl.style.display = 'none';
+                return result;
+            }
+
+            // 元エントリを土台に、編集した項目だけを差し替えた新しいエントリを作る
+            buildUpdatedGameEntry(original, edits) {
+                const buildTeam = (teamKey) => {
+                    const team = (original.teams || {})[teamKey];
+                    if (!team) return null;
+
+                    const editMap = edits.players[teamKey] || {};
+                    const players = Array.isArray(team.players)
+                        ? team.players.map((p, idx) => {
+                            const e = editMap[idx];
+                            if (!e) return p; // 編集対象外はオブジェクトごとそのまま残す
+                            const nameChanged = e.name !== (p.name || '');
+                            return {
+                                ...p, // 画面に出していない項目を保持
+                                name: e.name,
+                                // isMember は表示していないので原則保持。名前を変えた時だけ現在の名簿で判定し直す
+                                isMember: nameChanged ? this.isRosterMember(e.name) : p.isMember,
+                                stats: { ...(p.stats || {}), ...e.stats }, // 未知のスタッツキーも保持
+                                minMs: e.minMs
+                            };
+                        })
+                        : team.players;
+
+                    const score = Array.isArray(players)
+                        ? players.reduce((sum, p) => sum + this.calculatePTS(this.normalizeStats(p.stats)), 0)
+                        : team.score;
+
+                    return { ...team, name: edits.teamNames[teamKey] || team.name, players, score };
+                };
+
+                const teams = { ...(original.teams || {}) };
+                ['A', 'B'].forEach(teamKey => {
+                    const team = buildTeam(teamKey);
+                    if (team) teams[teamKey] = team;
+                });
+
+                return {
+                    ...original, // id / savedAt / 未知のフィールドを保持
+                    gameInfo: {
+                        ...(original.gameInfo || {}),
+                        event: edits.event,
+                        date:  edits.date,
+                        time:  edits.time
+                    },
+                    teams,
+                    editedAt: new Date().toISOString()
+                };
+            }
+
+            // 書き込み前の安全確認: 件数と id の並びが編集前と完全に一致すること
+            isHistoryIntact(before, after) {
+                if (!Array.isArray(before) || !Array.isArray(after)) return false;
+                if (before.length !== after.length) return false;
+                return before.every((g, i) => after[i] && after[i].id === g.id);
+            }
+
+            confirmEditGame() {
+                const gameId = this.editingGameId;
+                if (!gameId) return;
+
+                // 直前の状態を読み直してから編集する（別タブでの変更を上書きしないため）
+                const history = this.loadGameHistory();
+                const index = history.findIndex(g => g.id === gameId);
+                if (index === -1) {
+                    alert('対象のゲームが見つかりませんでした。別のタブで削除された可能性があります。');
+                    this.closeEditGameModal();
+                    this.refreshMonthlySectionUI();
+                    return;
+                }
+                const original = history[index];
+
+                const edits = this.collectEditGameInputs(original);
+                if (!edits) return; // 入力エラー。履歴は書き換えない
+
+                let updated;
+                try {
+                    updated = this.buildUpdatedGameEntry(original, edits);
+                } catch (e) {
+                    console.warn('ゲームの更新データ作成に失敗:', e);
+                    alert('更新内容の作成に失敗したため中止しました。データは変更されていません。');
+                    return;
+                }
+
+                const nextHistory = history.slice();
+                nextHistory[index] = updated;
+
+                if (!this.isHistoryIntact(history, nextHistory)) {
+                    alert('保存前の検証に失敗したため中止しました。データは変更されていません。');
+                    return;
+                }
+
+                if (!this.saveGameHistory(nextHistory)) return; // 失敗時は既存データがそのまま残る
+
+                this.closeEditGameModal();
+                this.showToast('ゲームを更新しました');
                 this.refreshMonthlySectionUI();
             }
 
