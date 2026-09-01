@@ -1,15 +1,15 @@
 ---
 layout: default
 title: ディフェンススタッツ記録
-description: ディフレクション・オンボールバンプ・コンテストなど、ボックススコアに残らないディフェンスの頑張りをエリア別に記録・数値化するツールです。試合の録画を別画面で見ながら、タップだけで計測できます。
+description: ディフレクション・オンボールバンプ・コンテストなど、ボックススコアに残らないディフェンスの頑張りをエリア別に記録して数値化するツールです。PCでは動画を見ながら、スマホでは別画面で動画を再生しながらタップだけで計測できます。
 is_tool: true
 tool_name: ディフェンススタッツ記録
 ---
 
 <style>
     /* ===== Controller ===== */
-    .slide-up   { transform: translateY(0%);    pointer-events: auto; opacity: 1; }
-    .slide-down { transform: translateY(110%);  pointer-events: none; opacity: 0; }
+    .slide-up   { transform: translateY(0%);   pointer-events: auto; opacity: 1; }
+    .slide-down { transform: translateY(110%); pointer-events: none; opacity: 0; }
 
     /* ===== Player rows ===== */
     .player-row { transition: all .18s ease; border-left: 4px solid transparent; }
@@ -27,7 +27,7 @@ tool_name: ディフェンススタッツ記録
         display: flex; justify-content: center;
         background: #D4956B; border-radius: 8px; padding: 4px;
     }
-    @media (min-width: 768px) { .court-wrap { max-height: 250px; } }
+    @media (min-width: 768px) { .court-wrap { max-height: 240px; } }
 
     .zone { cursor: pointer; }
     .zone > path, .zone > rect { transition: fill .12s ease, fill-opacity .12s ease; }
@@ -41,6 +41,14 @@ tool_name: ディフェンススタッツ記録
     .zone.disabled { cursor: not-allowed; pointer-events: none; }
     .zone.disabled > path, .zone.disabled > rect { fill: #57534e; fill-opacity: .55; }
     .zone.disabled > text { opacity: .45; }
+
+    /* ===== Video panel (PC only) ===== */
+    .video-frame { position: relative; width: 100%; padding-top: 56.25%; background: #0f172a; border-radius: 10px; overflow: hidden; }
+    .video-frame > iframe, .video-frame > video, .video-frame > .video-ph { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .video-ph { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .5rem; color: #94a3b8; font-size: .8rem; }
+    .src-tab { color: #94a3b8; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .src-tab:hover { color: #64748b; }
+    .src-tab.active { color: #EA580C; border-bottom-color: #EA580C; }
 
     /* ===== Toast ===== */
     .df-toast {
@@ -66,130 +74,345 @@ tool_name: ディフェンススタッツ記録
     .edit-input { width: 100%; padding: 4px 8px; border: 1px solid #d6d3d1; border-radius: 4px; font-size: 13px; }
     .edit-input:focus { outline: 2px solid #EA580C; border-color: transparent; }
 
-    /* Summary table */
     .sum-table th, .sum-table td { white-space: nowrap; }
     .sum-table tbody tr:nth-child(odd) { background: #fafaf9; }
+
+    /* ===== Article Section Styles - StatsToo Style ===== */
+    .article-section { background: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 1rem; margin-top: 1.5rem; }
+    .article-header { background: #1e293b; color: #FFFFFF; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+    .article-icon { font-size: 1.25rem; }
+    .article-title { font-size: 1.1rem; font-weight: 700; margin: 0; }
+    .article-content { padding: 1.25rem; }
+    .article-lead { font-size: 0.95rem; color: #0f172a; line-height: 1.8; margin-bottom: 1rem; }
+    .article-block { margin-bottom: 1.5rem; }
+    .article-block:last-child { margin-bottom: 0; }
+    .article-block h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; background: linear-gradient(90deg, #fff7ed 0%, #fffaf5 100%); padding: 0.5rem 0.875rem; border-left: 3px solid #EA580C; border-radius: 0 6px 6px 0; }
+    .article-block p { font-size: 0.875rem; color: #0f172a; line-height: 1.8; margin-bottom: 0.5rem; }
+    .article-block p:last-child { margin-bottom: 0; }
+
+    .step-list { display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0; }
+    .step-item { display: flex; align-items: flex-start; gap: 0.75rem; background: linear-gradient(90deg, #fff7ed 0%, #ffffff 100%); border-radius: 10px; padding: 0.875rem 1rem; }
+    .step-number { width: 2rem; height: 2rem; background: #EA580C; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.875rem; flex-shrink: 0; }
+    .step-text { font-size: 0.875rem; color: #1e293b; line-height: 1.6; }
+    .step-text strong { color: #EA580C; }
+
+    .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1rem 0; }
+    @media (min-width: 768px) { .feature-grid { grid-template-columns: repeat(4, 1fr); } }
+    .feature-card { background: #faf8f5; border-radius: 10px; padding: 1rem 0.75rem; text-align: center; }
+    .feature-card-icon { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    .feature-card-text { font-size: 0.75rem; font-weight: 700; color: #1e293b; }
+
+    .glossary-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin: 1rem 0; }
+    @media (min-width: 768px) { .glossary-grid { grid-template-columns: repeat(2, 1fr); } }
+    .glossary-card { background: #f8fafc; border-radius: 10px; padding: 1rem; border-left: 3px solid #EA580C; }
+    .glossary-card.is-minus { border-left-color: #e11d48; }
+    .glossary-card-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .glossary-card-title span { background: #EA580C; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; }
+    .glossary-card.is-minus .glossary-card-title span { background: #e11d48; }
+    .glossary-card-text { font-size: 0.8rem; color: #64748b; line-height: 1.6; }
 </style>
 
-<!-- ============================ Tool Header ============================ -->
-<div class="bg-secondary text-white rounded-xl p-4 md:p-5 mb-4 shadow-lg">
-    <div class="flex items-start justify-between gap-3 flex-wrap">
-        <div>
-            <h1 class="font-display text-2xl md:text-3xl tracking-wide">DEFENSIVE STATS TRACKER</h1>
-            <p class="text-white/70 text-xs md:text-sm mt-1">
-                ボックススコアに残らないディフェンスの頑張りを、エリア別に記録して数値化します。
-            </p>
+<!-- ============================ Page Header ============================ -->
+<div class="bg-gradient-to-r from-secondary to-secondary-light relative overflow-hidden page-header-pattern">
+    <div class="max-w-6xl mx-auto px-4 py-8 relative">
+        <div class="text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <span class="text-4xl">🛡️</span>
+                <h1 class="font-display text-3xl md:text-4xl tracking-wide text-white">DEFENSIVE STATS TRACKER</h1>
+            </div>
+            <p class="text-white/70 text-sm">ボックススコアに残らないディフェンスの頑張りをエリア別に記録・数値化</p>
         </div>
-        <div class="flex gap-2">
-            <button onclick="app.openGlossary()" class="btn-press text-[11px] px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition font-bold">
-                📖 判定基準
-            </button>
-            <button onclick="app.openSettings()" class="btn-press text-[11px] px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition font-bold">
-                ⚙️ 配点
-            </button>
-        </div>
-    </div>
-
-    <div class="mt-3 p-2.5 bg-primary/20 border border-primary/30 rounded-lg text-[11px] leading-relaxed">
-        <strong class="text-primary-light">使い方：</strong>
-        試合の録画を<strong>別ウィンドウ・別アプリ</strong>（スマホはYouTubeのミニプレーヤー、PCは別ウィンドウ）で再生しながら、このページでタップして記録します。
-        <span class="text-white/60">※オフボールの動きを記録するには、コート全体が映る引きの映像が必要です。</span>
     </div>
 </div>
 
-<!-- ============================ Game Info ============================ -->
-<section class="bg-white p-4 rounded-xl shadow-md border border-gray-100 mb-4">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div>
-            <label class="block text-[10px] font-bold text-gray-500 mb-1">大会・試合名</label>
-            <input type="text" id="game-event" class="edit-input" placeholder="例: 県大会 2回戦" oninput="app.save()">
-        </div>
-        <div>
-            <label class="block text-[10px] font-bold text-gray-500 mb-1">日付</label>
-            <input type="date" id="game-date" class="edit-input" onchange="app.save()">
-        </div>
-        <div class="col-span-2">
-            <label class="block text-[10px] font-bold text-gray-500 mb-1">記録中のクォーター</label>
-            <div id="quarter-tabs" class="flex gap-1"></div>
-        </div>
-    </div>
-</section>
+<div class="max-w-7xl mx-auto px-4 py-4 pb-72">
 
-<!-- ============================ Teams ============================ -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-    <!-- Team A -->
-    <div class="bg-white rounded-xl shadow-md border-2 border-indigo-200 overflow-hidden">
-        <div class="bg-indigo-500 text-white px-3 py-2 flex items-center gap-2">
-            <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded">自チーム</span>
-            <input type="text" id="name-teamA" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
-                   value="自チーム" oninput="app.setTeamName('A', this.value)">
+    <!-- Top Controls -->
+    <div class="flex justify-between items-center mb-4 gap-2 flex-wrap">
+        <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="app.openGlossary()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                📖 判定基準
+            </button>
+            <button onclick="app.openSettings()" class="text-xs bg-orange-50 hover:bg-orange-100 text-orange-600 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                ⚙️ 配点
+            </button>
         </div>
-        <div id="list-teamA" class="divide-y divide-gray-100"></div>
-        <button onclick="app.addPlayer('A')" class="w-full py-2.5 text-xs font-bold text-indigo-600 hover:bg-indigo-50 transition border-t border-gray-100">
-            ＋ 選手を追加
-        </button>
-    </div>
-
-    <!-- Team B -->
-    <div class="bg-white rounded-xl shadow-md border-2 border-rose-200 overflow-hidden">
-        <div class="bg-rose-500 text-white px-3 py-2 flex items-center gap-2">
-            <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded">相手</span>
-            <input type="text" id="name-teamB" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
-                   value="相手チーム" oninput="app.setTeamName('B', this.value)">
-        </div>
-        <div id="list-teamB" class="divide-y divide-gray-100"></div>
-        <button onclick="app.addPlayer('B')" class="w-full py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition border-t border-gray-100">
-            ＋ 選手を追加
-        </button>
-    </div>
-</section>
-
-<!-- ============================ Summary ============================ -->
-<section class="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 mb-4">
-    <div class="flex items-center justify-between gap-2 flex-wrap mb-3">
-        <h2 class="font-display text-xl tracking-wide text-secondary">集計</h2>
-        <div class="flex gap-2 items-center flex-wrap">
-            <select id="summary-view" class="edit-input text-xs" style="width:auto" onchange="app.render()">
-                <option value="total">種別サマリー</option>
-                <option value="zone">エリア別内訳</option>
-            </select>
-            <select id="summary-stat" class="edit-input text-xs hidden" style="width:auto" onchange="app.render()"></select>
-            <select id="summary-quarter" class="edit-input text-xs" style="width:auto" onchange="app.render()">
-                <option value="all">全体</option>
-            </select>
-            <button onclick="app.exportCSV()" class="btn-press text-[11px] px-3 py-1.5 rounded-lg bg-primary text-white font-bold hover:bg-primary-dark transition">
-                CSV出力
+        <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="app.openHistory()" class="text-xs bg-sky-50 hover:bg-sky-100 text-sky-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                📋 履歴
+            </button>
+            <button onclick="app.exportCSV()" class="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+                💾 CSV出力
+            </button>
+            <button onclick="app.resetAll()" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg font-medium transition">
+                リセット
             </button>
         </div>
     </div>
-    <div class="overflow-x-auto no-scrollbar">
-        <table class="sum-table w-full text-xs" style="min-width:720px">
-            <thead id="summary-head" class="bg-secondary text-white"></thead>
-            <tbody id="summary-body"></tbody>
-        </table>
-    </div>
-    <p id="summary-empty" class="text-center text-gray-400 text-sm py-6">まだ記録がありません。選手を選んで記録を開始してください。</p>
-    <p class="text-[10px] text-gray-400 mt-3 leading-relaxed">
-        ※ DFスコアは「種別の配点 × エリア係数」の合計です。配点は ⚙️ から変更できます。出場時間は記録していないため、出場時間が違う選手同士の単純比較には注意してください。
-    </p>
-</section>
 
-<!-- ============================ Danger zone ============================ -->
-<section class="text-center mb-6">
-    <button onclick="app.resetAll()" class="text-[11px] text-gray-400 hover:text-rose-500 underline transition">
-        すべての記録をリセット
-    </button>
-</section>
+    <!-- Game Info -->
+    <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100 mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+                <label class="block text-[10px] font-bold text-gray-500 mb-1">大会・試合名</label>
+                <input type="text" id="game-event" class="edit-input" placeholder="例: 県大会 2回戦" oninput="app.save()">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-gray-500 mb-1">日付</label>
+                <input type="date" id="game-date" class="edit-input" onchange="app.save()">
+            </div>
+            <div class="col-span-2">
+                <label class="block text-[10px] font-bold text-gray-500 mb-1">記録中のクォーター</label>
+                <div id="quarter-tabs" class="flex gap-1"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================ Video (PC) + Teams ============================ -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 items-start">
+
+        <!-- Video Panel : PC のみ表示 -->
+        <section id="video-panel" class="hidden md:block md:sticky md:top-4 bg-white p-3 rounded-xl shadow-md border border-gray-100">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
+                    <span>📹</span> 動画プレーヤー
+                </h2>
+                <span class="text-[10px] text-gray-400">PC版のみ</span>
+            </div>
+
+            <!-- Source tabs -->
+            <div class="flex gap-4 border-b border-gray-200 mb-2">
+                <button id="srcTab-youtube" onclick="app.setVideoSource('youtube')" type="button"
+                        class="src-tab active text-xs font-bold pb-1.5 transition">YouTube</button>
+                <button id="srcTab-local" onclick="app.setVideoSource('local')" type="button"
+                        class="src-tab text-xs font-bold pb-1.5 transition">端末内の動画</button>
+            </div>
+
+            <div id="srcPanel-youtube" class="flex gap-2 mb-2">
+                <input type="text" id="youtubeUrl" class="edit-input flex-1" placeholder="YouTubeのURLを貼り付け">
+                <button onclick="app.loadYouTube()" class="btn-press text-xs font-bold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-dark transition flex-shrink-0">読込</button>
+            </div>
+
+            <div id="srcPanel-local" class="hidden mb-2">
+                <input type="file" id="localVideoFile" accept="video/*" class="hidden" onchange="app.onLocalFile(this)">
+                <button onclick="document.getElementById('localVideoFile').click()"
+                        class="btn-press w-full text-xs font-bold px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition">
+                    🎞 動画ファイルを選択
+                </button>
+                <p id="localFileName" class="text-[10px] text-gray-400 mt-1 truncate"></p>
+            </div>
+
+            <!-- Player -->
+            <div class="video-frame mb-2">
+                <div id="player"></div>
+                <video id="localPlayer" class="hidden" playsinline></video>
+                <div id="videoPlaceholder" class="video-ph">
+                    <span class="text-2xl">📹</span>
+                    <span>動画を読み込むと、記録した瞬間の<br>再生位置が自動で残ります</span>
+                </div>
+            </div>
+
+            <!-- Player controls -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+                <button onclick="app.vNudge(-5)" class="btn-press text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition">⏪ 5秒</button>
+                <button id="vPlayBtn" onclick="app.vToggle()" class="btn-press text-[11px] font-bold px-3 py-1.5 rounded-lg bg-secondary text-white hover:bg-secondary-light transition">▶ 再生</button>
+                <button onclick="app.vNudge(5)" class="btn-press text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition">5秒 ⏩</button>
+                <select id="vRate" onchange="app.vSetRate(this.value)" class="edit-input text-xs" style="width:auto">
+                    <option value="0.5">0.5x</option>
+                    <option value="0.75">0.75x</option>
+                    <option value="1" selected>1x</option>
+                    <option value="1.5">1.5x</option>
+                    <option value="2">2x</option>
+                </select>
+                <span id="vTime" class="ml-auto font-mono text-xs font-bold bg-secondary text-white px-2 py-1 rounded">0:00</span>
+            </div>
+            <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
+                記録するたびに、そのときの再生位置が一緒に保存されます。履歴の時刻をクリックすればその場面に戻れ、CSVには頭出しURLが入ります。
+            </p>
+        </section>
+
+        <!-- Teams -->
+        <div class="grid grid-cols-1 gap-4">
+            <!-- Team A -->
+            <div class="bg-white rounded-xl shadow-md border-2 border-indigo-200 overflow-hidden">
+                <div class="bg-indigo-500 text-white px-3 py-2 flex items-center gap-2">
+                    <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded flex-shrink-0">自チーム</span>
+                    <input type="text" id="name-teamA" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
+                           value="自チーム" oninput="app.setTeamName('A', this.value)">
+                </div>
+                <div id="list-teamA" class="divide-y divide-gray-100"></div>
+                <button onclick="app.addPlayer('A')" class="w-full py-2.5 text-xs font-bold text-indigo-600 hover:bg-indigo-50 transition border-t border-gray-100">
+                    ＋ 選手を追加
+                </button>
+            </div>
+
+            <!-- Team B -->
+            <div class="bg-white rounded-xl shadow-md border-2 border-rose-200 overflow-hidden">
+                <div class="bg-rose-500 text-white px-3 py-2 flex items-center gap-2">
+                    <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded flex-shrink-0">相手</span>
+                    <input type="text" id="name-teamB" class="bg-transparent border-b border-white/30 text-sm font-bold flex-1 min-w-0 focus:outline-none focus:border-white"
+                           value="相手チーム" oninput="app.setTeamName('B', this.value)">
+                </div>
+                <div id="list-teamB" class="divide-y divide-gray-100"></div>
+                <button onclick="app.addPlayer('B')" class="w-full py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 transition border-t border-gray-100">
+                    ＋ 選手を追加
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SP向けの案内（PCでは非表示） -->
+    <div class="md:hidden bg-primary/10 border border-primary/20 rounded-xl p-3 mb-4 text-[11px] text-secondary leading-relaxed">
+        <strong class="text-primary-dark">スマホでの使い方：</strong>
+        試合の録画を<strong>YouTubeのミニプレーヤー</strong>や別アプリで再生しながら、この画面でタップして記録します。
+        <span class="text-gray-500">※オフボールの動きを記録するには、コート全体が映る引きの映像が必要です。</span>
+    </div>
+
+    <!-- ============================ Summary ============================ -->
+    <section class="bg-white p-4 md:p-5 rounded-xl shadow-md border border-gray-100 mb-4">
+        <div class="flex items-center justify-between gap-2 flex-wrap mb-3">
+            <h2 class="font-bold text-sm text-secondary flex items-center gap-2"><span>📊</span> 集計</h2>
+            <div class="flex gap-2 items-center flex-wrap">
+                <select id="summary-view" class="edit-input text-xs" style="width:auto" onchange="app.render()">
+                    <option value="total">種別サマリー</option>
+                    <option value="zone">エリア別内訳</option>
+                </select>
+                <select id="summary-stat" class="edit-input text-xs hidden" style="width:auto" onchange="app.render()"></select>
+                <select id="summary-quarter" class="edit-input text-xs" style="width:auto" onchange="app.render()">
+                    <option value="all">全体</option>
+                </select>
+            </div>
+        </div>
+        <div class="overflow-x-auto no-scrollbar">
+            <table class="sum-table w-full text-xs" style="min-width:720px">
+                <thead id="summary-head" class="bg-secondary text-white"></thead>
+                <tbody id="summary-body"></tbody>
+            </table>
+        </div>
+        <p id="summary-empty" class="text-center text-gray-400 text-sm py-6">まだ記録がありません。選手の「記録」ボタンを押して開始してください。</p>
+        <p class="text-[10px] text-gray-400 mt-3 leading-relaxed">
+            ※ DFスコアは「種別の配点 × エリア係数」の合計です。配点は ⚙️ から変更できます。出場時間は記録していないため、出場時間が違う選手同士の単純比較には注意してください。
+        </p>
+    </section>
+
+    <!-- ============================ 記事セクション ============================ -->
+    <section class="article-section">
+        <div class="article-header">
+            <span class="article-icon">📖</span>
+            <h2 class="article-title">ディフェンススタッツ記録の使い方</h2>
+        </div>
+        <div class="article-content">
+            <p class="article-lead">
+                得点やリバウンドと違い、ディフェンスの頑張りはボックススコアにほとんど残りません。<br>
+                このツールは、<strong>ディフレクション</strong>や<strong>オンボールバンプ</strong>といった「数字にならない守備の努力」を
+                コート上のエリア別に記録し、選手ごとに数値化するためのツールです。
+            </p>
+
+            <div class="article-block">
+                <h3>🎯 このツールでできること</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-card-icon">🛡️</div>
+                        <div class="feature-card-text">守備の努力を7指標で記録</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-icon">🗺️</div>
+                        <div class="feature-card-text">コート図でエリア別集計</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-icon">📹</div>
+                        <div class="feature-card-text">動画の頭出しURL付き出力</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-card-icon">🏅</div>
+                        <div class="feature-card-text">DFスコアで選手を評価</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-block">
+                <h3>📝 基本的な使い方</h3>
+                <div class="step-list">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-text"><strong>試合の録画を用意します。</strong>PCではページ内のプレーヤーにYouTubeのURLか動画ファイルを読み込みます。スマホでは、YouTubeのミニプレーヤーなど別画面で再生しながらこの画面を操作します。</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-text"><strong>選手を登録</strong>して、記録したい選手の「記録」ボタンを押します。画面下部にコントローラーが出てきます。</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-text"><strong>種別のボタンをタップ</strong>し、続けて<strong>コート図でエリアをタップ</strong>すると記録されます。ルーズボールとジャンプボールはエリア指定なしなので1タップで完了します。</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-text">自分のマークマン以外をカバーしたプレーは、<strong>「ヘルプ」に切り替えてから記録</strong>します。持ち場を離れて働いた回数が別に集計されます。</div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-text">記録が終わったら<strong>集計表とCSV出力</strong>で振り返ります。エリア別内訳に切り替えると、どこで守備が効いていたかが見えます。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-block">
+                <h3>🛡️ 記録できる7つの指標</h3>
+                <div class="glossary-grid">
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> ディフレクション</div>
+                        <p class="glossary-card-text">シュート以外のボール（パス・ドリブル）に手が触れ、軌道を変えたプレーです。奪い切れなくても、弾いたボールがコート外に出てもカウントします。ブロックショットは含めません。スティールの手前にあるボールへの接触をすべて拾う指標で、守備のエナジー量を測る代表的な数値です。</p>
+                    </div>
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> オンボールバンプ</div>
+                        <p class="glossary-card-text">ぶつかってくる相手の進路に先に立ち、体で受け止めて動きを制限したプレーです。完全に止め切れなくても、コースを変えさせられたらカウントします。</p>
+                    </div>
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> コンテスト</div>
+                        <p class="glossary-card-text">シューターに正対して手を伸ばし、シュートに影響を与えたプレーです（目安は約1m以内）。手が上がっていない場合や、後ろから追いかけただけの場合はカウントしません。</p>
+                    </div>
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> ボックスアウト</div>
+                        <p class="glossary-card-text">シュート後に相手を体で押さえ、リバウンドに触らせなかったプレーです。自分がリバウンドを取れなくても、味方が取れたならカウントします。ボックススコアに最も残りにくい献身のひとつです。</p>
+                    </div>
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> ルーズボール獲得</div>
+                        <p class="glossary-card-text">ディフェンス時に、どちらのボールでもない状態から自チームのボールにし切ったプレーです。</p>
+                    </div>
+                    <div class="glossary-card">
+                        <div class="glossary-card-title"><span>加点</span> ジャンプボール誘発</div>
+                        <p class="glossary-card-text">ディフェンス時に、相手が持っているボールを掴んでジャンプボールシチュエーションに持ち込んだプレーです。</p>
+                    </div>
+                    <div class="glossary-card is-minus">
+                        <div class="glossary-card-title"><span>減点</span> 抜かれた</div>
+                        <p class="glossary-card-text">マッチアップに突破された、またはヘルプやローテーションが間に合わなかったプレーです。<strong>加点だけを数えると、無謀にボールを狙って抜かれ続ける選手が高評価になってしまいます。</strong>バンプとペアで記録することで「止め切れた率」が出せ、守備の評価が公平になります。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-block">
+                <h3>💡 記録するときのコツ</h3>
+                <p>
+                    • <strong>撮影は引きの映像で</strong>：ヘルプやボックスアウトはボールから離れた場所で起こります。ボールだけを追いかけた映像では、一番価値のあるプレーが画面の外に出てしまいます。コート全体が入る固定カメラが理想です。<br>
+                    • <strong>基準を揃える</strong>：ディフェンスの評価は主観が入りやすい指標です。複数人で分担するときは、必ず「判定基準」を全員で読んでから始めてください。<br>
+                    • <strong>全部を一度に取ろうとしない</strong>：1試合を全選手ぶん記録すると相当な時間がかかります。「1クォーターだけ」「注目の1選手だけ」から始めるのがおすすめです。<br>
+                    • <strong>配点は目安</strong>：DFスコアの初期値は「取りにくいプレーほど高い」という考え方の目安です。絶対的な正解はないので、チームの狙いに合わせて調整してください。<br>
+                    • <strong>自動保存</strong>：データはブラウザに自動保存され、次回アクセス時に復元されます。
+                </p>
+            </div>
+        </div>
+    </section>
+</div>
 
 <!-- ============================ Controller ============================ -->
 <div id="controller" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-[3px] border-primary transition-all duration-300 ease-in-out slide-down z-40">
     <div class="max-w-4xl mx-auto px-3 py-2.5">
 
-        <!-- Header row -->
         <div class="flex justify-between items-center gap-2 mb-2">
             <div class="flex items-center gap-2 min-w-0">
                 <span id="ctl-player" class="text-sm font-bold text-secondary truncate"></span>
                 <span id="ctl-quarter" class="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded flex-shrink-0"></span>
+                <span id="ctl-vtime" class="hidden md:inline text-[10px] font-mono text-gray-400 flex-shrink-0"></span>
             </div>
             <div class="flex gap-1.5 flex-shrink-0">
                 <button id="help-toggle" onclick="app.toggleHelp()" class="btn-press text-[10px] px-2 py-1 rounded border font-bold transition"></button>
@@ -199,12 +422,12 @@ tool_name: ディフェンススタッツ記録
             </div>
         </div>
 
-        <!-- STEP 1: stat type -->
+        <!-- STEP 1: 種別 -->
         <div id="ctl-stats">
             <div id="stat-buttons" class="grid grid-cols-4 gap-1.5"></div>
         </div>
 
-        <!-- STEP 2: zone picker -->
+        <!-- STEP 2: エリア -->
         <div id="ctl-zone" class="hidden">
             <div class="flex items-center justify-between mb-1.5">
                 <span class="text-[11px] font-bold text-secondary">
@@ -213,39 +436,32 @@ tool_name: ディフェンススタッツ記録
                 <button onclick="app.cancelZone()" class="btn-press text-[10px] text-gray-500 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-bold">← 戻る</button>
             </div>
 
-            <!-- Backcourt bar -->
             <div id="zone-backcourt" onclick="app.pickZone('backcourt')"
                  class="btn-press cursor-pointer text-center text-[11px] font-bold text-white py-2 rounded-md mb-1.5 bg-stone-500 hover:bg-primary transition select-none">
                 バックコート
             </div>
 
-            <!-- Halfcourt -->
             <div class="court-wrap">
                 <svg class="court-svg" viewBox="0 0 300 345" preserveAspectRatio="xMidYMid meet">
-                    <!-- court lines (non-interactive) -->
                     <rect x="0" y="0" width="300" height="345" fill="#D4956B" rx="8"/>
 
-                    <!-- zone: outside 3P (frontcourt minus arc) -->
                     <g class="zone" data-zone="out3" onclick="app.pickZone('out3')">
                         <path fill="#0ea5e9" fill-opacity=".3" fill-rule="evenodd"
                               d="M 10 10 L 290 10 L 290 335 L 10 335 Z M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335 Z"/>
                         <text x="150" y="45">3Pライン外</text>
                     </g>
 
-                    <!-- zone: inside 3P, outside paint -->
                     <g class="zone" data-zone="in3" onclick="app.pickZone('in3')">
                         <path fill="#6366f1" fill-opacity=".32" fill-rule="evenodd"
                               d="M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335 Z M 90 215 L 210 215 L 210 335 L 90 335 Z"/>
                         <text x="150" y="150">3Pライン内</text>
                     </g>
 
-                    <!-- zone: paint -->
                     <g class="zone" data-zone="paint" onclick="app.pickZone('paint')">
                         <path fill="#ef4444" fill-opacity=".34" d="M 90 215 L 210 215 L 210 335 L 90 335 Z"/>
                         <text x="150" y="262">ペイント内</text>
                     </g>
 
-                    <!-- decorative lines on top -->
                     <g pointer-events="none" fill="none" stroke="#fff" stroke-width="2">
                         <rect x="10" y="10" width="280" height="325" rx="4"/>
                         <path d="M 30 335 L 30 220 Q 30 80 150 80 Q 270 80 270 220 L 270 335" stroke-dasharray="8,4" opacity=".7"/>
@@ -274,7 +490,7 @@ tool_name: ディフェンススタッツ記録
     <div class="df-modal-bg" onclick="app.closeModal('history-modal')"></div>
     <div class="df-modal-box">
         <div class="flex items-center justify-between mb-3">
-            <h3 class="font-display text-xl tracking-wide text-secondary">記録履歴</h3>
+            <h3 class="font-bold text-base text-secondary">記録履歴</h3>
             <button onclick="app.closeModal('history-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
         </div>
         <div id="history-list" class="space-y-1"></div>
@@ -285,7 +501,7 @@ tool_name: ディフェンススタッツ記録
     <div class="df-modal-bg" onclick="app.closeModal('settings-modal')"></div>
     <div class="df-modal-box">
         <div class="flex items-center justify-between mb-1">
-            <h3 class="font-display text-xl tracking-wide text-secondary">DFスコアの配点</h3>
+            <h3 class="font-bold text-base text-secondary">DFスコアの配点</h3>
             <button onclick="app.closeModal('settings-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
         </div>
         <p class="text-[11px] text-gray-500 mb-4 leading-relaxed">
@@ -305,7 +521,7 @@ tool_name: ディフェンススタッツ記録
     <div class="df-modal-bg" onclick="app.closeModal('glossary-modal')"></div>
     <div class="df-modal-box">
         <div class="flex items-center justify-between mb-1">
-            <h3 class="font-display text-xl tracking-wide text-secondary">判定基準</h3>
+            <h3 class="font-bold text-base text-secondary">判定基準</h3>
             <button onclick="app.closeModal('glossary-modal')" class="text-gray-400 hover:text-gray-600 text-xl leading-none">✕</button>
         </div>
         <p class="text-[11px] text-gray-500 mb-4 leading-relaxed">
@@ -315,7 +531,7 @@ tool_name: ディフェンススタッツ記録
         <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-[11px] text-amber-900 leading-relaxed">
             <strong>「マッチアップ / ヘルプ」の使い分け</strong><br>
             自分がマークしている相手に対するプレーは<strong>マッチアップ</strong>、自分の持ち場を離れて味方をカバーしたプレーは<strong>ヘルプ</strong>です。
-            ヘルプはエリア係数と別に集計され、献身度の指標になります。
+            ヘルプは別に集計され、献身度の指標になります。
         </div>
     </div>
 </div>
@@ -366,8 +582,13 @@ tool_name: ディフェンススタッツ記録
     const zoneDef = k => ZONES.find(z => z.key === k);
     const zoneLabel = k => (k === 'none' || !k) ? '—' : (zoneDef(k) ? zoneDef(k).label : k);
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmtTime = t => {
+        if (t == null) return '';
+        const s = Math.max(0, Math.floor(t));
+        return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    };
 
-    // ============================ State ============================
+    // ============================ App ============================
     const app = {
         state: {
             teams: {
@@ -380,8 +601,13 @@ tool_name: ディフェンススタッツ記録
             helpMode: false,
             weights: { stat: Object.assign({}, DEFAULT_STAT_W), zone: Object.assign({}, DEFAULT_ZONE_W) }
         },
-        selected: null,   // { team, playerId }
+        selected: null,
         pendingStat: null,
+
+        // 動画プレーヤー（PC版のみ利用）
+        video: { source: 'youtube', player: null, videoId: null, objectUrl: null, localName: '', localReady: false },
+        _ytQueue: [],
+        _ytLoading: false,
 
         // ---------------------- 永続化 ----------------------
         save() {
@@ -393,7 +619,8 @@ tool_name: ディフェンススタッツ記録
                     quarter: this.state.quarter,
                     weights: this.state.weights,
                     gameEvent: document.getElementById('game-event').value,
-                    gameDate: document.getElementById('game-date').value
+                    gameDate: document.getElementById('game-date').value,
+                    youtubeUrl: document.getElementById('youtubeUrl').value
                 }));
             } catch (e) { /* ストレージ無効時は無視 */ }
         },
@@ -412,6 +639,7 @@ tool_name: ディフェンススタッツ記録
             }
             document.getElementById('game-event').value = d.gameEvent || '';
             document.getElementById('game-date').value = d.gameDate || new Date().toISOString().slice(0, 10);
+            document.getElementById('youtubeUrl').value = d.youtubeUrl || '';
             return true;
         },
 
@@ -431,6 +659,7 @@ tool_name: ディフェンススタッツ記録
             this.buildQuarterSelect();
             this.buildGlossary();
             this.render();
+            setInterval(() => this.tickVideoTime(), 200);
         },
 
         newPlayer(team, i) {
@@ -443,15 +672,13 @@ tool_name: ディフェンススタッツ記録
                 <button onclick="app.pickStat('${s.key}')"
                         class="btn-press ${s.cls} font-bold py-2.5 px-1 rounded-lg text-[11px] leading-tight shadow-sm transition">
                     ${esc(s.short)}
-                </button>
-            `).join('');
+                </button>`).join('');
         },
 
         buildQuarterTabs() {
             document.getElementById('quarter-tabs').innerHTML = QUARTERS.map(q => `
                 <button onclick="app.setQuarter('${q}')" data-q="${q}"
-                        class="q-tab btn-press flex-1 py-1.5 text-xs font-bold rounded-lg border-2 transition">${q}</button>
-            `).join('');
+                        class="q-tab btn-press flex-1 py-1.5 text-xs font-bold rounded-lg border-2 transition">${q}</button>`).join('');
         },
 
         buildStatSelect() {
@@ -460,9 +687,8 @@ tool_name: ディフェンススタッツ記録
         },
 
         buildQuarterSelect() {
-            const sel = document.getElementById('summary-quarter');
-            sel.innerHTML = '<option value="all">全体</option>' +
-                QUARTERS.map(q => `<option value="${q}">${q}</option>`).join('');
+            document.getElementById('summary-quarter').innerHTML =
+                '<option value="all">全体</option>' + QUARTERS.map(q => `<option value="${q}">${q}</option>`).join('');
         },
 
         buildGlossary() {
@@ -474,8 +700,155 @@ tool_name: ディフェンススタッツ記録
                         エリア：${s.zones === 'none' ? '指定なし' : s.zones === 'front' ? 'バックコート以外の3エリア' : '4エリア'}
                         ／ マッチアップ・ヘルプの区別：${s.help ? 'あり' : 'なし'}
                     </p>
-                </div>
-            `).join('');
+                </div>`).join('');
+        },
+
+        // ---------------------- 動画プレーヤー（PC） ----------------------
+        setVideoSource(src) {
+            if (src !== 'youtube' && src !== 'local') return;
+            this.video.source = src;
+            const isLocal = src === 'local';
+            document.getElementById('srcTab-youtube').classList.toggle('active', !isLocal);
+            document.getElementById('srcTab-local').classList.toggle('active', isLocal);
+            document.getElementById('srcPanel-youtube').classList.toggle('hidden', isLocal);
+            document.getElementById('srcPanel-local').classList.toggle('hidden', !isLocal);
+            document.getElementById('player').classList.toggle('hidden', isLocal);
+            document.getElementById('localPlayer').classList.toggle('hidden', !isLocal);
+        },
+
+        // YouTube iframe API は「実際に使うとき」に初めて読み込む（スマホでは読み込まれない）
+        ensureYT(cb) {
+            if (window.YT && typeof YT.Player === 'function') { cb(); return; }
+            this._ytQueue.push(cb);
+            if (this._ytLoading) return;
+            this._ytLoading = true;
+            window.onYouTubeIframeAPIReady = () => {
+                const q = this._ytQueue.slice();
+                this._ytQueue = [];
+                q.forEach(f => f());
+            };
+            const s = document.createElement('script');
+            s.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(s);
+        },
+
+        extractVideoId(url) {
+            const m = String(url).match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([^&\n?#/]+)/);
+            return m ? m[1] : null;
+        },
+
+        loadYouTube() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            const id = this.extractVideoId(url);
+            if (!id) { this.toast('有効なYouTube URLを入力してください'); return; }
+            this.setVideoSource('youtube');
+            this.video.videoId = id;
+            this.save();
+            this.ensureYT(() => {
+                if (this.video.player && this.video.player.destroy) this.video.player.destroy();
+                document.getElementById('videoPlaceholder').classList.add('hidden');
+                this.video.player = new YT.Player('player', {
+                    width: '100%', height: '100%', videoId: id,
+                    playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+                    events: {
+                        onStateChange: e => {
+                            document.getElementById('vPlayBtn').textContent =
+                                (e.data === YT.PlayerState.PLAYING) ? '⏸ 停止' : '▶ 再生';
+                        }
+                    }
+                });
+                this.toast('動画を読み込みました');
+            });
+        },
+
+        onLocalFile(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            if (this.video.objectUrl) URL.revokeObjectURL(this.video.objectUrl);
+            this.video.objectUrl = URL.createObjectURL(file);
+            this.video.localName = file.name;
+            this.video.videoId = null;
+            const v = document.getElementById('localPlayer');
+            v.src = this.video.objectUrl;
+            v.controls = true;
+            this.video.localReady = true;
+            document.getElementById('localFileName').textContent = file.name;
+            document.getElementById('videoPlaceholder').classList.add('hidden');
+            this.setVideoSource('local');
+            v.onplay = () => { document.getElementById('vPlayBtn').textContent = '⏸ 停止'; };
+            v.onpause = () => { document.getElementById('vPlayBtn').textContent = '▶ 再生'; };
+            this.toast('動画を読み込みました');
+        },
+
+        vEl() { return document.getElementById('localPlayer'); },
+
+        vReady() {
+            if (this.video.source === 'local') return this.video.localReady;
+            return !!(this.video.player && typeof this.video.player.getCurrentTime === 'function');
+        },
+
+        vTime() {
+            if (!this.vReady()) return null;
+            try {
+                return this.video.source === 'local' ? (this.vEl().currentTime || 0) : (this.video.player.getCurrentTime() || 0);
+            } catch (e) { return null; }
+        },
+
+        vSeek(t) {
+            if (!this.vReady()) return;
+            const v = Math.max(0, t);
+            try {
+                if (this.video.source === 'local') this.vEl().currentTime = v;
+                else this.video.player.seekTo(v, true);
+            } catch (e) { /* noop */ }
+        },
+
+        vToggle() {
+            if (!this.vReady()) { this.toast('先に動画を読み込んでください'); return; }
+            try {
+                if (this.video.source === 'local') {
+                    const v = this.vEl();
+                    // play() は Promise を返す。iOS の自動再生制限などで reject するので握り潰す
+                    if (v.paused) { const p = v.play(); if (p && p.catch) p.catch(() => {}); } else { v.pause(); }
+                } else {
+                    const st = this.video.player.getPlayerState();
+                    if (st === YT.PlayerState.PLAYING) this.video.player.pauseVideo();
+                    else this.video.player.playVideo();
+                }
+            } catch (e) { /* noop */ }
+        },
+
+        vNudge(sec) {
+            const t = this.vTime();
+            if (t == null) { this.toast('先に動画を読み込んでください'); return; }
+            this.vSeek(t + sec);
+        },
+
+        vSetRate(r) {
+            if (!this.vReady()) return;
+            const rate = parseFloat(r) || 1;
+            try {
+                if (this.video.source === 'local') this.vEl().playbackRate = rate;
+                else this.video.player.setPlaybackRate(rate);
+            } catch (e) { /* noop */ }
+        },
+
+        tickVideoTime() {
+            const t = this.vTime();
+            const label = t == null ? '0:00' : fmtTime(t);
+            const el = document.getElementById('vTime');
+            if (el) el.textContent = label;
+            const ctl = document.getElementById('ctl-vtime');
+            if (ctl) ctl.textContent = t == null ? '' : '📹 ' + label;
+        },
+
+        seekTo(id) {
+            const h = this.state.history.find(x => x.id === id);
+            if (!h || h.videoTime == null) return;
+            if (!this.vReady()) { this.toast('動画が読み込まれていません'); return; }
+            this.vSeek(Math.max(0, h.videoTime - 3));
+            this.closeModal('history-modal');
+            this.toast(`${fmtTime(h.videoTime)} に移動しました`);
         },
 
         // ---------------------- 選手管理 ----------------------
@@ -504,10 +877,10 @@ tool_name: ディフェンススタッツ記録
             const p = this.state.teams[team].players.find(x => x.id === id);
             if (!p) return;
             p[field] = v;
-            // 履歴側の表示名も追従させる
             this.state.history.forEach(h => { if (h.playerId === id) h.playerName = this.playerLabel(p); });
             this.save();
             this.renderSummary();
+            this.renderController();
         },
 
         playerLabel(p) {
@@ -551,7 +924,6 @@ tool_name: ディフェンススタッツ記録
             if (s.zones === 'none') { this.record(statKey, 'none'); return; }
             this.pendingStat = statKey;
             document.getElementById('zone-stat-label').textContent = s.label;
-            // バックコートが使えない種別は無効化する
             const backAllowed = s.zones === 'all';
             const bc = document.getElementById('zone-backcourt');
             bc.classList.toggle('opacity-40', !backAllowed);
@@ -580,6 +952,7 @@ tool_name: ディフェンススタッツ記録
             const found = this.findPlayer(this.selected.playerId);
             if (!found) return;
             const s = statDef(statKey);
+            const t = this.vTime();
             this.state.history.push({
                 id: ++this.state.counter,
                 team: this.selected.team,
@@ -588,7 +961,9 @@ tool_name: ディフェンススタッツ記録
                 statKey,
                 zone: zoneKey,
                 help: s.help ? this.state.helpMode : false,
-                quarter: this.state.quarter
+                quarter: this.state.quarter,
+                videoTime: t,
+                videoId: (t != null && this.video.source === 'youtube') ? this.video.videoId : null
             });
             this.save();
             this.render();
@@ -627,8 +1002,7 @@ tool_name: ディフェンススタッツ記録
             ['A', 'B'].forEach(team => {
                 this.state.teams[team].players.forEach(p => {
                     const events = hist.filter(h => h.playerId === p.id);
-                    const counts = {};
-                    const byZone = {};
+                    const counts = {}, byZone = {};
                     let helpCount = 0, score = 0;
                     STATS.forEach(s => {
                         counts[s.key] = 0;
@@ -710,9 +1084,9 @@ tool_name: ディフェンススタッツ記録
             if (!this.selected) return;
             const found = this.findPlayer(this.selected.playerId);
             if (!found) { this.deselectPlayer(); return; }
-            document.getElementById('ctl-player').textContent = this.playerLabel(found.player);
-            document.getElementById('ctl-player').className =
-                'text-sm font-bold truncate ' + (this.selected.team === 'A' ? 'text-indigo-600' : 'text-rose-600');
+            const nameEl = document.getElementById('ctl-player');
+            nameEl.textContent = this.playerLabel(found.player);
+            nameEl.className = 'text-sm font-bold truncate ' + (this.selected.team === 'A' ? 'text-indigo-600' : 'text-rose-600');
             document.getElementById('ctl-quarter').textContent = this.state.quarter;
 
             const hb = document.getElementById('help-toggle');
@@ -724,7 +1098,7 @@ tool_name: ディフェンススタッツ記録
         },
 
         renderSummary() {
-            const rows = this.aggregate().filter(r => r.total > 0 || this.state.teams[r.team].players.length <= 12);
+            const rows = this.aggregate();
             const hasData = this.state.history.length > 0;
             document.getElementById('summary-empty').classList.toggle('hidden', hasData);
 
@@ -781,10 +1155,13 @@ tool_name: ディフェンススタッツ記録
             }
             el.innerHTML = hist.map(h => {
                 const s = statDef(h.statKey);
+                const tBtn = h.videoTime == null ? '' :
+                    `<button onclick="app.seekTo(${h.id})" class="btn-press text-[10px] font-mono font-bold text-sky-600 bg-sky-50 hover:bg-sky-100 px-1.5 py-0.5 rounded transition flex-shrink-0">▶ ${fmtTime(h.videoTime)}</button>`;
                 return `<div class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-gray-100">
                     <span class="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded flex-shrink-0">${esc(h.quarter)}</span>
+                    ${tBtn}
                     <span class="text-xs font-bold flex-shrink-0 ${h.team === 'A' ? 'text-indigo-600' : 'text-rose-600'}">${esc(h.playerName)}</span>
-                    <span class="text-xs ${s.kind === 'minus' ? 'text-rose-500 font-bold' : 'text-gray-700'}">${esc(s ? s.label : h.statKey)}</span>
+                    <span class="text-xs ${s && s.kind === 'minus' ? 'text-rose-500 font-bold' : 'text-gray-700'}">${esc(s ? s.label : h.statKey)}</span>
                     <span class="text-[10px] text-gray-400">${esc(zoneLabel(h.zone))}</span>
                     ${h.help ? '<span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">ヘルプ</span>' : ''}
                     <button onclick="app.deleteEvent(${h.id})" class="ml-auto flex-shrink-0 text-gray-300 hover:text-rose-500 transition text-sm leading-none px-1">✕</button>
@@ -834,16 +1211,16 @@ tool_name: ディフェンススタッツ記録
         // ---------------------- 出力 ----------------------
         exportCSV() {
             if (this.state.history.length === 0) { this.toast('記録がありません'); return; }
-            const q = esc(document.getElementById('game-event').value);
             const cell = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
             const date = document.getElementById('game-date').value;
             const rows = this.aggregate();
+            const range = document.getElementById('summary-quarter').value;
 
             let csv = '=== 試合情報 ===\n';
             csv += `大会・試合名,${cell(document.getElementById('game-event').value)}\n`;
             csv += `日付,${cell(date)}\n`;
             csv += `${cell(this.state.teams.A.name)},${cell(this.state.teams.B.name)}\n`;
-            csv += `集計範囲,${cell(document.getElementById('summary-quarter').value === 'all' ? '全体' : document.getElementById('summary-quarter').value)}\n\n`;
+            csv += `集計範囲,${cell(range === 'all' ? '全体' : range)}\n\n`;
 
             csv += '=== 種別サマリー ===\n';
             csv += ['チーム', '選手', ...STATS.map(s => s.label), 'ヘルプ回数', '止め切れた率', 'DFスコア'].map(cell).join(',') + '\n';
@@ -872,13 +1249,17 @@ tool_name: ディフェンススタッツ記録
             csv += '\n';
 
             csv += '=== 記録ログ ===\n';
-            csv += ['No', 'クォーター', 'チーム', '選手', '種別', 'エリア', '対応区分'].map(cell).join(',') + '\n';
+            csv += ['No', 'クォーター', 'チーム', '選手', '種別', 'エリア', '対応区分', '動画時間', '動画URL(頭出し)'].map(cell).join(',') + '\n';
             this.state.history.forEach(h => {
                 const s = statDef(h.statKey);
+                const url = (h.videoId && h.videoTime != null)
+                    ? `https://youtu.be/${h.videoId}?t=${Math.max(0, Math.floor(h.videoTime - 3))}` : '';
                 csv += [
                     h.id, h.quarter, this.state.teams[h.team].name, h.playerName,
                     s ? s.label : h.statKey, zoneLabel(h.zone),
-                    s && s.help ? (h.help ? 'ヘルプ' : 'マッチアップ') : ''
+                    s && s.help ? (h.help ? 'ヘルプ' : 'マッチアップ') : '',
+                    h.videoTime == null ? '' : fmtTime(h.videoTime),
+                    url
                 ].map(cell).join(',') + '\n';
             });
 
