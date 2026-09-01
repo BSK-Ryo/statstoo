@@ -1,7 +1,7 @@
 ---
 layout: default
 title: 動画スタッツ記録
-description: YouTubeの試合動画を見ながらバスケットボールのスタッツを記録できるツールです。画面1つでPC操作が完結し、試合を録画しておいて後日スタッツをつけたい方におすすめです。
+description: YouTubeの試合動画やスマホ・PC内の動画ファイルを見ながらバスケットボールのスタッツを記録できるツールです。画面1つで操作が完結し、試合を録画しておいて後日スタッツをつけたい方におすすめです。
 is_tool: true
 tool_name: 動画スタッツ記録
 ---
@@ -144,6 +144,24 @@ tool_name: 動画スタッツ記録
         top: 0;
         left: 0;
     }
+
+    /* flex/absolute 指定より .hidden を確実に優先させる */
+    #player.hidden,
+    #localPlayer.hidden,
+    #localPlaceholder.hidden { display: none !important; }
+    #localPlaceholder { display: flex; }
+
+    /* 動画ソース切替タブ */
+    .src-tab {
+        color: #94a3b8;
+        border-color: transparent;
+        margin-bottom: -1px;
+    }
+    .src-tab:hover { color: #64748b; }
+    .src-tab.active {
+        color: #EA580C;
+        border-color: #EA580C;
+    }
 </style>
 
 <!-- Page Header -->
@@ -154,7 +172,7 @@ tool_name: 動画スタッツ記録
                 <span class="text-4xl">📹</span>
                 <h1 class="font-display text-3xl md:text-4xl tracking-wide text-white">VIDEO STATS TRACKER</h1>
             </div>
-            <p class="text-white/70 text-sm">YouTubeの試合動画を見ながらスタッツを記録</p>
+            <p class="text-white/70 text-sm">YouTubeや端末内の試合動画を見ながらスタッツを記録</p>
         </div>
     </div>
 </div>
@@ -203,15 +221,46 @@ tool_name: 動画スタッツ記録
         <!-- Video Section (Left) -->
         <div class="lg:col-span-2 space-y-4">
             
-            <!-- URL Input -->
+            <!-- Video Source Input -->
             <section class="bg-white p-3 rounded-xl shadow-md border border-gray-100">
-                <div class="flex gap-2">
+                <!-- Source Tabs -->
+                <div class="flex gap-1 mb-2.5 border-b border-gray-200">
+                    <button id="srcTab-youtube" onclick="setVideoSource('youtube')" type="button"
+                        class="src-tab text-xs font-bold px-3 py-2 border-b-2 transition">
+                        ▶️ YouTube
+                    </button>
+                    <button id="srcTab-local" onclick="setVideoSource('local')" type="button"
+                        class="src-tab text-xs font-bold px-3 py-2 border-b-2 transition">
+                        📱 端末内の動画
+                    </button>
+                </div>
+
+                <!-- YouTube Panel -->
+                <div id="srcPanel-youtube" class="flex gap-2">
                     <input type="text" id="youtubeUrl"
                         placeholder="YouTube URLを貼り付け" oninput="saveState()"
                         class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition">
                     <button onclick="loadVideo()" class="btn-press bg-primary hover:bg-primary-dark text-white font-bold px-4 py-2 rounded-lg transition shadow-md text-sm whitespace-nowrap">
                         読み込む
                     </button>
+                </div>
+
+                <!-- Local File Panel -->
+                <div id="srcPanel-local" class="hidden">
+                    <input type="file" id="localVideoFile" accept="video/*" class="hidden" onchange="onLocalFileSelected(this)">
+                    <div class="flex gap-2 items-center">
+                        <button onclick="document.getElementById('localVideoFile').click()" type="button"
+                            class="btn-press bg-primary hover:bg-primary-dark text-white font-bold px-4 py-2 rounded-lg transition shadow-md text-sm whitespace-nowrap">
+                            動画を選ぶ
+                        </button>
+                        <div id="localVideoName" class="flex-1 text-xs text-gray-500 truncate">
+                            カメラロール／端末内の動画ファイルを選択してください
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
+                        動画はアップロードされず、端末内でそのまま再生されます。<br>
+                        ページを再読み込みするとスタッツは残りますが、動画は選び直しが必要です。
+                    </p>
                 </div>
             </section>
 
@@ -222,6 +271,14 @@ tool_name: 動画スタッツ記録
                         <div class="text-center text-gray-400">
                             <div class="text-4xl mb-2">🎬</div>
                             <p class="text-xs">YouTube URLを入力して動画を読み込んでください</p>
+                        </div>
+                    </div>
+                    <video id="localPlayer" class="absolute inset-0 w-full h-full bg-gray-900 rounded-lg hidden"
+                        playsinline webkit-playsinline controls preload="metadata"></video>
+                    <div id="localPlaceholder" class="absolute inset-0 bg-gray-900 rounded-lg items-center justify-center hidden">
+                        <div class="text-center text-gray-400">
+                            <div class="text-4xl mb-2">📱</div>
+                            <p class="text-xs">「動画を選ぶ」から端末内の動画を選択してください</p>
                         </div>
                     </div>
                 </div>
@@ -706,6 +763,8 @@ function createEmptyStats() { return { p2m: 0, p2a: 0, p3m: 0, p3a: 0, ftm: 0, f
 
 let player = null, isPlayerReady = false, timeUpdateInterval = null, generatedImageBlob = null, generatedImageDataUrl = null;
 let currentVideoId = null, historyCounter = 0, editingHistoryId = null, editingTags = {}, editingStatKey = null, summaryAxis = 'play', summaryScope = 'all', seekOffset = 3;
+// 動画ソース: 'youtube' = YouTube iframe API / 'local' = 端末内ファイル（<video> + ObjectURL）
+let videoSource = 'youtube', localObjectUrl = null, localVideoName = '', localReady = false;
 // =============================
 // 🎯 多軸ミートタグ設定
 // =============================
@@ -749,30 +808,122 @@ const MISS_HOTKEYS = { Digit2: 'p2a', Digit3: 'p3a', Digit1: 'fta' };
 const ROSTER_KEY = 'statstoo_rosters', ROSTER_LEGACY_KEY = 'statstoo_roster';
 let rosterData = null, rosterSelectedTeamId = null, rosterCheckedIds = new Set();
 
-document.addEventListener('DOMContentLoaded', () => { initFilterOptions(); const restored = loadState(); if (!restored) document.getElementById('game-date').value = new Date().toISOString().slice(0, 10); render(); setupKeyboardShortcuts(); refreshMonthly(); if (restored && state.history.length) showToast('前回の記録を復元しました'); });
+document.addEventListener('DOMContentLoaded', () => { initFilterOptions(); const restored = loadState(); if (!restored) document.getElementById('game-date').value = new Date().toISOString().slice(0, 10); initLocalPlayer(); setVideoSource(videoSource); renderLocalFileName(); render(); setupKeyboardShortcuts(); refreshMonthly(); if (restored && state.history.length) showToast('前回の記録を復元しました'); });
 
 // =============================
 // 💾 自動保存（localStorage）
 // =============================
-function saveState() { try { const data = { teams: state.teams, history: state.history, historyCounter, currentVideoId, seekOffset, youtubeUrl: document.getElementById('youtubeUrl').value, gameEvent: document.getElementById('game-event').value, gameDate: document.getElementById('game-date').value, gameTime: document.getElementById('game-time').value }; localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) { /* ストレージ無効時は無視 */ } }
-function loadState() { try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return false; const d = JSON.parse(raw); if (d.teams && d.teams.A && d.teams.B) state.teams = d.teams; if (Array.isArray(d.history)) state.history = d.history.map(ensureTags); if (typeof d.historyCounter === 'number') historyCounter = d.historyCounter; if (d.currentVideoId) currentVideoId = d.currentVideoId; if (typeof d.seekOffset === 'number') { seekOffset = d.seekOffset; const so = document.getElementById('seek-offset'); if (so) so.value = d.seekOffset; } document.getElementById('youtubeUrl').value = d.youtubeUrl || ''; document.getElementById('game-event').value = d.gameEvent || ''; document.getElementById('game-date').value = d.gameDate || new Date().toISOString().slice(0, 10); document.getElementById('game-time').value = d.gameTime || ''; document.getElementById('name-teamA').value = state.teams.A.name; document.getElementById('name-teamB').value = state.teams.B.name; document.getElementById('header-teamA').textContent = state.teams.A.name; document.getElementById('header-teamB').textContent = state.teams.B.name; pendingResumeUrl = (d.youtubeUrl && d.youtubeUrl.trim()) ? d.youtubeUrl : null; if (pendingResumeUrl && window.YT && typeof YT.Player === 'function') { loadVideo(); pendingResumeUrl = null; } return true; } catch (e) { return false; } }
+function saveState() { try { const data = { teams: state.teams, history: state.history, historyCounter, currentVideoId, seekOffset, videoSource, localVideoName, youtubeUrl: document.getElementById('youtubeUrl').value, gameEvent: document.getElementById('game-event').value, gameDate: document.getElementById('game-date').value, gameTime: document.getElementById('game-time').value }; localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) { /* ストレージ無効時は無視 */ } }
+function loadState() { try { const raw = localStorage.getItem(STORAGE_KEY); if (!raw) return false; const d = JSON.parse(raw); if (d.teams && d.teams.A && d.teams.B) state.teams = d.teams; if (Array.isArray(d.history)) state.history = d.history.map(ensureTags); if (typeof d.historyCounter === 'number') historyCounter = d.historyCounter; if (d.currentVideoId) currentVideoId = d.currentVideoId; if (typeof d.seekOffset === 'number') { seekOffset = d.seekOffset; const so = document.getElementById('seek-offset'); if (so) so.value = d.seekOffset; } document.getElementById('youtubeUrl').value = d.youtubeUrl || ''; document.getElementById('game-event').value = d.gameEvent || ''; document.getElementById('game-date').value = d.gameDate || new Date().toISOString().slice(0, 10); document.getElementById('game-time').value = d.gameTime || ''; document.getElementById('name-teamA').value = state.teams.A.name; document.getElementById('name-teamB').value = state.teams.B.name; document.getElementById('header-teamA').textContent = state.teams.A.name; document.getElementById('header-teamB').textContent = state.teams.B.name; pendingResumeUrl = (d.youtubeUrl && d.youtubeUrl.trim()) ? d.youtubeUrl : null; if (d.videoSource === 'local') videoSource = 'local'; localVideoName = d.localVideoName || ''; if (pendingResumeUrl && videoSource === 'youtube' && window.YT && typeof YT.Player === 'function') { loadVideo(); pendingResumeUrl = null; } return true; } catch (e) { return false; } }
+
+// =============================
+// 🎬 動画ソース（YouTube / 端末内ファイル）
+// =============================
+// 再生系はすべて videoCtl 経由で呼ぶ。YouTube iframe API と <video> 要素の差はここだけで吸収する
+const videoCtl = {
+    ready() { return videoSource === 'local' ? localReady : !!(player && isPlayerReady); },
+    getTime() {
+        if (videoSource === 'local') return localVideoEl().currentTime || 0;
+        return (player && typeof player.getCurrentTime === 'function') ? player.getCurrentTime() : 0;
+    },
+    seek(t) { const v = Math.max(0, t); videoSource === 'local' ? (localVideoEl().currentTime = v) : player.seekTo(v, true); },
+    // <video>.play() は Promise を返し、直後の pause や iOS の自動再生制限で reject する。握り潰して未処理例外にしない
+    play() { if (videoSource !== 'local') { player.playVideo(); return; } const p = localVideoEl().play(); if (p && p.catch) p.catch(() => {}); },
+    pause() { videoSource === 'local' ? localVideoEl().pause() : player.pauseVideo(); },
+    isPlaying() { return videoSource === 'local' ? !localVideoEl().paused : player.getPlayerState() === YT.PlayerState.PLAYING; },
+    setRate(r) { videoSource === 'local' ? (localVideoEl().playbackRate = r) : player.setPlaybackRate(r); }
+};
+
+function localVideoEl() { return document.getElementById('localPlayer'); }
+
+function setVideoSource(src) {
+    if (src !== 'youtube' && src !== 'local') return;
+    if (videoCtl.ready()) { try { videoCtl.pause(); } catch (e) { /* 切替時の停止失敗は無視 */ } }
+    videoSource = src;
+    const isLocal = src === 'local';
+    document.getElementById('srcTab-youtube').classList.toggle('active', !isLocal);
+    document.getElementById('srcTab-local').classList.toggle('active', isLocal);
+    document.getElementById('srcPanel-youtube').classList.toggle('hidden', isLocal);
+    document.getElementById('srcPanel-local').classList.toggle('hidden', !isLocal);
+    document.getElementById('player').classList.toggle('hidden', isLocal);
+    localVideoEl().classList.toggle('hidden', !(isLocal && localReady));
+    document.getElementById('localPlaceholder').classList.toggle('hidden', !(isLocal && !localReady));
+    // YouTube に戻った時、復元待ちの URL があればこのタイミングで読み込む
+    if (!isLocal && pendingResumeUrl && !player && window.YT && typeof YT.Player === 'function') { loadVideo(); pendingResumeUrl = null; }
+    updatePlayPauseLabel();
+    saveState();
+}
+
+function onLocalFileSelected(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    soundManager.init();
+    const v = localVideoEl();
+    if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+    localReady = false;
+    localObjectUrl = URL.createObjectURL(file);
+    localVideoName = file.name;
+    // 端末内で再生するだけでアップロードは行わない
+    v.src = localObjectUrl;
+    v.load();
+    renderLocalFileName();
+    saveState();
+}
+
+function renderLocalFileName() {
+    const el = document.getElementById('localVideoName');
+    if (!localVideoName) {
+        el.textContent = 'カメラロール／端末内の動画ファイルを選択してください';
+        el.className = 'flex-1 text-xs text-gray-500 truncate';
+        return;
+    }
+    el.textContent = localReady ? localVideoName : `${localVideoName}（選び直してください）`;
+    el.className = `flex-1 text-xs truncate ${localReady ? 'text-secondary font-bold' : 'text-primary font-bold'}`;
+}
+
+function initLocalPlayer() {
+    const v = localVideoEl();
+    v.addEventListener('loadedmetadata', () => {
+        localReady = true;
+        v.playbackRate = parseFloat(document.getElementById('speedSelect').value) || 1;
+        v.classList.remove('hidden');
+        document.getElementById('localPlaceholder').classList.add('hidden');
+        renderLocalFileName();
+        startTimeUpdate();
+        showToast('動画を読み込みました！');
+    });
+    v.addEventListener('error', () => {
+        localReady = false;
+        v.classList.add('hidden');
+        document.getElementById('localPlaceholder').classList.remove('hidden');
+        showToast('この動画は再生できませんでした（HEVC/H.265の可能性があります）');
+    });
+    v.addEventListener('play', updatePlayPauseLabel);
+    v.addEventListener('pause', updatePlayPauseLabel);
+}
+
+function updatePlayPauseLabel() {
+    let playing = false;
+    try { playing = videoCtl.ready() && videoCtl.isPlaying(); } catch (e) { /* プレーヤー未初期化時は停止扱い */ }
+    document.getElementById('playPauseBtn').textContent = playing ? '⏸️ 停止' : '▶️ 再生';
+}
 
 // YouTube API
 const tag = document.createElement('script'); tag.src = 'https://www.youtube.com/iframe_api'; document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
-function onYouTubeIframeAPIReady() { console.log('YouTube API Ready'); if (pendingResumeUrl) { loadVideo(); pendingResumeUrl = null; } }
-function loadVideo() { soundManager.init(); const url = document.getElementById('youtubeUrl').value.trim(); const videoId = extractVideoId(url); if (!videoId) { showToast('有効なYouTube URLを入力してください'); return; } currentVideoId = videoId; if (player) player.destroy(); player = new YT.Player('player', { width: '100%', height: '100%', videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } }); showToast('動画を読み込みました！'); }
+function onYouTubeIframeAPIReady() { console.log('YouTube API Ready'); if (pendingResumeUrl && videoSource === 'youtube') { loadVideo(); pendingResumeUrl = null; } }
+function loadVideo() { soundManager.init(); if (videoSource !== 'youtube') setVideoSource('youtube'); const url = document.getElementById('youtubeUrl').value.trim(); const videoId = extractVideoId(url); if (!videoId) { showToast('有効なYouTube URLを入力してください'); return; } currentVideoId = videoId; if (player) player.destroy(); player = new YT.Player('player', { width: '100%', height: '100%', videoId, playerVars: { 'playsinline': 1, 'rel': 0, 'modestbranding': 1 }, events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange } }); showToast('動画を読み込みました！'); }
 function extractVideoId(url) { const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/); return m ? m[1] : null; }
 function onPlayerReady() { isPlayerReady = true; startTimeUpdate(); }
-function onPlayerStateChange(e) { document.getElementById('playPauseBtn').textContent = e.data === YT.PlayerState.PLAYING ? '⏸️ 停止' : '▶️ 再生'; }
-function startTimeUpdate() { if (timeUpdateInterval) clearInterval(timeUpdateInterval); timeUpdateInterval = setInterval(() => { if (player && isPlayerReady && typeof player.getCurrentTime === 'function') { const f = formatTime(player.getCurrentTime()); document.getElementById('currentTime').textContent = f; document.getElementById('controllerTime').textContent = f; } }, 100); }
+function onPlayerStateChange(e) { if (videoSource === 'youtube') document.getElementById('playPauseBtn').textContent = e.data === YT.PlayerState.PLAYING ? '⏸️ 停止' : '▶️ 再生'; }
+function startTimeUpdate() { if (timeUpdateInterval) clearInterval(timeUpdateInterval); timeUpdateInterval = setInterval(() => { if (videoCtl.ready()) { const f = formatTime(videoCtl.getTime()); document.getElementById('currentTime').textContent = f; document.getElementById('controllerTime').textContent = f; } }, 100); }
 function formatTime(s) { return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`; }
 // 記録時刻からオフセット分だけ手前を頭出し位置とする（リアクションのラグ補正）
 function adjTime(t) { return t == null ? null : Math.max(0, t - seekOffset); }
 function setSeekOffset(v) { seekOffset = Math.min(30, Math.max(0, parseInt(v, 10) || 0)); saveState(); renderStatsLog(); }
-function togglePlayPause() { soundManager.init(); if (!player || !isPlayerReady) return; player.getPlayerState() === YT.PlayerState.PLAYING ? player.pauseVideo() : player.playVideo(); }
-function seekBackward() { if (player && isPlayerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 5), true); }
-function seekForward() { if (player && isPlayerReady) player.seekTo(player.getCurrentTime() + 5, true); }
-function changeSpeed() { if (player && isPlayerReady) player.setPlaybackRate(parseFloat(document.getElementById('speedSelect').value)); }
+function togglePlayPause() { soundManager.init(); if (!videoCtl.ready()) return; videoCtl.isPlaying() ? videoCtl.pause() : videoCtl.play(); updatePlayPauseLabel(); }
+function seekBackward() { if (videoCtl.ready()) videoCtl.seek(videoCtl.getTime() - 5); }
+function seekForward() { if (videoCtl.ready()) videoCtl.seek(videoCtl.getTime() + 5); }
+function changeSpeed() { if (videoCtl.ready()) videoCtl.setRate(parseFloat(document.getElementById('speedSelect').value)); }
 
 // Team & Player
 function updateTeamName(t, n) { state.teams[t].name = n; document.getElementById(`header-team${t}`).textContent = n; saveState(); }
@@ -788,7 +939,7 @@ function deletePlayer(t, id) { const p = state.teams[t].players.find(p => p.id =
 function resetGame() { if (!confirm('スタッツをリセットしますか？（💾保存した試合は残りますが、記録中の内容は消えます）')) return; try { localStorage.removeItem(STORAGE_KEY); } catch (e) {} state.teams.A.players = createDefaultPlayers('A'); state.teams.B.players = createDefaultPlayers('B'); state.teams.A.name = '味方チーム'; state.teams.B.name = '相手チーム'; ['name-teamA', 'name-teamB'].forEach((id, i) => document.getElementById(id).value = i === 0 ? '味方チーム' : '相手チーム'); ['header-teamA', 'header-teamB'].forEach((id, i) => document.getElementById(id).textContent = i === 0 ? '味方チーム' : '相手チーム'); document.getElementById('game-event').value = ''; document.getElementById('game-date').value = new Date().toISOString().slice(0, 10); document.getElementById('game-time').value = ''; state.history = []; deselectPlayer(); render(); }
 
 // Stats
-function recordStat(k) { soundManager.init(); if (!state.selectedPlayer) { showToast('選手を選択してください'); return; } const { team, playerId } = state.selectedPlayer; const p = state.teams[team].players.find(p => p.id === playerId); if (!p) return; ['p2m', 'p3m', 'ftm'].includes(k) ? soundManager.playSuccessSound() : ['p2a', 'p3a', 'fta', 'to'].includes(k) ? soundManager.playMissSound() : soundManager.playNeutralSound(); const entry = { id: ++historyCounter, team, playerId, playerName: playerLabel(p), statKey: k, value: 1 }; if (isShotStat(k)) { entry.videoTime = (player && isPlayerReady && typeof player.getCurrentTime === 'function') ? player.getCurrentTime() : null; entry.videoId = currentVideoId; entry.tags = emptyTags(); entry.memo = ''; } state.history.push(entry); p.stats[k] += 1; if (k === 'p2m') p.stats.p2a += 1; if (k === 'p3m') p.stats.p3a += 1; if (k === 'ftm') p.stats.fta += 1; render(); showToast(`${p.name}: ${getStatLabel(k)}`); }
+function recordStat(k) { soundManager.init(); if (!state.selectedPlayer) { showToast('選手を選択してください'); return; } const { team, playerId } = state.selectedPlayer; const p = state.teams[team].players.find(p => p.id === playerId); if (!p) return; ['p2m', 'p3m', 'ftm'].includes(k) ? soundManager.playSuccessSound() : ['p2a', 'p3a', 'fta', 'to'].includes(k) ? soundManager.playMissSound() : soundManager.playNeutralSound(); const entry = { id: ++historyCounter, team, playerId, playerName: playerLabel(p), statKey: k, value: 1 }; if (isShotStat(k)) { entry.videoTime = videoCtl.ready() ? videoCtl.getTime() : null; entry.videoId = videoSource === 'local' ? null : currentVideoId; entry.tags = emptyTags(); entry.memo = ''; } state.history.push(entry); p.stats[k] += 1; if (k === 'p2m') p.stats.p2a += 1; if (k === 'p3m') p.stats.p3a += 1; if (k === 'ftm') p.stats.fta += 1; render(); showToast(`${p.name}: ${getStatLabel(k)}`); }
 function getStatLabel(k) { return { p2m: '2P成功 +2', p2a: '2Pミス', p3m: '3P成功 +3', p3a: '3Pミス', ftm: 'FT成功 +1', fta: 'FTミス', orb: 'OR', drb: 'DR', ast: 'AST', stl: 'STL', blk: 'BLK', to: 'TO', pf: 'PF' }[k] || k; }
 function undoLast() { if (state.history.length === 0) return; const l = state.history.pop(); const p = state.teams[l.team].players.find(p => p.id === l.playerId); if (!p) return; p.stats[l.statKey] -= l.value; if (l.statKey === 'p2m') p.stats.p2a -= 1; if (l.statKey === 'p3m') p.stats.p3a -= 1; if (l.statKey === 'ftm') p.stats.fta -= 1; render(); showToast(`取り消し: ${l.playerName} - ${getStatLabel(l.statKey)}`); }
 function calculatePTS(s) { return s.p2m * 2 + s.p3m * 3 + s.ftm; }
@@ -804,7 +955,7 @@ function initFilterOptions() { const sel = document.getElementById('filter-meet'
 function setSummaryAxis(v) { summaryAxis = v; renderMeetSummary(); }
 function setSummaryScope(v) { summaryScope = v; renderMeetSummary(); }
 function renderStatsLog() { const el = document.getElementById('statsLog'); const countEl = document.getElementById('logCount'); const total = state.history.length; const filtered = state.history.filter(passesLogFilter); const isFiltered = logFilter.result !== 'all' || logFilter.team !== 'all' || logFilter.meet !== 'all' || logFilter.shotsOnly; if (countEl) countEl.textContent = total === 0 ? '' : (isFiltered ? `(${filtered.length}/${total}件)` : `(${total}件)`); if (total === 0) { el.innerHTML = '<p class="text-center text-gray-400 text-xs py-3">まだ記録がありません</p>'; return; } if (filtered.length === 0) { el.innerHTML = '<p class="text-center text-gray-400 text-xs py-3">条件に合う記録がありません</p>'; return; } el.innerHTML = [...filtered].reverse().slice(0, 50).map(e => { const isSuc = ['p2m', 'p3m', 'ftm'].includes(e.statKey); const isMiss = ['p2a', 'p3a', 'fta', 'to'].includes(e.statKey); const shot = isShotStat(e.statKey); const jt = (shot && e.videoTime != null) ? adjTime(e.videoTime) : null; const timeChip = (jt != null) ? `<button onclick="seekToTime(${jt})" title="${seekOffset > 0 ? `記録の${seekOffset}秒手前にジャンプ` : 'この瞬間にジャンプ'}" class="btn-press font-mono text-primary bg-primary/10 hover:bg-primary/20 px-1.5 py-0.5 rounded transition whitespace-nowrap">▶ ${formatTime(jt)}</button>` : ''; const meetTag = tagChips(e).map(v => `<span class="bg-secondary/10 text-secondary px-1.5 py-0.5 rounded font-bold whitespace-nowrap">${escapeHtml(v)}</span>`).join(''); const memoText = e.memo ? `<span class="text-gray-500 italic truncate">${escapeHtml(e.memo)}</span>` : ''; const meta = shot && hasMeta(e); const editBtn = shot ? `<button onclick="openMeetEditor(${e.id})" class="btn-press ml-auto shrink-0 text-[9px] ${meta ? 'text-primary border-primary/30' : 'text-gray-400 border-gray-200 hover:text-primary hover:border-primary/30'} border rounded px-1.5 py-0.5 transition">${meta ? '✎ 編集' : '＋ミート/メモ'}</button>` : ''; return `<div class="flex flex-wrap items-center gap-x-2 gap-y-1 p-1.5 border-b border-gray-100 last:border-b-0 text-[10px]">${timeChip}<span class="${e.team === 'A' ? 'text-indigo-600' : 'text-rose-600'} font-medium truncate max-w-[70px] shrink-0">${e.playerName}</span><span class="${isSuc ? 'text-green-600' : isMiss ? 'text-red-500' : 'text-gray-600'} font-medium whitespace-nowrap">${getStatLabel(e.statKey)}</span>${meetTag}${memoText}${editBtn}</div>`; }).join(''); }
-function seekToTime(t) { if (player && isPlayerReady && typeof player.seekTo === 'function') { player.seekTo(t, true); player.playVideo(); } else { showToast('先に動画を読み込んでください'); } }
+function seekToTime(t) { if (videoCtl.ready()) { videoCtl.seek(t); videoCtl.play(); } else { showToast(videoSource === 'local' ? '先に端末内の動画を選択してください' : '先に動画を読み込んでください'); } }
 function openMeetEditor(id) { const e = ensureTags(state.history.find(h => h.id === id) || {}); if (!e.id) return; editingHistoryId = id; editingStatKey = e.statKey; editingTags = Object.assign(emptyTags(), e.tags || {}); document.getElementById('meet-editor-title').innerHTML = `<span class="${e.team === 'A' ? 'text-indigo-600' : 'text-rose-600'}">${escapeHtml(e.playerName)}</span> の ${getStatLabel(e.statKey)}${e.videoTime != null ? ` <span class="text-gray-400 font-mono text-xs">(${formatTime(adjTime(e.videoTime))})</span>` : ''}`; const memoInput = document.getElementById('meet-memo-input'); memoInput.value = e.memo || ''; memoInput.placeholder = getMeetPlaceholder(e.statKey); renderAxes(); document.getElementById('meet-modal').classList.add('active'); }
 function renderAxes() { const container = document.getElementById('meet-axes'); const axes = SHOT_AXES.filter(a => axisApplies(a, editingStatKey)); if (axes.length === 0) { container.innerHTML = '<p class="text-[11px] text-gray-400 py-1">フリースローはミートタグなし（メモのみ）</p>'; return; } container.innerHTML = axes.map(a => { const opts = getAxisOptions(a.key, editingStatKey); const cur = editingTags[a.key] || null; const btns = opts.map(o => { const sel = cur === o; return `<button onclick="selectAxisOption('${a.key}', '${o.replace(/'/g, "\\'")}')" class="btn-press px-2 py-1 rounded-lg text-[11px] font-medium border transition ${sel ? 'bg-primary text-white border-primary' : 'bg-gray-50 text-gray-600 border-gray-200 hover:border-primary/40'}">${escapeHtml(o)}</button>`; }).join(''); return `<div class="mb-3"><div class="flex items-center justify-between mb-1.5"><label class="text-[10px] text-gray-500 font-bold uppercase tracking-wide">${escapeHtml(a.label)}</label>${cur ? `<button onclick="selectAxisOption('${a.key}', null)" class="text-[9px] text-gray-400 hover:text-rose-500">クリア</button>` : ''}</div><div class="flex flex-wrap gap-1.5">${btns}</div></div>`; }).join(''); }
 function selectAxisOption(axisKey, value) { editingTags[axisKey] = (value === null || editingTags[axisKey] === value) ? null : value; renderAxes(); }
@@ -851,12 +1002,12 @@ function closeRosterManager() { document.getElementById('roster-manager-modal').
 const GAME_HISTORY_KEY = 'statstoo_game_history';
 function loadGameHistory() { try { const raw = localStorage.getItem(GAME_HISTORY_KEY); return raw ? JSON.parse(raw) : []; } catch (e) { console.warn('ゲーム履歴の読み込み失敗:', e); return []; } }
 function saveGameHistory(arr) { try { localStorage.setItem(GAME_HISTORY_KEY, JSON.stringify(arr)); } catch (e) { alert('ストレージ容量が不足しています。古い試合を削除してから再試行してください。'); } }
-function saveCurrentGame() { const event = document.getElementById('game-event').value; let date = document.getElementById('game-date').value; const time = document.getElementById('game-time').value; if (!date) { date = new Date().toISOString().slice(0, 10); document.getElementById('game-date').value = date; } const memberSet = rosterMemberNameSet(); const snap = team => state.teams[team].players.map(p => ({ name: (p.name || '').trim(), number: String(p.number || '').trim(), isMember: isRosterMember(p.name, memberSet), stats: Object.assign({}, p.stats), minMs: 0 })); const entry = { id: `game-${Date.now()}`, savedAt: new Date().toISOString(), source: 'video', gameInfo: { event, date, time }, teams: { A: { name: state.teams.A.name, score: calculateTeamScore('A'), players: snap('A') }, B: { name: state.teams.B.name, score: calculateTeamScore('B'), players: snap('B') } }, video: { url: document.getElementById('youtubeUrl').value, videoId: currentVideoId, seekOffset, shotLog: state.history } }; const hist = loadGameHistory(); hist.unshift(entry); saveGameHistory(hist); showToast('試合を保存しました'); refreshMonthly(); }
+function saveCurrentGame() { const event = document.getElementById('game-event').value; let date = document.getElementById('game-date').value; const time = document.getElementById('game-time').value; if (!date) { date = new Date().toISOString().slice(0, 10); document.getElementById('game-date').value = date; } const memberSet = rosterMemberNameSet(); const snap = team => state.teams[team].players.map(p => ({ name: (p.name || '').trim(), number: String(p.number || '').trim(), isMember: isRosterMember(p.name, memberSet), stats: Object.assign({}, p.stats), minMs: 0 })); const entry = { id: `game-${Date.now()}`, savedAt: new Date().toISOString(), source: 'video', gameInfo: { event, date, time }, teams: { A: { name: state.teams.A.name, score: calculateTeamScore('A'), players: snap('A') }, B: { name: state.teams.B.name, score: calculateTeamScore('B'), players: snap('B') } }, video: { url: document.getElementById('youtubeUrl').value, videoId: currentVideoId, source: videoSource, localVideoName, seekOffset, shotLog: state.history } }; const hist = loadGameHistory(); hist.unshift(entry); saveGameHistory(hist); showToast('試合を保存しました'); refreshMonthly(); }
 function openHistoryModal() { renderHistoryList(); document.getElementById('history-modal').classList.add('active'); }
 function closeHistoryModal() { document.getElementById('history-modal').classList.remove('active'); }
 function renderHistoryList() { const el = document.getElementById('history-list'); const hist = loadGameHistory(); if (hist.length === 0) { el.innerHTML = '<p class="text-center text-gray-400 text-xs py-4">保存した試合がありません</p>'; return; } el.innerHTML = hist.map(g => { const ev = (g.gameInfo && g.gameInfo.event) || '試合'; const date = (g.gameInfo && g.gameInfo.date) || '---'; const isVid = g.source === 'video' || (g.video && Array.isArray(g.video.shotLog)); const aN = g.teams.A.name, bN = g.teams.B.name, aS = g.teams.A.score, bS = g.teams.B.score; return `<div class="border border-gray-200 rounded-lg p-2"><div class="flex justify-between items-center gap-2"><div class="min-w-0"><div class="text-xs font-bold text-secondary truncate">${isVid ? '🎬 ' : ''}${escapeHtml(aN)} ${aS} — ${bS} ${escapeHtml(bN)}</div><div class="text-[10px] text-gray-400 truncate">${escapeHtml(date)} ${escapeHtml(ev)}</div></div><div class="flex gap-1 shrink-0"><button onclick="restoreGame('${g.id}')" class="text-[10px] text-primary border border-primary/30 rounded px-2 py-1 hover:bg-primary/5 font-bold">復元</button><button onclick="deleteSavedGame('${g.id}')" class="text-[10px] text-red-400 border border-red-200 rounded px-2 py-1 hover:bg-red-50 font-bold">削除</button></div></div></div>`; }).join(''); }
 function deleteSavedGame(id) { if (!confirm('この試合を削除しますか？')) return; saveGameHistory(loadGameHistory().filter(g => g.id !== id)); renderHistoryList(); refreshMonthly(); }
-function restoreGame(id) { const g = loadGameHistory().find(x => x.id === id); if (!g) return; if (!confirm('現在の記録を破棄して、この試合を読み込みますか？')) return; const mk = (team, p, i) => ({ id: `${team}-${Date.now()}-${i}`, name: (p.name || '').trim(), number: String(p.number || '').trim(), team, isOnCourt: true, stats: Object.assign(createEmptyStats(), p.stats || {}) }); state.teams.A.name = g.teams.A.name || '味方チーム'; state.teams.B.name = g.teams.B.name || '相手チーム'; state.teams.A.players = (g.teams.A.players || []).map((p, i) => mk('A', p, i)); state.teams.B.players = (g.teams.B.players || []).map((p, i) => mk('B', p, i)); document.getElementById('name-teamA').value = state.teams.A.name; document.getElementById('name-teamB').value = state.teams.B.name; document.getElementById('header-teamA').textContent = state.teams.A.name; document.getElementById('header-teamB').textContent = state.teams.B.name; document.getElementById('game-event').value = (g.gameInfo && g.gameInfo.event) || ''; document.getElementById('game-date').value = (g.gameInfo && g.gameInfo.date) || ''; document.getElementById('game-time').value = (g.gameInfo && g.gameInfo.time) || ''; state.history = []; historyCounter = 0; document.getElementById('youtubeUrl').value = ''; currentVideoId = null; const v = g.video; if (v) { if (typeof v.seekOffset === 'number') { seekOffset = v.seekOffset; const so = document.getElementById('seek-offset'); if (so) so.value = v.seekOffset; } if (Array.isArray(v.shotLog)) { const labelToId = { A: {}, B: {} }; ['A', 'B'].forEach(tm => state.teams[tm].players.forEach(p => { labelToId[tm][playerLabel(p)] = p.id; })); state.history = v.shotLog.map(e => { const ne = Object.assign({}, e); ensureTags(ne); if (labelToId[ne.team] && labelToId[ne.team][ne.playerName]) ne.playerId = labelToId[ne.team][ne.playerName]; return ne; }); historyCounter = state.history.reduce((m, e) => Math.max(m, e.id || 0), 0); } if (v.url) { document.getElementById('youtubeUrl').value = v.url; currentVideoId = v.videoId || extractVideoId(v.url); } } closeHistoryModal(); deselectPlayer(); if (currentVideoId && window.YT && typeof YT.Player === 'function') loadVideo(); showToast('試合を読み込みました'); }
+function restoreGame(id) { const g = loadGameHistory().find(x => x.id === id); if (!g) return; if (!confirm('現在の記録を破棄して、この試合を読み込みますか？')) return; const mk = (team, p, i) => ({ id: `${team}-${Date.now()}-${i}`, name: (p.name || '').trim(), number: String(p.number || '').trim(), team, isOnCourt: true, stats: Object.assign(createEmptyStats(), p.stats || {}) }); state.teams.A.name = g.teams.A.name || '味方チーム'; state.teams.B.name = g.teams.B.name || '相手チーム'; state.teams.A.players = (g.teams.A.players || []).map((p, i) => mk('A', p, i)); state.teams.B.players = (g.teams.B.players || []).map((p, i) => mk('B', p, i)); document.getElementById('name-teamA').value = state.teams.A.name; document.getElementById('name-teamB').value = state.teams.B.name; document.getElementById('header-teamA').textContent = state.teams.A.name; document.getElementById('header-teamB').textContent = state.teams.B.name; document.getElementById('game-event').value = (g.gameInfo && g.gameInfo.event) || ''; document.getElementById('game-date').value = (g.gameInfo && g.gameInfo.date) || ''; document.getElementById('game-time').value = (g.gameInfo && g.gameInfo.time) || ''; state.history = []; historyCounter = 0; document.getElementById('youtubeUrl').value = ''; currentVideoId = null; const v = g.video; if (v) { if (typeof v.seekOffset === 'number') { seekOffset = v.seekOffset; const so = document.getElementById('seek-offset'); if (so) so.value = v.seekOffset; } if (Array.isArray(v.shotLog)) { const labelToId = { A: {}, B: {} }; ['A', 'B'].forEach(tm => state.teams[tm].players.forEach(p => { labelToId[tm][playerLabel(p)] = p.id; })); state.history = v.shotLog.map(e => { const ne = Object.assign({}, e); ensureTags(ne); if (labelToId[ne.team] && labelToId[ne.team][ne.playerName]) ne.playerId = labelToId[ne.team][ne.playerName]; return ne; }); historyCounter = state.history.reduce((m, e) => Math.max(m, e.id || 0), 0); } if (v.url) { document.getElementById('youtubeUrl').value = v.url; currentVideoId = v.videoId || extractVideoId(v.url); } } closeHistoryModal(); deselectPlayer(); const wasLocal = v && v.source === 'local'; if (wasLocal) { localReady = false; localVideoEl().removeAttribute('src'); if (localObjectUrl) { URL.revokeObjectURL(localObjectUrl); localObjectUrl = null; } localVideoName = v.localVideoName || ''; setVideoSource('local'); renderLocalFileName(); } else { setVideoSource('youtube'); if (currentVideoId && window.YT && typeof YT.Player === 'function') loadVideo(); } showToast(wasLocal ? '試合を読み込みました（動画は選び直してください）' : '試合を読み込みました'); }
 
 // =============================
 // 📅 月間スタッツ（保存ゲームを月単位で自動合算）
