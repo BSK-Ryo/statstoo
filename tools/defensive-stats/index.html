@@ -278,6 +278,10 @@ tool_name: ディフェンススタッツ記録
                     <option value="zone">エリア別内訳</option>
                 </select>
                 <select id="summary-stat" class="edit-input text-xs hidden" style="width:auto" onchange="app.render()"></select>
+                <label id="split-help-wrap" class="hidden items-center gap-1 text-[11px] font-bold text-gray-600 cursor-pointer select-none">
+                    <input type="checkbox" id="split-help" onchange="app.render()"
+                           style="width:15px;height:15px;accent-color:#EA580C;cursor:pointer"> マッチアップ／ヘルプで分ける
+                </label>
                 <select id="summary-quarter" class="edit-input text-xs" style="width:auto" onchange="app.render()">
                     <option value="all">全体</option>
                 </select>
@@ -351,7 +355,7 @@ tool_name: ディフェンススタッツ記録
                     </div>
                     <div class="step-item">
                         <div class="step-number">5</div>
-                        <div class="step-text">記録が終わったら<strong>集計表とCSV出力</strong>で振り返ります。エリア別内訳に切り替えると、どこで守備が効いていたかが見えます。</div>
+                        <div class="step-text">記録が終わったら<strong>集計表とCSV出力</strong>で振り返ります。<strong>エリア別内訳</strong>に切り替えるとエリアごとの回数が見え、さらに<strong>「マッチアップ／ヘルプで分ける」</strong>にチェックを入れると、「ペイント内でマッチアップ相手を止めた回数」と「ペイント内でヘルプに行った回数」を分けて確認できます。</div>
                     </div>
                 </div>
             </div>
@@ -923,7 +927,7 @@ tool_name: ディフェンススタッツ記録
             if (!s) return;
             if (s.zones === 'none') { this.record(statKey, 'none'); return; }
             this.pendingStat = statKey;
-            document.getElementById('zone-stat-label').textContent = s.label;
+            this.syncZoneLabel();
             const backAllowed = s.zones === 'all';
             const bc = document.getElementById('zone-backcourt');
             bc.classList.toggle('opacity-40', !backAllowed);
@@ -1002,24 +1006,30 @@ tool_name: ディフェンススタッツ記録
             ['A', 'B'].forEach(team => {
                 this.state.teams[team].players.forEach(p => {
                     const events = hist.filter(h => h.playerId === p.id);
-                    const counts = {}, byZone = {};
+                    // byZone = エリア別の合計 / byZoneHelp = そのうちヘルプでの回数
+                    // マッチアップでの回数は byZone - byZoneHelp で求める
+                    const counts = {}, byZone = {}, byZoneHelp = {};
                     let helpCount = 0, score = 0;
                     STATS.forEach(s => {
                         counts[s.key] = 0;
-                        byZone[s.key] = { backcourt: 0, out3: 0, in3: 0, paint: 0, none: 0 };
+                        byZone[s.key]     = { backcourt: 0, out3: 0, in3: 0, paint: 0, none: 0 };
+                        byZoneHelp[s.key] = { backcourt: 0, out3: 0, in3: 0, paint: 0, none: 0 };
                     });
                     events.forEach(e => {
                         if (counts[e.statKey] === undefined) return;
                         counts[e.statKey]++;
                         const z = e.zone || 'none';
-                        if (byZone[e.statKey][z] !== undefined) byZone[e.statKey][z]++;
+                        if (byZone[e.statKey][z] !== undefined) {
+                            byZone[e.statKey][z]++;
+                            if (e.help) byZoneHelp[e.statKey][z]++;
+                        }
                         if (e.help) helpCount++;
                         score += (this.state.weights.stat[e.statKey] || 0) * (this.state.weights.zone[z] || 1);
                     });
                     const stops = counts.bump + counts.blowby;
                     rows.push({
                         team, player: p, name: this.playerLabel(p),
-                        counts, byZone, helpCount, total: events.length,
+                        counts, byZone, byZoneHelp, helpCount, total: events.length,
                         stopRate: stops > 0 ? counts.bump / stops * 100 : null,
                         score: Math.round(score * 10) / 10
                     });
@@ -1095,6 +1105,23 @@ tool_name: ディフェンススタッツ記録
                 (this.state.helpMode
                     ? 'bg-amber-400 text-amber-950 border-amber-500'
                     : 'bg-gray-100 text-gray-600 border-gray-200 hover:bg-gray-200');
+
+            // ヘルプは押しっぱなしの状態なので、切り忘れに気づけるようパネル全体を色で示す
+            const ctl = document.getElementById('controller');
+            ctl.classList.toggle('bg-amber-50', this.state.helpMode);
+            ctl.classList.toggle('border-amber-400', this.state.helpMode);
+            ctl.classList.toggle('bg-white', !this.state.helpMode);
+            ctl.classList.toggle('border-primary', !this.state.helpMode);
+            this.syncZoneLabel();
+        },
+
+        syncZoneLabel() {
+            if (!this.pendingStat) return;
+            const s = statDef(this.pendingStat);
+            if (!s) return;
+            document.getElementById('zone-stat-label').innerHTML =
+                esc(s.label) + (s.help && this.state.helpMode
+                    ? ' <span class="text-amber-600">（ヘルプ）</span>' : '');
         },
 
         renderSummary() {
@@ -1103,7 +1130,13 @@ tool_name: ディフェンススタッツ記録
             document.getElementById('summary-empty').classList.toggle('hidden', hasData);
 
             const view = document.getElementById('summary-view').value;
+            const curStat = statDef(document.getElementById('summary-stat').value);
+            // 「マッチアップ／ヘルプで分ける」は、その区別を記録している種別のときだけ出す
+            const canSplit = view === 'zone' && !!(curStat && curStat.help);
             document.getElementById('summary-stat').classList.toggle('hidden', view !== 'zone');
+            const splitWrap = document.getElementById('split-help-wrap');
+            splitWrap.classList.toggle('hidden', !canSplit);
+            splitWrap.classList.toggle('flex', canSplit);
 
             const head = document.getElementById('summary-head');
             const body = document.getElementById('summary-body');
@@ -1126,21 +1159,34 @@ tool_name: ディフェンススタッツ記録
                 </tr>`).join('');
             } else {
                 const sk = document.getElementById('summary-stat').value;
-                const s = statDef(sk);
+                const s = curStat;
+                const split = canSplit && document.getElementById('split-help').checked;
+                // 分割ONのときは 1エリア = マッチアップ / ヘルプ の2列になる
+                const cols = split
+                    ? ZONES.flatMap(z => [
+                        { zone: z.key, mode: 'm', label: z.short + '<br><span class="font-normal opacity-70">マッチアップ</span>' },
+                        { zone: z.key, mode: 'h', label: z.short + '<br><span class="font-normal opacity-70">ヘルプ</span>' }
+                      ])
+                    : ZONES.map(z => ({ zone: z.key, mode: 'all', label: esc(z.label) }));
+                const cellVal = (r, c) => {
+                    const tot = r.byZone[sk][c.zone] || 0;
+                    const hlp = r.byZoneHelp[sk][c.zone] || 0;
+                    return c.mode === 'h' ? hlp : c.mode === 'm' ? tot - hlp : tot;
+                };
                 head.innerHTML = `<tr>
                     <th class="text-left px-2 py-2 sticky left-0 bg-secondary">選手</th>
-                    ${ZONES.map(z => `<th class="px-2 py-2 text-center">${esc(z.label)}</th>`).join('')}
+                    ${cols.map(c => `<th class="px-2 py-2 text-center ${c.mode === 'h' ? 'bg-amber-600' : ''}">${c.label}</th>`).join('')}
                     <th class="px-2 py-2 text-center">エリア指定なし</th>
                     <th class="px-2 py-2 text-center bg-primary">合計</th>
                 </tr>`;
                 body.innerHTML = rows.map(r => `<tr class="border-b border-gray-100">
                     <td class="px-2 py-1.5 font-bold sticky left-0 ${r.team === 'A' ? 'text-indigo-600' : 'text-rose-600'} bg-white">${esc(r.name)}</td>
-                    ${ZONES.map(z => `<td class="px-2 py-1.5 text-center tabular-nums">${r.byZone[sk][z.key] || '-'}</td>`).join('')}
+                    ${cols.map(c => `<td class="px-2 py-1.5 text-center tabular-nums ${c.mode === 'h' ? 'bg-amber-50 text-amber-700 font-bold' : ''}">${cellVal(r, c) || '-'}</td>`).join('')}
                     <td class="px-2 py-1.5 text-center tabular-nums">${r.byZone[sk].none || '-'}</td>
                     <td class="px-2 py-1.5 text-center tabular-nums font-bold text-primary-dark bg-primary/5">${r.counts[sk] || '-'}</td>
                 </tr>`).join('');
                 if (s && s.zones === 'none') {
-                    body.innerHTML += `<tr><td colspan="${ZONES.length + 3}" class="px-2 py-2 text-[10px] text-gray-400">
+                    body.innerHTML += `<tr><td colspan="${cols.length + 3}" class="px-2 py-2 text-[10px] text-gray-400">
                         ${esc(s.label)} はエリアを指定せずに記録する種別です。</td></tr>`;
                 }
             }
@@ -1235,13 +1281,20 @@ tool_name: ディフェンススタッツ記録
             });
             csv += '\n';
 
+            // CSVは幅の制約がないので、常にマッチアップ／ヘルプまで割って出す
             csv += '=== エリア別内訳 ===\n';
-            csv += ['チーム', '選手', '種別', ...ZONES.map(z => z.label), 'エリア指定なし', '合計'].map(cell).join(',') + '\n';
+            csv += ['チーム', '選手', '種別',
+                ...ZONES.flatMap(z => [z.label + '(マッチアップ)', z.label + '(ヘルプ)']),
+                'エリア指定なし', '合計'].map(cell).join(',') + '\n';
             rows.forEach(r => STATS.forEach(s => {
                 if (!r.counts[s.key]) return;
                 csv += [
                     this.state.teams[r.team].name, r.name, s.label,
-                    ...ZONES.map(z => r.byZone[s.key][z.key]),
+                    ...ZONES.flatMap(z => {
+                        const tot = r.byZone[s.key][z.key] || 0;
+                        const hlp = r.byZoneHelp[s.key][z.key] || 0;
+                        return [tot - hlp, hlp];
+                    }),
                     r.byZone[s.key].none,
                     r.counts[s.key]
                 ].map(cell).join(',') + '\n';
