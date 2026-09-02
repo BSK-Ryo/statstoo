@@ -21,20 +21,28 @@ tool_name: ディフェンススタッツ記録
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
     /* ===== Court map ===== */
-    .court-svg { width: 100%; height: 100%; display: block; }
+    /* 高さを確定させ、SVGは高さ基準で縦横比どおりに縮小する。
+       max-height だけだと親の高さが auto のままで height:100% が効かず、
+       SVGが幅基準の巨大サイズになってコート下部（ペイント内）が見切れる */
     .court-wrap {
-        max-height: 190px;
-        display: flex; justify-content: center;
+        height: 200px;
+        aspect-ratio: 300 / 345;   /* 高さから幅を確定させ、コート図にぴったり合わせる */
+        margin: 0 auto;
+        display: flex; align-items: center; justify-content: center;
         background: #D4956B; border-radius: 8px; padding: 4px;
+        overflow: hidden;
     }
-    @media (min-width: 768px) { .court-wrap { max-height: 240px; } }
+    .court-svg { height: 100%; width: auto; max-width: 100%; display: block; }
+    /* バックコートのバーをコート図と同じ幅に揃えて、ひとまとまりに見せる */
+    .zone-picker-body { width: fit-content; max-width: 100%; margin: 0 auto; }
+    @media (min-width: 768px) { .court-wrap { height: 300px; } }
 
     .zone { cursor: pointer; }
     .zone > path, .zone > rect { transition: fill .12s ease, fill-opacity .12s ease; }
     .zone > text {
-        fill: #fff; font-size: 14px; font-weight: 700; text-anchor: middle;
+        fill: #fff; font-size: 20px; font-weight: 700; text-anchor: middle;
         pointer-events: none; paint-order: stroke;
-        stroke: rgba(0,0,0,.45); stroke-width: 3px; stroke-linejoin: round;
+        stroke: rgba(0,0,0,.5); stroke-width: 2.5px; stroke-linejoin: round;
     }
     .zone:hover  > path, .zone:hover  > rect { fill: #EA580C; fill-opacity: .9; }
     .zone:active > path, .zone:active > rect { fill: #c2410c; fill-opacity: 1; }
@@ -440,6 +448,7 @@ tool_name: ディフェンススタッツ記録
                 <button onclick="app.cancelZone()" class="btn-press text-[10px] text-gray-500 px-2 py-1 border border-gray-200 rounded hover:bg-gray-50 font-bold">← 戻る</button>
             </div>
 
+            <div class="zone-picker-body">
             <div id="zone-backcourt" onclick="app.pickZone('backcourt')"
                  class="btn-press cursor-pointer text-center text-[11px] font-bold text-white py-2 rounded-md mb-1.5 bg-stone-500 hover:bg-primary transition select-none">
                 バックコート
@@ -463,7 +472,7 @@ tool_name: ディフェンススタッツ記録
 
                     <g class="zone" data-zone="paint" onclick="app.pickZone('paint')">
                         <path fill="#ef4444" fill-opacity=".34" d="M 90 215 L 210 215 L 210 335 L 90 335 Z"/>
-                        <text x="150" y="262">ペイント内</text>
+                        <text x="150" y="288">ペイント内</text>
                     </g>
 
                     <g pointer-events="none" fill="none" stroke="#fff" stroke-width="2">
@@ -482,6 +491,7 @@ tool_name: ディフェンススタッツ記録
                     </g>
                     <rect x="125" y="320" width="50" height="4" fill="#fff" pointer-events="none"/>
                 </svg>
+            </div>
             </div>
         </div>
     </div>
