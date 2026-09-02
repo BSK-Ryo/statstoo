@@ -175,10 +175,12 @@ tool_name: ディフェンススタッツ記録
     </section>
 
     <!-- ============================ Video (PC) + Teams ============================ -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 items-start">
+    <!-- .main-content は 1280px 未満だと 600px 幅しかないため、横並びは xl(1280px) から。
+         それ未満は縦積みにして動画を幅いっぱいに使い、sticky で追従させる -->
+    <div class="mb-4 xl:grid xl:grid-cols-3 xl:gap-4 xl:items-start">
 
-        <!-- Video Panel : PC のみ表示 -->
-        <section id="video-panel" class="hidden md:block md:sticky md:top-4 bg-white p-3 rounded-xl shadow-md border border-gray-100">
+        <!-- Video Panel : PC のみ表示。横並び時は 2/3 幅を使う -->
+        <section id="video-panel" class="hidden md:block xl:col-span-2 sticky top-4 z-20 mb-4 xl:mb-0 bg-white p-3 rounded-xl shadow-md border border-gray-100">
             <div class="flex items-center justify-between mb-2">
                 <h2 class="font-bold text-sm text-secondary flex items-center gap-2">
                     <span>📹</span> 動画プレーヤー
@@ -237,8 +239,8 @@ tool_name: ディフェンススタッツ記録
             </p>
         </section>
 
-        <!-- Teams -->
-        <div class="grid grid-cols-1 gap-4">
+        <!-- Teams : 縦積みレイアウトのときは横に並べ、横並びレイアウトでは縦に積む -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-4">
             <!-- Team A -->
             <div class="bg-white rounded-xl shadow-md border-2 border-indigo-200 overflow-hidden">
                 <div class="bg-indigo-500 text-white px-3 py-2 flex items-center gap-2">
@@ -1068,20 +1070,20 @@ tool_name: ディフェンススタッツ記録
                     const sel = this.selected && this.selected.playerId === p.id;
                     const n = hist.filter(h => h.playerId === p.id).length;
                     return `
-                    <div class="player-row ${sel ? (isA ? 'selected-ally' : 'selected-enemy') : 'hover:bg-gray-50'} px-2 py-1.5 flex items-center gap-2">
+                    <div class="player-row ${sel ? (isA ? 'selected-ally' : 'selected-enemy') : 'hover:bg-gray-50'} px-2 py-1.5 flex items-center gap-1.5">
                         <input type="text" value="${esc(p.number)}" placeholder="#" maxlength="3"
-                               class="edit-input text-center font-bold flex-shrink-0" style="width:44px"
+                               class="edit-input text-center font-bold flex-shrink-0" style="width:36px"
                                oninput="app.updatePlayer('${team}','${p.id}','number',this.value)">
                         <input type="text" value="${esc(p.name)}" placeholder="選手名"
                                class="edit-input flex-1 min-w-0"
                                oninput="app.updatePlayer('${team}','${p.id}','name',this.value)">
                         <button onclick="app.selectPlayer('${team}','${p.id}')"
-                                class="btn-press flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold transition ${sel
+                                class="btn-press flex-shrink-0 px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition ${sel
                                     ? 'bg-primary text-white shadow-sm'
                                     : (isA ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200' : 'bg-rose-100 text-rose-700 hover:bg-rose-200')}">
                             ${sel ? '記録中' : '記録'}
                         </button>
-                        <span class="flex-shrink-0 text-[10px] font-bold text-gray-400 tabular-nums" style="width:26px">${n}</span>
+                        <span class="flex-shrink-0 text-[10px] font-bold text-gray-400 tabular-nums" style="width:22px">${n}</span>
                         <button onclick="app.removePlayer('${team}','${p.id}')"
                                 class="flex-shrink-0 text-gray-300 hover:text-rose-500 transition text-sm leading-none px-1">✕</button>
                     </div>`;
