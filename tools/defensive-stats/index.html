@@ -237,6 +237,47 @@ tool_name: ディフェンススタッツ記録
             <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
                 記録するたびに、そのときの再生位置が一緒に保存されます。履歴の時刻をクリックすればその場面に戻れ、CSVには頭出しURLが入ります。
             </p>
+
+            <!-- ハイライト再生・切り出し -->
+            <details id="clip-panel" class="mt-3 border-t border-gray-100 pt-3">
+                <summary class="cursor-pointer text-xs font-bold text-secondary flex items-center gap-2 select-none">
+                    <span>🎬</span> ハイライト再生・切り出し
+                    <span id="clip-count" class="ml-auto text-[10px] font-normal text-gray-400"></span>
+                </summary>
+                <div class="mt-2 space-y-2">
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <select id="clip-player" class="edit-input text-xs" onchange="app.updateClipCount()"></select>
+                        <select id="clip-stat" class="edit-input text-xs" onchange="app.updateClipCount()"></select>
+                        <select id="clip-quarter" class="edit-input text-xs" onchange="app.updateClipCount()"></select>
+                    </div>
+                    <div class="flex items-center gap-2 text-[11px] text-gray-600">
+                        <span>プレーの前</span>
+                        <input type="number" id="clip-pre" value="5" min="0" max="30" class="edit-input text-center" style="width:52px">
+                        <span>秒 ／ 後</span>
+                        <input type="number" id="clip-post" value="5" min="1" max="30" class="edit-input text-center" style="width:52px">
+                        <span>秒</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button id="hl-play-btn" onclick="app.toggleHighlight()"
+                                class="btn-press text-[11px] font-bold px-3 py-1.5 rounded-lg bg-primary text-white hover:bg-primary-dark transition disabled:opacity-40 disabled:cursor-not-allowed">▶ 連続再生</button>
+                        <button id="clip-zip-btn" onclick="app.clipBatch()"
+                                class="btn-press text-[11px] font-bold px-3 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition disabled:opacity-40 disabled:cursor-not-allowed">✂️ 一括切り出し（ZIP）</button>
+                    </div>
+                    <div id="hl-status" class="hidden text-[11px] font-bold text-primary-dark bg-primary/10 px-2 py-1.5 rounded-lg"></div>
+                    <div id="clip-progress" class="hidden">
+                        <div class="flex justify-between text-[10px] text-gray-600 mb-1">
+                            <span id="clip-progress-label" class="truncate"></span>
+                            <span id="clip-progress-pct" class="flex-shrink-0 ml-2 font-mono"></span>
+                        </div>
+                        <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div id="clip-progress-bar" class="h-full bg-emerald-500 transition-all" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 leading-relaxed">
+                        連続再生はYouTube・端末内どちらでも使えます。<strong>切り出しは端末内の動画のみ</strong>対応で、初回だけ処理エンジン（約31MB）を読み込みます。再エンコードせずに切るため、開始位置が数秒早くなることがあります。
+                    </p>
+                </div>
+            </details>
         </section>
 
         <!-- Teams : 縦積みレイアウトのときは横に並べ、横並びレイアウトでは縦に積む -->
@@ -366,6 +407,14 @@ tool_name: ディフェンススタッツ記録
                         <div class="step-text">記録が終わったら<strong>集計表とCSV出力</strong>で振り返ります。<strong>エリア別内訳</strong>に切り替えるとエリアごとの回数が見え、さらに<strong>「マッチアップ／ヘルプで分ける」</strong>にチェックを入れると、「ペイント内でマッチアップ相手を止めた回数」と「ペイント内でヘルプに行った回数」を分けて確認できます。</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="article-block">
+                <h3>🎬 ハイライト再生と切り出し（PC版）</h3>
+                <p>
+                    動画プレーヤーの「ハイライト再生・切り出し」を開くと、記録したプレーを<strong>選手・種別・クォーターで絞り込んで連続再生</strong>できます。「田中のペイント内バンプだけを順番に見る」といった振り返りがワンクリックで済みます。<br>
+                    端末内の動画ファイルを使っている場合は、同じ絞り込みで<strong>各プレーの前後数秒を動画ファイルとして切り出し、ZIPでまとめてダウンロード</strong>できます。ファイル名には「Q1_02-03_田中_オンボールバンプ_ペイント内.mp4」のように情報が入るので、ディフレクションやバンプの素材集めにそのまま使えます。処理はすべてブラウザ内で行われ、動画がどこかにアップロードされることはありません。
+                </p>
             </div>
 
             <div class="article-block">
@@ -619,7 +668,8 @@ tool_name: ディフェンススタッツ記録
         pendingStat: null,
 
         // 動画プレーヤー（PC版のみ利用）
-        video: { source: 'youtube', player: null, videoId: null, objectUrl: null, localName: '', localReady: false },
+        video: { source: 'youtube', player: null, videoId: null, objectUrl: null, localName: '', localReady: false, file: null },
+        _ff: null, _ffMountedFile: null, _scripts: {}, _hl: null, _hlTimer: null,
         _ytQueue: [],
         _ytLoading: false,
 
@@ -672,6 +722,7 @@ tool_name: ディフェンススタッツ記録
             this.buildStatSelect();
             this.buildQuarterSelect();
             this.buildGlossary();
+            this.buildClipSelects();
             this.render();
             setInterval(() => this.tickVideoTime(), 200);
         },
@@ -782,6 +833,9 @@ tool_name: ディフェンススタッツ記録
             this.video.objectUrl = URL.createObjectURL(file);
             this.video.localName = file.name;
             this.video.videoId = null;
+            this.video.file = file;          // 切り出し時に ffmpeg へマウントする実体
+            this._ffMountedFile = null;      // ファイルが変わったので再マウントが必要
+            if (this._hl) this.stopHighlight();
             const v = document.getElementById('localPlayer');
             v.src = this.video.objectUrl;
             v.controls = true;
@@ -863,6 +917,311 @@ tool_name: ディフェンススタッツ記録
             this.vSeek(Math.max(0, h.videoTime - 3));
             this.closeModal('history-modal');
             this.toast(`${fmtTime(h.videoTime)} に移動しました`);
+        },
+
+        vPlay() {
+            if (!this.vReady()) return;
+            try {
+                if (this.video.source === 'local') { const p = this.vEl().play(); if (p && p.catch) p.catch(() => {}); }
+                else this.video.player.playVideo();
+            } catch (e) { /* noop */ }
+        },
+
+        vPause() {
+            if (!this.vReady()) return;
+            try {
+                if (this.video.source === 'local') this.vEl().pause();
+                else this.video.player.pauseVideo();
+            } catch (e) { /* noop */ }
+        },
+
+        // ---------------------- ハイライト（絞り込み・連続再生） ----------------------
+        // 別の動画で記録した時刻を混ぜないよう、今読み込んでいる動画に属する記録だけを対象にする
+        matchesCurrentVideo(h) {
+            if (h.videoTime == null) return false;
+            if (this.video.source === 'youtube') return !!h.videoId && h.videoId === this.video.videoId;
+            // 端末内の動画: ファイル名で照合（videoName を持たない旧データは通す）
+            return h.videoId == null && (h.videoName == null || h.videoName === this.video.localName);
+        },
+
+        buildClipSelects() {
+            const keep = id => { const el = document.getElementById(id); return el ? el.value : 'all'; };
+            const cur = { p: keep('clip-player'), s: keep('clip-stat'), q: keep('clip-quarter') };
+            const opt = (v, label, sel) => `<option value="${esc(v)}"${sel === v ? ' selected' : ''}>${esc(label)}</option>`;
+
+            const players = ['A', 'B'].flatMap(t => this.state.teams[t].players.map(p => ({ id: p.id, label: this.playerLabel(p) })));
+            document.getElementById('clip-player').innerHTML =
+                opt('all', '全選手', cur.p) + players.map(p => opt(p.id, p.label, cur.p)).join('');
+            document.getElementById('clip-stat').innerHTML =
+                opt('all', '全種別', cur.s) + STATS.map(s => opt(s.key, s.label, cur.s)).join('');
+            document.getElementById('clip-quarter').innerHTML =
+                opt('all', '全クォーター', cur.q) + QUARTERS.map(q => opt(q, q, cur.q)).join('');
+        },
+
+        clipTargets() {
+            if (!this.vReady()) return [];
+            const v = id => document.getElementById(id).value;
+            const pid = v('clip-player'), sk = v('clip-stat'), q = v('clip-quarter');
+            return this.state.history
+                .filter(h => this.matchesCurrentVideo(h)
+                    && (pid === 'all' || h.playerId === pid)
+                    && (sk === 'all' || h.statKey === sk)
+                    && (q === 'all' || h.quarter === q))
+                .sort((a, b) => a.videoTime - b.videoTime);
+        },
+
+        clipRange() {
+            const n = (id, def, min, max) => {
+                const x = parseFloat(document.getElementById(id).value);
+                return isNaN(x) ? def : Math.min(max, Math.max(min, x));
+            };
+            return { pre: n('clip-pre', 5, 0, 30), post: n('clip-post', 5, 1, 30) };
+        },
+
+        canClip() {
+            return this.video.source === 'local' && !!this.video.file && this.video.localReady;
+        },
+
+        updateClipCount() {
+            const el = document.getElementById('clip-count');
+            if (!el) return;
+            const n = this.clipTargets().length;
+            el.textContent = this.vReady() ? `対象 ${n}件` : '動画を読み込むと使えます';
+            const busy = !!this._clipBusy;
+            document.getElementById('hl-play-btn').disabled = busy || (n === 0 && !this._hl);
+            document.getElementById('clip-zip-btn').disabled = busy || n === 0 || !this.canClip();
+            document.getElementById('clip-zip-btn').title = this.canClip() ? '' : '切り出しは端末内の動画のみ対応です';
+        },
+
+        toggleHighlight() { this._hl ? this.stopHighlight(false) : this.startHighlight(); },
+
+        startHighlight() {
+            if (!this.vReady()) { this.toast('先に動画を読み込んでください'); return; }
+            const targets = this.clipTargets();
+            if (targets.length === 0) { this.toast('対象の記録がありません'); return; }
+            const { pre, post } = this.clipRange();
+            this._hl = { targets, i: -1, pre, post, end: 0 };
+            document.getElementById('hl-play-btn').textContent = '■ 停止';
+            document.getElementById('hl-status').classList.remove('hidden');
+            this._hlNext();
+            clearInterval(this._hlTimer);
+            this._hlTimer = setInterval(() => this._hlTick(), 200);
+            this.updateClipCount();
+        },
+
+        _hlNext() {
+            const hl = this._hl;
+            if (!hl) return;
+            hl.i++;
+            if (hl.i >= hl.targets.length) { this.stopHighlight(true); return; }
+            const h = hl.targets[hl.i];
+            const s = statDef(h.statKey);
+            hl.end = h.videoTime + hl.post;
+            this.vSeek(Math.max(0, h.videoTime - hl.pre));
+            this.vPlay();
+            document.getElementById('hl-status').textContent =
+                `▶ ${hl.i + 1}/${hl.targets.length}　${h.playerName}　${s ? s.label : h.statKey}` +
+                (h.zone && h.zone !== 'none' ? `　${zoneLabel(h.zone)}` : '') + (h.help ? '（ヘルプ）' : '');
+        },
+
+        _hlTick() {
+            const hl = this._hl;
+            if (!hl) return;
+            const t = this.vTime();
+            if (t == null) return;
+            if (t >= hl.end - 0.05) this._hlNext();
+        },
+
+        stopHighlight(finished) {
+            clearInterval(this._hlTimer);
+            this._hlTimer = null;
+            this._hl = null;
+            this.vPause();
+            const btn = document.getElementById('hl-play-btn');
+            if (btn) btn.textContent = '▶ 連続再生';
+            const st = document.getElementById('hl-status');
+            if (st) { st.classList.add('hidden'); st.textContent = ''; }
+            if (finished) this.toast('連続再生が終わりました');
+            this.updateClipCount();
+        },
+
+        // ---------------------- 切り出し（ffmpeg.wasm） ----------------------
+        // 端末内の動画のみ対応。ffmpeg はブラウザ内(WebAssembly)で動かし、動画はどこにも送らない。
+        // 単一スレッド版を使う: マルチスレッド版は COOP/COEP ヘッダが必要で GitHub Pages では設定できない。
+        // ファイル本体は WORKERFS でマウントし、メモリに丸ごと載せない（数GBの試合動画でも動く）。
+        FF_URLS: {
+            ffmpeg: 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js',
+            worker: 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/814.ffmpeg.js',
+            util:   'https://cdn.jsdelivr.net/npm/@ffmpeg/util@0.12.1/dist/umd/index.js',
+            // core は ESM 版を使う。Worker はモジュール型で生成されるため UMD 版だと
+            // import() 後に default export が無く "failed to import ffmpeg-core.js" になる
+            core:   'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.js',
+            wasm:   'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm/ffmpeg-core.wasm',
+            jszip:  'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'
+        },
+
+        // ffmpeg.wasm の Worker はエラーを文字列で返すので、Error でも文字列でも読める形にする
+        errText(e, fallback) {
+            if (typeof e === 'string' && e) return e.replace(/^Error:\s*/, '');
+            return (e && e.message) || fallback;
+        },
+
+        loadScript(src) {
+            if (!this._scripts[src]) {
+                this._scripts[src] = new Promise((res, rej) => {
+                    const s = document.createElement('script');
+                    s.src = src;
+                    s.onload = () => res();
+                    s.onerror = () => { delete this._scripts[src]; rej(new Error('ライブラリの読み込みに失敗しました')); };
+                    document.head.appendChild(s);
+                });
+            }
+            return this._scripts[src];
+        },
+
+        async ensureFFmpeg(onStatus) {
+            if (this._ff && this._ff.loaded) return this._ff;
+            onStatus('処理エンジンを読み込み中…（初回のみ約31MB）');
+            await this.loadScript(this.FF_URLS.ffmpeg);
+            await this.loadScript(this.FF_URLS.util);
+            const ff = new window.FFmpegWASM.FFmpeg();
+            const toBlobURL = window.FFmpegUtil.toBlobURL;
+            this._ffLog = [];
+            // "Aborted()" は各 exec 終了時に必ず出る正常ノイズなので、エラー表示に混ざらないよう除外
+            ff.on('log', ({ message }) => {
+                if (!message || message.trim() === 'Aborted()') return;
+                this._ffLog.push(message);
+                if (this._ffLog.length > 30) this._ffLog.shift();
+            });
+            // CDN 越しに Worker を直接生成できないため、worker / core / wasm は blob URL に変換して渡す
+            await ff.load({
+                coreURL:        await toBlobURL(this.FF_URLS.core,   'text/javascript'),
+                wasmURL:        await toBlobURL(this.FF_URLS.wasm,   'application/wasm'),
+                classWorkerURL: await toBlobURL(this.FF_URLS.worker, 'text/javascript')
+            });
+            this._ff = ff;
+            return ff;
+        },
+
+        async ffMount(ff) {
+            const file = this.video.file;
+            if (this._ffMountedFile === file) return;
+            if (this._ffMountedFile) { try { await ff.unmount('/input'); } catch (e) { /* noop */ } }
+            try { await ff.createDir('/input'); } catch (e) { /* 既にある */ }
+            await ff.mount('WORKERFS', { files: [file] }, '/input');
+            this._ffMountedFile = file;
+        },
+
+        // 1件をストリームコピーで切り出して Uint8Array を返す
+        async clipOne(ff, h, pre, post) {
+            const start = Math.max(0, h.videoTime - pre);
+            const dur = (h.videoTime - start) + post;
+            const input = '/input/' + this.video.file.name;
+            const out = `clip_${h.id}.mp4`;
+            // faststart（moov 先頭移動の2パス目）はローカル再生には不要なので付けない
+            const base = ['-ss', start.toFixed(2), '-i', input, '-t', dur.toFixed(2)];
+            const tail = ['-avoid_negative_ts', 'make_zero', '-y', out];
+            let rc = await ff.exec([...base, '-c', 'copy', ...tail]);
+            if (rc !== 0) {
+                // 音声コーデックが mp4 に入らない場合（PCM等）は音声だけ再エンコードして再試行
+                rc = await ff.exec([...base, '-c:v', 'copy', '-c:a', 'aac', ...tail]);
+            }
+            if (rc !== 0) throw new Error('この動画は切り出せませんでした（' + (this._ffLog.slice(-1)[0] || 'ffmpeg error') + '）');
+            const data = await ff.readFile(out);
+            try { await ff.deleteFile(out); } catch (e) { /* noop */ }
+            return data;
+        },
+
+        clipName(h) {
+            const s = statDef(h.statKey);
+            const safe = x => String(x).replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_');
+            return [
+                h.quarter,
+                fmtTime(h.videoTime).replace(':', '-'),
+                safe(h.playerName),
+                safe(s ? s.label : h.statKey),
+                (h.zone && h.zone !== 'none') ? safe(zoneLabel(h.zone)) : null,
+                h.help ? 'ヘルプ' : null
+            ].filter(Boolean).join('_') + '.mp4';
+        },
+
+        setClipProgress(label, pct) {
+            const box = document.getElementById('clip-progress');
+            box.classList.remove('hidden');
+            document.getElementById('clip-progress-label').textContent = label;
+            document.getElementById('clip-progress-pct').textContent = pct == null ? '' : Math.round(pct) + '%';
+            document.getElementById('clip-progress-bar').style.width = (pct == null ? 0 : pct) + '%';
+        },
+
+        setClipBusy(on) {
+            this._clipBusy = on;
+            if (!on) document.getElementById('clip-progress').classList.add('hidden');
+            this.updateClipCount();
+        },
+
+        downloadBlob(blob, name) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = name;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        },
+
+        async clipSingle(id) {
+            const h = this.state.history.find(x => x.id === id);
+            if (!h || !this.canClip() || !this.matchesCurrentVideo(h)) { this.toast('切り出しは端末内の動画のみ対応です'); return; }
+            if (this._clipBusy) { this.toast('処理中です'); return; }
+            if (this._hl) this.stopHighlight(false);
+            const { pre, post } = this.clipRange();
+            document.getElementById('clip-panel').open = true;
+            this.setClipBusy(true);
+            try {
+                const ff = await this.ensureFFmpeg(msg => this.setClipProgress(msg, null));
+                await this.ffMount(ff);
+                this.setClipProgress(`切り出し中：${h.playerName} ${statDef(h.statKey).label}`, 50);
+                const data = await this.clipOne(ff, h, pre, post);
+                this.downloadBlob(new Blob([data], { type: 'video/mp4' }), this.clipName(h));
+                this.toast('切り出しました');
+            } catch (e) {
+                this.toast('切り出しに失敗しました：' + this.errText(e, '不明なエラー'));
+            } finally {
+                this.setClipBusy(false);
+            }
+        },
+
+        async clipBatch() {
+            if (!this.canClip()) { this.toast('切り出しは端末内の動画のみ対応です'); return; }
+            if (this._clipBusy) { this.toast('処理中です'); return; }
+            const targets = this.clipTargets();
+            if (targets.length === 0) { this.toast('対象の記録がありません'); return; }
+            if (targets.length > 40 && !confirm(`${targets.length}本を切り出します。時間がかかりますが続けますか？`)) return;
+            if (this._hl) this.stopHighlight(false);
+            const { pre, post } = this.clipRange();
+            this.setClipBusy(true);
+            try {
+                const ff = await this.ensureFFmpeg(msg => this.setClipProgress(msg, null));
+                await this.loadScript(this.FF_URLS.jszip);
+                await this.ffMount(ff);
+                const zip = new window.JSZip();
+                const used = {};
+                for (let i = 0; i < targets.length; i++) {
+                    const h = targets[i];
+                    this.setClipProgress(`切り出し中 ${i + 1}/${targets.length}：${h.playerName} ${statDef(h.statKey).label}`, i / targets.length * 100);
+                    const data = await this.clipOne(ff, h, pre, post);
+                    let name = this.clipName(h);
+                    if (used[name]) name = name.replace(/\.mp4$/, `_${++used[name]}.mp4`); else used[name] = 1;
+                    zip.file(name, data);
+                }
+                this.setClipProgress('ZIPを作成中…', 100);
+                const blob = await zip.generateAsync({ type: 'blob' });
+                const date = document.getElementById('game-date').value || new Date().toISOString().slice(0, 10);
+                this.downloadBlob(blob, `defensive_clips_${date}.zip`);
+                this.toast(`${targets.length}本を切り出しました`);
+            } catch (e) {
+                this.toast('切り出しに失敗しました：' + this.errText(e, '不明なエラー'));
+            } finally {
+                this.setClipBusy(false);
+            }
         },
 
         // ---------------------- 選手管理 ----------------------
@@ -977,7 +1336,9 @@ tool_name: ディフェンススタッツ記録
                 help: s.help ? this.state.helpMode : false,
                 quarter: this.state.quarter,
                 videoTime: t,
-                videoId: (t != null && this.video.source === 'youtube') ? this.video.videoId : null
+                videoId: (t != null && this.video.source === 'youtube') ? this.video.videoId : null,
+                // 端末内の動画はURLを持たないので、ファイル名で「どの動画の時刻か」を紐づける
+                videoName: (t != null && this.video.source === 'local') ? this.video.localName : null
             });
             this.save();
             this.render();
@@ -1054,6 +1415,8 @@ tool_name: ディフェンススタッツ記録
             this.renderQuarterTabs();
             this.renderSummary();
             this.renderController();
+            this.buildClipSelects();
+            this.updateClipCount();
         },
 
         renderPlayers() {
@@ -1213,9 +1576,12 @@ tool_name: ディフェンススタッツ記録
                 const s = statDef(h.statKey);
                 const tBtn = h.videoTime == null ? '' :
                     `<button onclick="app.seekTo(${h.id})" class="btn-press text-[10px] font-mono font-bold text-sky-600 bg-sky-50 hover:bg-sky-100 px-1.5 py-0.5 rounded transition flex-shrink-0">▶ ${fmtTime(h.videoTime)}</button>`;
+                const cutBtn = (h.videoTime != null && this.canClip() && this.matchesCurrentVideo(h))
+                    ? `<button onclick="app.clipSingle(${h.id})" title="この場面を切り出し" class="btn-press text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-1.5 py-0.5 rounded transition flex-shrink-0">✂️</button>`
+                    : '';
                 return `<div class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 border border-gray-100">
                     <span class="text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded flex-shrink-0">${esc(h.quarter)}</span>
-                    ${tBtn}
+                    ${tBtn}${cutBtn}
                     <span class="text-xs font-bold flex-shrink-0 ${h.team === 'A' ? 'text-indigo-600' : 'text-rose-600'}">${esc(h.playerName)}</span>
                     <span class="text-xs ${s && s.kind === 'minus' ? 'text-rose-500 font-bold' : 'text-gray-700'}">${esc(s ? s.label : h.statKey)}</span>
                     <span class="text-[10px] text-gray-400">${esc(zoneLabel(h.zone))}</span>
